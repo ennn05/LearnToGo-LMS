@@ -1,0 +1,9 @@
+.container {
+    text-align: center;
+}
+
+.tagline {
+  font-family: monospace;
+  border-radius: 4px;
+  padding: 0 4px;
+}
