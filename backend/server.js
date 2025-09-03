@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import open from 'open';
 import { sql } from "./config/db.js";
+import routes from './routes/index.js';
 
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
 
+app.use("/api", routes)
 async function initDB() {
   try{
     await sql`
