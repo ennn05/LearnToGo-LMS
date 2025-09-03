@@ -6,6 +6,8 @@ import cors from 'cors';
 import { fileURLToPath } from 'url'; 
 import path from 'path';
 import open from 'open';
+import { sql } from "./config/db.js";
+
 
 dotenv.config();
 
@@ -19,14 +21,31 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
 
+async function initDB() {
+  try{
+    await sql`
+      CREATE TABLE IF NOT EXISTS instructors  
+      instructor_id VARCHAR(50) NOT NULL,
+      instructor_fname VARCHAR(50) NOT NULL,
+      instructor_lname VARCHAR(50) NOT NULL,
+      instructor_email VARCHAR(50) NOT NULL,
+    `
+
+  } catch (error){
+    console.log("ERROR IN DB", error);
+  }
+}
 
 app.use(express.static(path.join(__dirname, "../frontend/public")));
 
-// app.get('/', (req, res) => {
-//   res.send('Hello from backend!');
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+//   open(`http://localhost:${PORT}`);
 // });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  open(`http://localhost:${PORT}`);
-});
+initDB().then(()=> {
+    app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    open(`http://localhost:${PORT}`);
+  });
+})
