@@ -9,10 +9,10 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email && password) {
-      console.log("✅ Login successful:", email);
+      console.log("Login successful:", email);
       // redirect later using React Router
     } else {
-      console.log("❌ Login failed");
+      console.log("Login failed");
     }
   };
 
