@@ -10,22 +10,39 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  // const handleLogin = (e) => {
+  //   e.preventDefault();
+    
+  //   // Placeholder credentials
+  //   const validEmail = "chong@123";
+  //   const validPassword = "123";
+  //   ///// IMPORTANT WE TEST WITH FAKE CREDENTIALS FIRST/////
+
+  //   if (email === validEmail && password === validPassword) {
+  //     setMessage("✅ Login successful!");
+  //     console.log("Login successful:", email);
+  //     // Redirect logic 
+  //     navigate("/dashboard")
+  //   } else {
+  //     setMessage("❌ Invalid email or password");
+  //     console.log("Login failed");
+  //   }
+  // };
+  const handleLogin = async (e) => {
     e.preventDefault();
     
-    // Placeholder credentials
-    const validEmail = "chong@123";
-    const validPassword = "123";
-    ///// IMPORTANT WE TEST WITH FAKE CREDENTIALS FIRST/////
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-    if (email === validEmail && password === validPassword) {
-      setMessage("✅ Login successful!");
-      console.log("Login successful:", email);
-      // Redirect logic 
-      navigate("/dashboard")
+    const data = await res.json();
+    if (res.ok) {
+      console.log("Login successful", data.user);
+      navigate("/dashboard"); // use React Router
     } else {
       setMessage("❌ Invalid email or password");
-      console.log("Login failed");
     }
   };
 
