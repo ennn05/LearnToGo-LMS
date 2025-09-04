@@ -10,28 +10,10 @@ function Login() {
 
   const navigate = useNavigate();
 
-  // const handleLogin = (e) => {
-  //   e.preventDefault();
-    
-  //   // Placeholder credentials
-  //   const validEmail = "chong@123";
-  //   const validPassword = "123";
-  //   ///// IMPORTANT WE TEST WITH FAKE CREDENTIALS FIRST/////
-
-  //   if (email === validEmail && password === validPassword) {
-  //     setMessage("✅ Login successful!");
-  //     console.log("Login successful:", email);
-  //     // Redirect logic 
-  //     navigate("/dashboard")
-  //   } else {
-  //     setMessage("❌ Invalid email or password");
-  //     console.log("Login failed");
-  //   }
-  // };
-  const handleLogin = async (e) => {
+  const handleLogin = async(e) => {
     e.preventDefault();
     
-    const res = await fetch("http://localhost:5000/api/auth/login", {
+    const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
