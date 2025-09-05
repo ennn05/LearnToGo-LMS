@@ -1,5 +1,6 @@
 import express from "express";
 import { sql } from "../db.js";
+import { registerInstructor } from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -25,5 +26,8 @@ router.post("/login", async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+
+router.post("/register/instructor", registerInstructor);
 
 export default router;
