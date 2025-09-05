@@ -1,3 +1,7 @@
+import { sql } from '../db.js';
+import { hashPassword } from '../libs/auth.js';
+
+
 const INSTRUCTOR_PIN = process.env.INSTRUCTOR_PIN || "12345";
 const STUDENT_PIN = process.env.STUDENT_PIN || "67890";
 
@@ -19,9 +23,10 @@ export const registerInstructor = async (req, res) => {
             return res.status(409).json({ status: "failed", message: "Email already in use" });
         }
 
-        const newInstructor = await sql`INSERT INTO "LMS".instructor (instructor_email, instructor_password) VALUES (${email}, ${password}) RETURNING *`;
+        const hashedPassword = await hashPassword(password);
+        const newInstructor = await sql`INSERT INTO "LMS".instructor (instructor_email, instructor_password) VALUES (${email}, ${hashedPassword}) RETURNING *`;
         newInstructor.rows[0].instructor_password = undefined;
-        
+
         console.log("DB result:", newInstructor);
         return res.status(201).json({ success: true, message: "Registration successful", user: newInstructor[0] });
         
@@ -50,7 +55,8 @@ export const registerStudent = async (req, res) => {
             return res.status(409).json({ status: "failed", message: "Email already in use" });
         }
 
-        const newStudent = await sql`INSERT INTO "LMS".student (student_email, student_password) VALUES (${email}, ${password}) RETURNING *`;
+        const hashedPassword = await hashPassword(password);
+        const newStudent = await sql`INSERT INTO "LMS".student (student_email, student_password) VALUES (${email}, ${hashedPassword}) RETURNING *`;
         newStudent.rows[0].student_password = undefined;
 
         console.log("DB result:", newStudent);
