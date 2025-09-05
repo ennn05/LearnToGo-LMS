@@ -49,22 +49,38 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-
     const { email, password } = req.body;
     console.log("Login attempt:", email, password);
+    
     try {
-        const instructor = await sql`SELECT * FROM "LMS".instructor WHERE instructor_email = ${email}`;
-        console.log("DB result:", instructor);
+        
+        if (!(email || password)) {
+            return res.status(400).json({ status: "failed", message: "Provide Required Fields!" });
+        }
 
-        if (instructor.length > 0) {
-            if (password === instructor[0].instructor_password) {
-                return res.status(200).json({ message: "Login successful", user: instructor[0] });
-            } else {
-                return res.status(401).json({ message: "Invalid email or password" });
-            }
-        } else {
+        const user = await sql`SELECT * FROM "LMS".user WHERE user_email = ${email}`;
+        console.log("DB result:", user);
+
+        if (user.length <= 0)
+        {
             return res.status(401).json({ message: "Invalid email or password" });
         }
+
+        const isPasswordValid = await checkPassword(password, user[0].user_password);
+        if (!isPasswordValid) 
+        {
+            return res.status(401).json({ message: "Invalid email or password" });    
+        } 
+        
+        const payload = {
+            id: user[0].user_id,
+            role: user[0].user_role,
+        }
+        const token = generateJWT(payload);
+
+        user[0].user_password = undefined;
+
+        return res.status(200).json({ status: "success",message: "Login successful", user: user[0], token });
 
 
     } catch (error) {

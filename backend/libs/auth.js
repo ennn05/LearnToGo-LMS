@@ -14,6 +14,6 @@ export const checkPassword = async (userPassword, hashedPassword) => {
   }
 };
 
-export const generateJWT = (id) => {
-  return JWT.sign({ userId: id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+export const generateJWT = (payload) => {
+  return JWT.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
