@@ -20,7 +20,7 @@ app.use("/api/auth", authRoutes);
 // Test DB
 async function testDB() {
   try {
-    const result = await sql`SELECT * FROM "LMS".instructor;`;
+    const result = await sql`SELECT * FROM "LMS".user;`;
     console.log("✅ Database connection successful:", result);
   } catch (err) {
     console.error("❌ Database connection failed:", err);
