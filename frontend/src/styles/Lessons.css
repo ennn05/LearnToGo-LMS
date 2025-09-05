@@ -1,0 +1,87 @@
+/* Sidebar */
+.sidebar {
+  width: 16rem; /* 64 in Tailwind = 16rem */
+  height: 100vh; /* full screen height */
+  background-color: #1f2937; /* bg-gray-800 */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* Profile section */
+.profile {
+  display: flex;
+  align-items: center; /* vertically center avatar + text */
+  margin-bottom: 2rem;
+}
+
+.profile .avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%; /* circle */
+  background-color: #374151; /* gray placeholder */
+  margin-right: 1rem; /* space between avatar and text */
+}
+
+.profile .info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile .name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.profile .role {
+  font-size: 0.875rem;
+  color: #9ca3af; /* lighter gray */
+}
+
+.sidebar h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Sidebar buttons */
+.sidebar button {
+  padding: 0.5rem 1rem; /* p-2 */
+  margin-bottom: 0.5rem; /* mb-2 */
+  text-align: left;
+  border-radius: 0.25rem; /* rounded */
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.sidebar button:hover {
+  background-color: #374151; /* hover:bg-gray-700 */
+}
+
+.sidebar button.active {
+  background-color: #374151; /* bg-gray-700 when active */
+}
+
+/* Main content */
+.main-content {
+  margin-left: 16rem; /* leave space for sidebar */
+  background-color: #f3f4f6; /* bg-gray-100 */
+  flex: 1;
+  padding: 1.5rem; /* p-6 */
+  min-height: 100vh;
+}
+
+.main-content h2 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 600; /* font-semibold */
+  margin-bottom: 1rem; /* mb-4 */
+}
