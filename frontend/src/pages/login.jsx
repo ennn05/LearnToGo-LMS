@@ -7,6 +7,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [pin, setPin] = useState("");
+  const [role, setRole] = useState("student");
 
   const navigate = useNavigate();
 
@@ -25,6 +29,24 @@ function Login() {
       navigate("/dashboard"); // use React Router
     } else {
       setMessage("❌ Invalid email or password");
+    }
+  };
+
+  const handleRegistration = async(e) => {
+    e.preventDefault();
+
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fname, lname, pin, role, email, password }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      console.log("Registration successful", data.user);
+      navigate("/dashboard"); // use React Router
+    } else {
+      setMessage("❌ Registration failed");
     }
   };
 
@@ -72,10 +94,22 @@ function Login() {
       {form === "register" && (
         <div className="form active">
           <h2>Register</h2>
-          <form onSubmit={(e) => e.preventDefault()}>
-            <input type="text" placeholder="Name" required style={{ width: "290px" }} />
-            <input type="email" placeholder="Email" required style={{ width: "290px" }} />
-            <input type="password" placeholder="Password" required style={{ width: "290px" }} />
+          <form onSubmit={handleRegistration}>
+            <input type="text" placeholder="First Name" required style={{ width: "290px" }} value={fname} onChange={(e) => setFname(e.target.value)}
+            />
+            <input type="text" placeholder="Last Name" required style={{ width: "290px" }} value={lname} onChange={(e) => setLname(e.target.value)}
+            />
+            <input type="text" placeholder="Registration PIN" required style={{ width: "290px" }} value={pin} onChange={(e) => setPin(e.target.value)}
+            />
+            <select placeholder="Select Role" required style={{ width: "290px" }} value={role} onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="instructor">Instructor</option>
+              <option value="student">Student</option>
+            </select>
+            <input type="email" placeholder="Email" required style={{ width: "290px" }} value={email} onChange={(e) => setEmail(e.target.value)}
+            />
+            <input type="password" placeholder="Password" required style={{ width: "290px" }} value={password} onChange={(e) => setPassword(e.target.value)}
+            />
             <button type="submit">Register</button>
           </form>
         </div>
