@@ -8,11 +8,11 @@ router.post("/login", async (req, res) => {
   console.log("Login attempt:", email, password);
 
   try {
-    const instructor = await sql`SELECT * FROM "LMS".instructor WHERE instructor_email = ${email}`;
+    const instructor = await sql`SELECT * FROM "LMS".instructor WHERE inst_email = ${email}`;
     console.log("DB result:", instructor);
 
     if (instructor.length > 0) {
-      if (password === instructor[0].instructor_password) {
+      if (password === instructor[0].inst_pword) {
         return res.status(200).json({ message: "Login successful", user: instructor[0] });
       } else {
         return res.status(401).json({ message: "Invalid email or password" });

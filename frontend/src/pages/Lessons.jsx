@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import "../styles/Lessons.css";
 
 function Lessons() {
   const [activePage, setActivePage] = useState("lessons");
   const [user, setUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -16,12 +16,10 @@ function Lessons() {
   return (
     <div className="flex">
       <div className="sidebar">
-        <h1>Lessons</h1>
-
         <div className="profile">
           <div className="avatar"></div>
           <div className="info">
-            <div className="name">{user?.instructor_name || "Loading..."}</div>
+          <div className="name">{user? `${user.inst_fname} ${user.inst_lname}`: "Loading..."}</div>
             <div className="role">Instructor</div>
           </div>
         </div>
@@ -41,20 +39,90 @@ function Lessons() {
         </button>
       </div>
 
+      {/* Main Content */}
       <div className="main-content">
         {activePage === "lessons" && (
           <div>
-            <h2>Lessons</h2>
+            <div className="topbar">Lessons</div>
             <p>Here you can manage lessons...</p>
           </div>
         )}
 
         {activePage === "courses" && (
           <div>
-            <h2>Courses</h2>
+            <div className="topbar">Courses</div>
             <p>Here you can manage courses...</p>
           </div>
         )}
+
+        {/* Floating Action Button */}
+        <button className="fab" onClick={() => setShowModal(true)}>
+          +
+        </button>
+
+        {/* Modal */}
+        {showModal && (
+          <div className="modal-overlay" onClick={() => setShowModal(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Add Lesson</h3>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+
+                  const lessonData = {
+                    title: e.target.title.value,
+                    description: e.target.description.value,
+                    objective: e.target.objective.value,
+                    estimatedTime: e.target.estimatedTime.value,
+                  };
+
+                  console.log("Lesson submitted:", lessonData);
+                  alert("Lesson added! (Hook this to backend)");
+
+                  setShowModal(false);
+                }}
+              >
+                <div className="form-group">
+                  <label>Lesson Title</label>
+                  <input type="text" name="title" required />
+                </div>
+
+                <div className="form-group">
+                  <label>Description</label>
+                  <textarea name="description" rows="2" required />
+                </div>
+
+                <div className="form-group">
+                  <label>Objective</label>
+                  <textarea name="objective" rows="2" required />
+                </div>
+
+                <div className="form-group-inline">
+                  <label>Estimated Time</label>
+                  <input
+                    type="text"
+                    name="estimatedTime"
+                    placeholder="e.g. 30 mins"
+                    required
+                  />
+                </div>
+
+                <div className="modal-actions">
+                  <button type="submit">Save</button>
+                  <button
+                    type="button"
+                    className="cancel"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+
       </div>
     </div>
   );
