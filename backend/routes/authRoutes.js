@@ -1,6 +1,6 @@
 import express from "express";
 import { sql } from "../db.js";
-import { registerInstructor, registerStudent } from "../controllers/authController.js";
+import { register } from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -28,8 +28,6 @@ router.post("/login", async (req, res) => {
 });
 
 
-router.post("/register/instructor", registerInstructor);
-
-router.post("/register/student", registerStudent);
+router.post("/register", register);
 
 export default router;
