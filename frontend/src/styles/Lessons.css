@@ -160,17 +160,20 @@
 
 .modal input,
 .modal textarea {
+  resize: none;
   margin-bottom: 1rem;
   padding: 0.5rem;
   border: 1px solid #d1d5db;
   border-radius: 0.25rem;
   font-size: 1rem;
+  background-color: white;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+  background-color: white
 }
 
 .modal-actions button {
@@ -212,9 +215,11 @@
 .form-group input,
 .form-group textarea,
 .form-group-inline input {
-  width: 100%;
+  width: 95%;
   padding: 6px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
+  background-color: white;
+  color: #111827; 
 }
