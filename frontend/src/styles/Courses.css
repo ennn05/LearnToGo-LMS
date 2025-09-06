@@ -10,15 +10,15 @@ body {
   margin: 0;
   padding: 0;
 }
-
+/* Course Details Page Styles */
 .flex {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  width: 100%;
   font-family: 'Arial', sans-serif;
-  background-color: #ecf0f1;
 }
 
-/* Sidebar Styles */
+/* Sidebar Styles (same as Courses.css) */
 .sidebar {
   width: 250px;
   background-color: #2c3e50;
@@ -26,6 +26,8 @@ body {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  position:static;
+  z-index: 20;
 }
 
 .profile {
@@ -101,28 +103,27 @@ body {
 .main-content {
   flex: 1;
   background-color: #ecf0f1;
-  padding: 15px;
+  padding: 0;
   overflow-y: auto;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  margin: 0 auto;
   width: 100%;
-  max-width: none;
 }
 
 .topbar {
   background-color: white;
-  padding: 15px 20px;
-  border-radius: 8px;
-  margin-bottom: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  left: 0;
+  z-index: 0;
+  position: sticky;
 }
 
 .topbar h1 {
   margin: 0;
   color: #2c3e50;
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 28px;
 }
 
 /* Courses Container */
@@ -131,11 +132,13 @@ body {
   border-radius: 8px;
   padding: 25px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin:0 auto;
   flex: 1;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  min-height: calc(100vh - 200px);
+  width: 95%;
+  /* min-height: calc(100vh - 100px); */
+  height: 85%;
 }
 
 .loading, .no-courses {

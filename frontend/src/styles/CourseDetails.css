@@ -2,6 +2,7 @@
 .flex {
   display: flex;
   height: 100vh;
+  width: 100%;
   font-family: 'Arial', sans-serif;
 }
 
@@ -13,6 +14,8 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+  position:static;
+  z-index: 20;
 }
 
 .profile {
@@ -88,18 +91,21 @@
 .main-content {
   flex: 1;
   background-color: #ecf0f1;
-  padding: 30px;
+  padding: 0;
   overflow-y: auto;
-  max-width: 1600px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .topbar {
   background-color: white;
   padding: 20px;
-  border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  left: 0;
+  z-index: 0;
+  position: sticky;
 }
 
 .topbar h1 {
@@ -114,7 +120,7 @@
   border-radius: 8px;
   padding: 40px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  max-width: 1400px;
+  width: 90%;
   margin: 0 auto;
 }
 
