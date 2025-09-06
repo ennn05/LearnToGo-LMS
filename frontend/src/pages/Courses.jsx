@@ -14,7 +14,11 @@ function Courses() {
   const fetchCourses = async () => {
     try {
       console.log("Fetching courses from mock API...");
-      const data = await mockCourseAPI.getAllCourses();
+      // const data = await mockCourseAPI.getAllCourses();
+      // const data = await api.get("courses/instructor");
+      const response = await fetch("http://localhost:5000/api/courses/instructor");
+      const data = await response.json();
+
       console.log("Courses loaded:", data);
       setCourses(data);
     } catch (error) {
@@ -28,14 +32,15 @@ function Courses() {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-    } else {
-      // For testing: create a mock user if no user is logged in
-      setUser({
-        inst_fname: "Test",
-        inst_lname: "User",
-        inst_email: "test@example.com"
-      });
-    }
+    } 
+    // else {
+    //   // For testing: create a mock user if no user is logged in
+    //   setUser({
+    //     inst_fname: "Test",
+    //     inst_lname: "User",
+    //     inst_email: "test@example.com"
+    //   });
+    // }
     fetchCourses();
   }, []);
 
@@ -56,9 +61,9 @@ function Courses() {
           <div className="avatar"></div>
           <div className="info">
             <div className="name">
-              {user ? `${user.inst_fname} ${user.inst_lname}` : "Loading..."}
+              {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
-            <div className="role">Instructor</div>
+            <div className="role">${user.user_role}</div>
           </div>
         </div>
 
@@ -118,9 +123,9 @@ function Courses() {
             <div className="courses-grid">
               {courses.map((course) => (
                 <div
-                  key={course.course_id}
+                  key={course.course_code}
                   className="course-card"
-                  onClick={() => handleCourseClick(course.course_id)}
+                  onClick={() => handleCourseClick(course.course_code)}
                 >
                   <div className="course-code">{course.course_code}</div>
                   <div className="course-title">{course.course_title}</div>
