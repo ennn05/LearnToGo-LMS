@@ -10,6 +10,7 @@ function Login() {
 
   const navigate = useNavigate();
 
+  // Function to handle login form submission
   const handleLogin = async(e) => {
     e.preventDefault();
 

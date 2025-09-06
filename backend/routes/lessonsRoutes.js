@@ -3,6 +3,17 @@ import { sql } from "../db.js";
 
 const router = express.Router();
 
+// Get all lessons
+router.get("/", async (req, res) => {
+  try {
+    const lessons = await sql`SELECT * FROM "LMS".lesson ORDER BY lesson_id ASC;`;
+    res.json(lessons);
+  } catch (err) {
+    console.error("Error fetching lessons:", err);
+    res.status(500).json({ message: "Internal server error: fail to get lessons" });
+  }
+});
+
 // Add Lesson
 router.post("/", async (req, res) => {
   try {
@@ -21,7 +32,7 @@ router.post("/", async (req, res) => {
     res.status(201).json(newLesson[0]);
   } catch (err) {
     console.error("Error inserting lesson:", err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error: fail to add lesson" });
   }
 });
 

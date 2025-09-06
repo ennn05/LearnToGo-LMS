@@ -5,6 +5,20 @@ function Lessons() {
   const [activePage, setActivePage] = useState("lessons");
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [lessons, setLessons] = useState([]);
+
+  useEffect(() => {
+    const fetchLessons = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/lessons");
+        const data = await response.json();
+        setLessons(data);
+      } catch (err) {
+        console.error("Failed to fetch lessons:", err);
+      }
+    };
+    fetchLessons();
+  }, []);
 
   const addLesson = async (lessonData) => {
     try {
@@ -41,6 +55,19 @@ function Lessons() {
 
   return (
     <div className="flex">
+
+      <div className="lessons-list">
+        {lessons.map((lesson) => (
+          <div className="lesson-card" key={lesson.lesson_id}>
+            <div className="lesson-info">
+              <h3>{lesson.lesson_title}</h3>
+              <p>{lesson.lesson_desc}</p>
+              <p>Objective: {lesson.lesson_obj}</p>
+              <p>Effort per week: {lesson.lesson_effort_per_week} days</p>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Sidebar */}
       <div className="sidebar">
