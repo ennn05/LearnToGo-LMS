@@ -18,9 +18,19 @@ app.use(morgan('dev'));
 app.use("/api", routes);
 
 // Test DB
+// async function testDB() {
+//   try {
+//     const result = await sql`SELECT * FROM "LMS".user;`;
+//     console.log("✅ Database connection successful:", result);
+//   } catch (err) {
+//     console.error("❌ Database connection failed:", err);
+//   }
+// }
+// testDB();
+
 async function testDB() {
   try {
-    const result = await sql`SELECT * FROM "LMS".user;`;
+    const result = await sql`SELECT * FROM "LMS".instructor;`;
     console.log("✅ Database connection successful:", result);
   } catch (err) {
     console.error("❌ Database connection failed:", err);

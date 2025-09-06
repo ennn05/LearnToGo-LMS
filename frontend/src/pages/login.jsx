@@ -23,7 +23,7 @@ function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/lessons");
     }
   }, [user]);
 
@@ -32,43 +32,43 @@ function Login() {
   const handleLogin = async(e) => {
     e.preventDefault();
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    // const res = await fetch("/api/auth/login", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ email: loginEmail, password: loginPwd }),
+    // });
 
-    const data = await res.json();
-    if (res.ok) {
-      console.log("Login successful", data.user);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/lessons"); // use React Router
-    } else {
-      setLoginMsg("Invalid email or password");
-    }
-
-    // try {
-
-    //   const { data : res } = await api.post("/auth/login", { email: loginEmail, password: loginPwd });
-
-    //   if (res?.user)
-    //   {
-    //     console.log("Login successful", res.user);
-    //     setLoginMsg("Login successful");
-    //     const userInfo = {...res.user, token: res.token };
-    //     localStorage.setItem("user", JSON.stringify(userInfo));
-    //     setCredentials(userInfo);
-    //     setTimeout(() => {
-    //       navigate("/dashboard");
-    //     }, 2000);
-    //   }
-    //   else {
-    //     setLoginMsg("NO  USER?");
-    //   }
-    // } catch (error) {
-    //   console.error("Login error:", error);
-    //   setLoginMsg(`❌ Login failed: ${error.response?.data?.message || ''}`);
+    // const data = await res.json();
+    // if (res.ok) {
+    //   console.log("Login successful", data.user);
+    //   localStorage.setItem("user", JSON.stringify(data.user));
+    //   navigate("/lessons"); // use React Router
+    // } else {
+    //   setLoginMsg("Invalid email or password");
     // }
+
+    try {
+
+      const { data : res } = await api.post("/auth/login", { email: loginEmail, password: loginPwd });
+
+      if (res?.user)
+      {
+        console.log("Login successful", res.user);
+        setLoginMsg("Login successful");
+        const userInfo = {...res.user, token: res.token };
+        localStorage.setItem("user", JSON.stringify(userInfo));
+        setCredentials(userInfo);
+        setTimeout(() => {
+          navigate("/lessons");
+        }, 2000);
+      }
+      else {
+        setLoginMsg("NO  USER?");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setLoginMsg(`❌ Login failed: ${error.response?.data?.message || ''}`);
+    }
   };
 
   const handleRegistration = async(e) => {
@@ -86,7 +86,7 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/lessons");
         }, 1500);
       }
       else {

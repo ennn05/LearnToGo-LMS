@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/Lessons.css";
+import api from "../libs/apiCalls";
 
 function Lessons() {
   const [activePage, setActivePage] = useState("lessons");
@@ -10,9 +11,13 @@ function Lessons() {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/lessons");
-        const data = await response.json();
-        setLessons(data);
+        
+        // const response = await fetch("http://localhost:5000/api/lessons");
+        // const data = await response.json();
+        // setLessons(data);
+
+        const {data: res} = await api.get("/lessons");
+        setLessons(res);
       } catch (err) {
         console.error("Failed to fetch lessons:", err);
       }
@@ -22,23 +27,23 @@ function Lessons() {
 
   const addLesson = async (lessonData) => {
     try {
-      const response = await fetch("http://localhost:5000/api/lessons", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(lessonData),
-      });
+      // const response = await fetch("http://localhost:5000/api/lessons", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(lessonData),
+      // });
 
-      if (!response.ok) {
-        const errorText = await response.text(); // <-- capture backend response
-        console.error("Server responded with:", errorText);
+      const {data: res} = await api.post("lessons", lessonData);
+
+      if (!res.success) {
+        console.error("Server responded with:", res.message);
         throw new Error("Failed to add lesson");
       }
 
-      const result = await response.json();
-      console.log("Lesson saved:", result);
-      return result;
+      console.log("Lesson saved:", res.data);
+      return res.data;
     } catch (error) {
       console.error("Error adding lesson:", error);
       alert("Failed to add lesson. Please try again.");
@@ -74,7 +79,7 @@ function Lessons() {
         <div className="profile">
           <div className="avatar"></div>
           <div className="info">
-          <div className="name">{user? `${user.inst_fname} ${user.inst_lname}`: "Loading..."}</div>
+          <div className="name">{user? `${user.user_fname} ${user.user_lname}`: "Loading..."}</div>
           <div className="role">Instructor</div>
         </div>
       </div>
@@ -128,6 +133,7 @@ function Lessons() {
                     estimatedTime: e.target.estimatedTime.value,
                   };
 
+                  console.log("Adding lesson")
                   // TODO: Send lessonData to backend
                   const result = await addLesson(lessonData);
                   

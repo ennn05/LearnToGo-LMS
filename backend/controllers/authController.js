@@ -39,13 +39,30 @@ export const register = async (req, res) => {
         const newUser = await sql`INSERT INTO "LMS".user (user_fname, user_lname, user_email, user_password, user_role) VALUES (${fname}, ${lname}, ${email}, ${hashedPassword}, ${role}) RETURNING *`;
         newUser[0].user_password = undefined;
 
+        if (role === 'instructor'){
+            await sql`INSERT INTO "LMS".instructor (inst_user_id) VALUES (${newUser[0].user_id}) RETURNING *`;
+
+        }
+        else if (role === 'student')
+        {
+            await sql`INSERT INTO "LMS".student (stu_user_id) VALUES (${newUser[0].user_id}) RETURNING *`;
+        }
+        
+        const payload = {
+            id: newUser[0].user_id,
+            role: newUser[0].user_role,
+        }
+        const token = generateJWT(payload);
+
         console.log("DB result:", newUser);
-        return res.status(201).json({ success: true, message: "Registration successful", user: newUser[0] });
+        return res.status(201).json({ success: true, message: "Registration successful", user: newUser[0] , token});
 
     } catch (error) {
         console.error("Registration error:", error);
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
+
+
 };
 
 export const login = async (req, res) => {

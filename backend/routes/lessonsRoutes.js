@@ -30,10 +30,10 @@ router.post("/", async (req, res) => {
     RETURNING *;
     `;
 
-    res.status(201).json(newLesson[0]);
+    return res.status(201).json({success: true, data: newLesson[0]});
   } catch (err) {
     console.error("Error inserting lesson:", err);
-    res.status(500).json({ message: "Internal server error: fail to add lesson" });
+    return res.status(500).json({ success:false, message: "Internal server error: fail to add lesson" });
   }
 });
 
