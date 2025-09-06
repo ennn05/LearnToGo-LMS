@@ -15,3 +15,10 @@ export const getCourseByCode = async (courseCode) => {
     ON i.inst_user_id = u.user_id WHERE course_code = ${courseCode};`;
     return courses[0];
 }
+
+export const createCourse = async (course) => {
+    
+    const courses = await sql`SELECT * FROM "LMS".course c LEFT JOIN "LMS".instructor i ON c.course_creator = i.inst_user_id JOIN "LMS".user u
+    ON i.inst_user_id = u.user_id WHERE course_code = ${courseCode};`;
+    return courses[0];
+}

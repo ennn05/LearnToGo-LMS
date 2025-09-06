@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode } from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -40,5 +40,31 @@ export const getCourse = async (req, res) => {
     catch (error) {
         console.error("Error fetching course:", error);
         return res.status(500).json({ success: false, message: "Failed to fetch course." });
+    }
+};
+
+export const addCourse = async (req, res) => {
+    const { code, title, lessons  } = req.body;
+    try {
+        if (!code || !title)
+        {
+            return res.status(400).json({ success: false, message: "Course code and title are required" });
+        }
+
+        const existCourse = await getCourseByCode(code);
+        if (existCourse) 
+        {
+            return res.status(400).json({ success: false, message: "Course code already exists" });
+        }
+
+        const course = await createCourse({course, title, lessons});
+        if (course) {
+            return res.status(200).json({ success: true, data: course });
+        }
+        return res.status(404).json({ success: false, message: "Course not found." });
+    }
+    catch (error) {
+        console.error("Error in creating course:", error);
+        return res.status(500).json({ success: false, message: "Failed to create course." });
     }
 };
