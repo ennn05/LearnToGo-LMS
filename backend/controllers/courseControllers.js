@@ -44,7 +44,7 @@ export const getCourse = async (req, res) => {
 };
 
 export const addCourse = async (req, res) => {
-    const { code, title, lessons  } = req.body;
+    const { code, title, creator, lessons  } = req.body;
     try {
         if (!code || !title)
         {
@@ -57,7 +57,21 @@ export const addCourse = async (req, res) => {
             return res.status(400).json({ success: false, message: "Course code already exists" });
         }
 
-        const course = await createCourse({course, title, lessons});
+        const today = new Date().toISOString().split('T')[0];
+
+        const total_credit = lessons.reduce((sum, lesson) => sum + (lesson.credit || 0), 0);
+
+        const courseData = {
+            code,
+            title,
+            total_credit,
+            date_created: today,
+            date_updated: today,
+            creator,
+            status: 'draft',
+        };
+
+        const course = await createCourse(courseData);
         if (course) {
             return res.status(200).json({ success: true, data: course });
         }
