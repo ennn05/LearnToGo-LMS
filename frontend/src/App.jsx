@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import Login from "./pages/login";
 import Lessons from "./pages/lessons";
 import Courses from "./pages/courses";
@@ -19,6 +19,33 @@ const RootLayout = () => {
   );
 }
 
+function ProtectedRoute({ children, allowedRoles }) {
+  const user = useStore((state) => state.user);
+  console.log(user)
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!allowedRoles.includes(user.user_role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
+  return children;
+}
+
+function Unauthorized() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="unauthorized-container">
+      <h1>403 - Unauthorized</h1>
+      <p>You don't have permission to view this page.</p>
+      <button onClick={() => navigate("/")}>Go Back Home</button>
+    </div>
+  );
+}
+
 function App() {
   return (
       <Routes>
@@ -26,9 +53,11 @@ function App() {
           <Route path="/" element={<Navigate to="/courses" />} />
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/courses" element={<Courses />} />
-          <Route path="/students" element={<Students />} />
+          <Route path="/students" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Students /></ProtectedRoute>} />
         </Route>
         <Route path="/login" element={<Login />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
       </Routes>
   );
