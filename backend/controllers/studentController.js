@@ -25,7 +25,8 @@ export const removeStudent = async (req, res) => {
                 message: "Student does not exist.",
             });
         }
-        console.log("Student deleted:", deleteStudent);
+        deletedStudent[0].user_password = undefined;
+        console.log("Student deleted:", deletedStudent[0]);
         return res.status(200).json({ success: true, data: deletedStudent[0] });
     }
     catch (error) {

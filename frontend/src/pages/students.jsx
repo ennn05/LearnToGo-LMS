@@ -10,6 +10,7 @@ const Students = () => {
     const [user, setUser] = useState(null);
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState(null);
     const navigate = useNavigate();
 
 
@@ -80,16 +81,22 @@ const Students = () => {
                 }
 
                 const data = await res.json();
-                console.log("Deleted:", data.message);
+                console.log("Deleted:", data.data);
+                setMessage({ text: "Student removed successfully!", type: "success" });
+
+                // Auto-hide after 3s
+                setTimeout(() => setMessage(null), 3000);
 
                 // Optimistically update UI
-                setStudents(students.filter((s) => s.stu_user_id !== stuUserId));
+                setStudents(students.filter((s) => s.user_id !== stuUserId));
 
                 // const res = await api.delete(`/students/${stuId}`);
                 // console.log("Deleted:", res.data.message);
 
             } catch(error) {
                 console.error("Error deleting student:", error.message);
+                setMessage({ text: "Failed to remove student. Please try again.", type: "error" });
+                setTimeout(() => setMessage(null), 3000);
 
             } finally {
                 setLoading(false);
@@ -151,6 +158,11 @@ const Students = () => {
 
       {/* Main Content */}
       <div className="main-content">
+        {message && (
+        <div className={`feedback ${message.type}`}>
+            {message.text}
+        </div>
+        )}
         <div className="topbar">
           <h1>Students</h1>
         </div>
@@ -179,7 +191,7 @@ const Students = () => {
                                 <td>{`${s.user_fname} ${s.user_lname}`}</td>
                                 <td>{s.user_email}</td>
                                 <td className="action">
-                                <button onClick={() => handleRemove(s.id)}>Remove</button>
+                                <button onClick={() => handleRemove(s.user_id)}>Remove</button>
                                 </td>
                             </tr>
                             ))}
