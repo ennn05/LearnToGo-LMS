@@ -56,8 +56,45 @@ const Students = () => {
         navigate("/");
     };
 
-    const handleRemove = () => {
+    const handleRemove = async (stuUserId) => {
+        if (window.confirm("Are you sure you want to remove this student?")) {
+    
+            const prevStudents = [...students];
 
+            try {
+                console.log("Deleting student from API...");
+                // const { data : res } = await api.get("students");
+                // console.log("Students loaded: ", res?.data)
+                // setStudents(res?.data);
+                
+                const res = await fetch(`http://localhost:5000/api/students/${stuUserId}`, {
+                    method: "DELETE",
+                    headers: {
+                    "Content-Type": "application/json",
+                    },
+                });
+
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error(errText);
+                }
+
+                const data = await res.json();
+                console.log("Deleted:", data.message);
+
+                // Optimistically update UI
+                setStudents(students.filter((s) => s.stu_user_id !== stuUserId));
+
+                // const res = await api.delete(`/students/${stuId}`);
+                // console.log("Deleted:", res.data.message);
+
+            } catch(error) {
+                console.error("Error deleting student:", error.message);
+
+            } finally {
+                setLoading(false);
+            }
+        }
     };
 
     return (
