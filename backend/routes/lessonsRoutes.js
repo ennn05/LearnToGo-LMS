@@ -4,7 +4,7 @@ import sql from '../db.js';
 
 const router = express.Router();
 
-router.get("/", authenticate, (req, res) => {
+router.get("/", authorize("instructor"), (req, res) => {
     console.log("Lessons route is working");
     sql`SELECT * FROM "LMS".lesson;`
         .then(lessons => {

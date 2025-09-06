@@ -27,8 +27,8 @@ export const authenticate = (req, res, next) => {
 };
 
 export const authorize = (...roles) => {
-    console.log("Authorized roles:", roles); // Debugging line
   return (req, res, next) => {
+    console.log("Authorized roles:", roles); // Debugging line
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ message: "Forbidden: insufficient rights" });
     }
@@ -36,6 +36,5 @@ export const authorize = (...roles) => {
   };
 };
 
-
-
+export default authenticate;
 
