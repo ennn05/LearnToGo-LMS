@@ -1,12 +1,18 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import Login from "./pages/login";
 import Dashboard from "./pages/Dashboard";
 import Lessons from "./pages/lessons";
 import Courses from "./pages/courses";
 import Students from "./pages/students";
+import { setAuthToken } from "./libs/apiCalls";
+import { use } from "react";
+import useStore from "./store";
 
 const RootLayout = () => {
-  const user = null; // Replace with actual user authentication logic
+  const user = useStore((state) => state.user);
+  console.log(user)
+
+  setAuthToken(user?.token ?? "");
 
   return !user ? <Navigate to="/login" replace={true} /> : (
     <div>

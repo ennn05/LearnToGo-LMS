@@ -17,12 +17,12 @@ export const register = async (req, res) => {
         if (role === "instructor") {
             if (`${pin}` !== INSTRUCTOR_PIN) {
                 console.log("Invalid instructor pin provided:", pin);
-                return res.status(404).json({ status: "failed", message: "Invalid PIN for Instructor account." });
+                return res.status(401).json({ status: "failed", message: "Invalid PIN for Instructor account." });
             }
         } else if (role === "student") {
             if (`${pin}` !== STUDENT_PIN) {
                 console.log("Invalid student pin provided:", pin);
-                return res.status(404).json({ status: "failed", message: "Invalid PIN for Student account." });
+                return res.status(401).json({ status: "failed", message: "Invalid PIN for Student account." });
             }
         } else {
             console.log("Invalid role provided:", role);
