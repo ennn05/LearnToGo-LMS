@@ -257,7 +257,6 @@ body {
   font-size: 14px;
   font-weight: 500;
   z-index: 9999;   
-  position: fixed;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   animation: fadeIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; 
 }
