@@ -10,9 +10,10 @@ function Login() {
 
   const navigate = useNavigate();
 
+  // Function to handle login form submission
   const handleLogin = async(e) => {
     e.preventDefault();
-    
+
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -22,9 +23,10 @@ function Login() {
     const data = await res.json();
     if (res.ok) {
       console.log("Login successful", data.user);
-      navigate("/dashboard"); // use React Router
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/lessons"); // use React Router
     } else {
-      setMessage("❌ Invalid email or password");
+      setMessage("Invalid email or password");
     }
   };
 
