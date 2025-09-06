@@ -31,3 +31,17 @@ export const deleteCourse = async (courseCode) => {
     const courses = await sql`DELETE FROM "LMS".course WHERE course_code = ${courseCode} RETURNING *;`;
     return courses[0];
 }
+
+export const updateCourse = async (courseData) => {
+    const {id, updateData} = courseData;
+    console.log(courseData);
+    const courses = await sql`UPDATE "LMS".course 
+                    SET 
+                        course_title = ${updateData.course_title},
+                        course_total_credit = ${updateData.course_total_credit},
+                        course_date_updated = ${updateData.course_date_updated},
+                        course_status = ${updateData.course_status}
+                    WHERE course_code = ${id} 
+                    RETURNING *;`;
+    return courses[0];
+}
