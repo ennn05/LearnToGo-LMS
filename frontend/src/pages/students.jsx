@@ -21,9 +21,10 @@ const Students = () => {
             // setStudents(res?.data);
             
             const response = await fetch("http://localhost:5000/api/students");
+            console.log(response);
             const data = await response.json();
-            console.log("Students loaded: ", data)
-            setStudents(data);
+            console.log("Students loaded: ", data.data);
+            setStudents(data.data);
 
         } catch(error) {
             console.error(error)
@@ -55,7 +56,9 @@ const Students = () => {
         navigate("/");
     };
 
+    const handleRemove = () => {
 
+    };
 
     return (
         <div className="flex">
@@ -135,9 +138,9 @@ const Students = () => {
                         </thead>
                         <tbody>
                             {students.map((s) => (
-                            <tr key={s.id}>
-                                <td>{s.name}</td>
-                                <td>{s.email}</td>
+                            <tr key={s.user_id}>
+                                <td>{`${s.user_fname} ${s.user_lname}`}</td>
+                                <td>{s.user_email}</td>
                                 <td>
                                 <button onClick={() => handleRemove(s.id)}>Remove</button>
                                 </td>
