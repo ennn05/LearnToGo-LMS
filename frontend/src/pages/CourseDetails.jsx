@@ -85,9 +85,29 @@ function CourseDetails() {
     
   };
 
-  const handleArchiveCourse = () => {
+  const handleArchiveCourse = async () => {
     // TODO: Implement archive course functionality
     console.log("Archive course clicked");
+
+    const courseUpdateData = {...course, course_status: 'archived'};
+    console.log(courseUpdateData);
+
+    const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+      method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(courseUpdateData),
+    })
+
+    if (!res.ok)
+      {
+        console.error("Error fetching courses:", res);
+      }
+      const data = await res.json();
+
+      console.log("Course archived:", data.data);
+      setCourse(data.data);
   };
 
   const handleLogout = () => {
