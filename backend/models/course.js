@@ -5,7 +5,7 @@ export const getAllCourses = async () => {
     return courses;
 }
 
-export const getCourseByInstructor = async (instructorId) => {
+export const getCoursesByInstructor = async (instructorId) => {
     const courses = await sql`SELECT * FROM "LMS".courses WHERE course_creator = ${instructorId};`;
     return courses;
 }
