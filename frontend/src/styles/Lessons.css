@@ -1,0 +1,253 @@
+/* Sidebar */
+.sidebar {
+  width: 16rem; 
+  height: 100vh; /* full screen height */
+  background-color: #1f2937; 
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* Profile section */
+.profile {
+  display: flex;
+  align-items: center; /* vertically center avatar + text */
+  margin-bottom: 2rem;
+}
+
+.profile .avatar {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%; /* circle */
+  background-color: #374151; /* gray placeholder */
+  margin-right: 1rem; /* space between avatar and text */
+}
+
+.profile .info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile .name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.profile .role {
+  font-size: 0.875rem;
+  color: #9ca3af; /* lighter gray */
+}
+
+/* Sidebar buttons */
+.sidebar button {
+  padding: 0.5rem 1rem; /* p-2 */
+  margin-bottom: 0.5rem; /* mb-2 */
+  text-align: left;
+  border-radius: 0.25rem; /* rounded */
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.sidebar button:hover {
+  background-color: #374151; /* hover:bg-gray-700 */
+}
+
+.sidebar button.active {
+  background-color: #374151; /* bg-gray-700 when active */
+}
+
+
+/* Main content */
+.main-content {
+  margin-left: 16rem; /* leave space for sidebar */
+  background-color: #f3f4f6; /* bg-gray-100 */
+  flex: 1;
+  padding: 1.5rem; /* p-6 */
+  min-height: 100vh;
+  min-height: 100%; 
+}
+
+.main-content h2 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 600; /* font-semibold */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+
+/* Top bar (page title box) */
+.topbar {
+  position: fixed;  
+  top: 0;
+  left: 18rem;        /* start after sidebar */
+  right: 0;           /* stretch all the way */
+  height: 3.5rem;     /* consistent height */
+  background-color: #374151; 
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+  padding: 0 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  z-index: 20;
+}
+
+.fab {
+  position: fixed;
+  bottom: 2rem;   /* space from bottom */
+  right: 2rem;    /* space from right */
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;  /* make it round */
+  background-color: #2563eb; /* blue-600 */
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: background-color 0.2s ease;
+}
+
+.fab:hover {
+  background-color: #1d4ed8; /* darker blue */
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* Modal box */
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.modal h3 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal input,
+.modal textarea {
+  resize: none;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  background-color: white
+}
+
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.modal-actions button[type="submit"] {
+  background-color: #2563eb;
+  color: white;
+}
+
+.modal-actions .cancel {
+  background-color: #e5e7eb;
+  color: black;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.form-group-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.form-group label,
+.form-group-inline label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group-inline input {
+  width: 95%;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  color: #111827; 
+}
+
+.lessons-list {
+  display: flex;
+  flex-direction: column; 
+  gap: 1rem;
+  margin-top: 5rem; /* below topbar */
+  margin-left: 0; 
+  padding-right: 1rem;
+  width: 100%;  /* take full width of main-content */
+}
+
+.lesson-card {
+  display: flex;
+  flex-direction: row;
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  width: 100%;       /* fill the available width */
+  max-width: none;   /* remove max-width restrictions */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.lesson-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
