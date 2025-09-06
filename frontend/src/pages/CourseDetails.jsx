@@ -6,6 +6,7 @@ import "../styles/CourseDetails.css";
 function CourseDetails() {
   const { courseId } = useParams();
   const navigate = useNavigate();
+  // const user = useStore((state)=>state);
   const [user, setUser] = useState(null);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -191,12 +192,16 @@ function CourseDetails() {
               </span>
             </div>
             <div className="course-actions">
-              <button className="btn-publish" onClick={handlePublishCourse}>
-                Publish
-              </button>
-              <button className="btn-archive" onClick={handleArchiveCourse}>
-                Archive
-              </button>
+              {course.course_status !== 'published'? (
+                <button className="btn-publish" onClick={handlePublishCourse}>
+                  Publish
+                </button>
+              ) : ''}              
+              {course.course_status !== 'archived'? (
+                <button className="btn-archive" onClick={handleArchiveCourse}>
+                  Archive
+                </button>
+                ) : ''}    
             </div>
           </div>
 
