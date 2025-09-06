@@ -133,7 +133,7 @@ const Students = () => {
                             <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Action</th>
+                            <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -141,7 +141,7 @@ const Students = () => {
                             <tr key={s.user_id}>
                                 <td>{`${s.user_fname} ${s.user_lname}`}</td>
                                 <td>{s.user_email}</td>
-                                <td>
+                                <td className="action">
                                 <button onClick={() => handleRemove(s.id)}>Remove</button>
                                 </td>
                             </tr>
