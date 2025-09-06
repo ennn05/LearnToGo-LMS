@@ -14,9 +14,17 @@ function CourseDetails() {
   // Fetch course details from mock API
   const fetchCourseDetails = async () => {
     try {
-      const data = await mockCourseAPI.getCourseById(courseId);
-      console.log("Course details loaded:", data);
-      setCourse(data);
+      // const data = await mockCourseAPI.getCourseById(courseId);
+      // const data = await api.get(`courses/instructor/${courseId}`);
+      const res = await fetch(`http://localhost:5000/api/courses/instructor/${courseId}`);
+      if (!res.ok)
+      {
+        console.error("Error fetching courses:", res);
+      }
+      const data = await res.json();
+
+      console.log("Course details loaded:", data.data);
+      setCourse(data.data);
     } catch (error) {
       console.error("Error fetching course details:", error);
       setError("Course not found");
@@ -32,9 +40,10 @@ function CourseDetails() {
     } else {
       // For testing: create a mock user if no user is logged in
       setUser({
-        inst_fname: "Test",
-        inst_lname: "User",
-        inst_email: "test@example.com"
+        user_fname: "Test",
+        user_lname: "User",
+        user_email: "test@example.com",
+        user_role: "Instructor",
       });
     }
     fetchCourseDetails();
@@ -90,8 +99,8 @@ function CourseDetails() {
           <div className="profile">
             <div className="avatar"></div>
             <div className="info">
-              <div className="name">{user ? `${user.inst_fname} ${user.inst_lname}` : "Loading..."}</div>
-              <div className="role">Instructor</div>
+              <div className="name">{user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</div>
+              <div className="role">{user.user_role}</div>
             </div>
           </div>
         </div>
@@ -114,9 +123,9 @@ function CourseDetails() {
           <div className="avatar"></div>
           <div className="info">
             <div className="name">
-              {user ? `${user.inst_fname} ${user.inst_lname}` : "Loading..."}
+              {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
-            <div className="role">Instructor</div>
+            <div className="role">{user.user_role}</div>
           </div>
         </div>
 
@@ -156,8 +165,8 @@ function CourseDetails() {
           {/* Course Status and Actions */}
           <div className="course-header">
             <div className="course-status">
-              <span className={`status-badge ${course.status || 'draft'}`}>
-                {course.status || 'Draft'}
+              <span className={`status-badge ${course.course_status || 'draft'}`}>
+                {course.course_status || 'Draft'}
               </span>
             </div>
             <div className="course-actions">
@@ -182,19 +191,19 @@ function CourseDetails() {
             </div>
             <div className="info-item">
               <label>Total credit:</label>
-              <span>{course.total_credits}</span>
+              <span>{course.course_total_credit}</span>
             </div>
             <div className="info-item">
               <label>Date created:</label>
-              <span>{new Date(course.date_created).toLocaleDateString()}</span>
+              <span>{new Date(course.course_date_created).toLocaleDateString()}</span>
             </div>
             <div className="info-item">
               <label>Last updated:</label>
-              <span>{new Date(course.last_updated).toLocaleDateString()}</span>
+              <span>{new Date(course.course_date_updated).toLocaleDateString()}</span>
             </div>
             <div className="info-item">
               <label>Created by:</label>
-              <span>{user ? `${user.inst_fname} ${user.inst_lname}` : "Unknown"}</span>
+              <span>{user ? `${course.user_fname} ${course.user_lname}` : "Unknown"}</span>
             </div>
           </div>
 

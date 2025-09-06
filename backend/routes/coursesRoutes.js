@@ -5,5 +5,7 @@ const router = express.Router();
 
 router.get("/", getCourses);
 router.get("/instructor", getInstructorCourses);
+// router.get("/instructor/:id", getInstructorCourses);
+router.get("/instructor/:id", getCourse);
 
 export default router;
