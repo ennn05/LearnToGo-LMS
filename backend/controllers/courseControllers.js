@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode } from "../models/course";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -13,7 +13,9 @@ export const getCourses = async (req, res) => {
 };
 
 export const getInstructorCourses = async (req, res) => {
-    const instructorId = req?.user.user_id;
+    console.log("HI")
+    const instructorId = req?.user?.user_id;
+    console.log(instructorId);
     if (!instructorId) return res.status(401).json({success: false, error: "Unauthorized" });
 
     try {

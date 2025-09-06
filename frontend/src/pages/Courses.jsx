@@ -17,6 +17,11 @@ function Courses() {
       // const data = await mockCourseAPI.getAllCourses();
       // const data = await api.get("courses/instructor");
       const response = await fetch("http://localhost:5000/api/courses/instructor");
+
+      if (!response.ok)
+      {
+        console.error("Error fetching courses:", response);
+      }
       const data = await response.json();
 
       console.log("Courses loaded:", data);
@@ -30,17 +35,19 @@ function Courses() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    console.log(storedUser);
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } 
-    // else {
-    //   // For testing: create a mock user if no user is logged in
-    //   setUser({
-    //     inst_fname: "Test",
-    //     inst_lname: "User",
-    //     inst_email: "test@example.com"
-    //   });
-    // }
+    else {
+      // For testing: create a mock user if no user is logged in
+      setUser({
+        user_fname: "Test",
+        user_lname: "User",
+        user_email: "test@example.com",
+        user_role: "Instructur",
+      });
+    }
     fetchCourses();
   }, []);
 
@@ -63,7 +70,7 @@ function Courses() {
             <div className="name">
               {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
-            <div className="role">${user.user_role}</div>
+            <div className="role">{user.user_role}</div>
           </div>
         </div>
 
