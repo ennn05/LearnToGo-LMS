@@ -4,7 +4,7 @@ import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, e
 const router = express.Router();
 
 router.get("/", getCourses);
-router.get("/instructor", getInstructorCourses);
+router.get("/instructor", getCourses);
 // router.get("/instructor/:id", getInstructorCourses);
 router.get("/instructor/:id", getCourse);
 router.post("/", addCourse);
