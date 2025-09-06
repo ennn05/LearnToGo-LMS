@@ -27,5 +27,7 @@ export const createCourse = async (courseData) => {
     return course[0];
 }
 
-
-
+export const deleteCourse = async (courseCode) => {
+    const courses = await sql`DELETE FROM "LMS".course WHERE course_code = ${courseCode} RETURNING *;`;
+    return courses[0];
+}

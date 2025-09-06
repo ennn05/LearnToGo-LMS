@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse } from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -80,5 +80,22 @@ export const addCourse = async (req, res) => {
     catch (error) {
         console.error("Error in creating course:", error);
         return res.status(500).json({ success: false, message: "Failed to create course." });
+    }
+};
+
+
+export const removeCourse = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const deletedCourse = await deleteCourse(id);
+        if (!deletedCourse) 
+        {
+            return res.status(404).json({ success: false, message: "Course does not exist" });
+        }
+        return res.status(200).json({ success: true, data: deletedCourse });
+    }
+    catch (error) {
+        console.error("Error in deleting course:", error);
+        return res.status(500).json({ success: false, message: "Failed to delete course." });
     }
 };
