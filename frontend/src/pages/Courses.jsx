@@ -5,6 +5,7 @@ import "../styles/Courses.css";
 
 function Courses() {
   const [activePage, setActivePage] = useState("courses");
+  // const user = useStore((state) => state);
   const [user, setUser] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +25,8 @@ function Courses() {
       }
       const data = await response.json();
 
-      console.log("Courses loaded:", data);
-      setCourses(data);
+      console.log("Courses loaded:", data.data);
+      setCourses(data.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
@@ -38,6 +39,7 @@ function Courses() {
     console.log(storedUser);
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+      console.log("User: ", user);
     } 
     else {
       // For testing: create a mock user if no user is logged in
@@ -45,7 +47,7 @@ function Courses() {
         user_fname: "Test",
         user_lname: "User",
         user_email: "test@example.com",
-        user_role: "Instructur",
+        user_role: "Instructor",
       });
     }
     fetchCourses();
@@ -70,7 +72,7 @@ function Courses() {
             <div className="name">
               {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
-            <div className="role">{user.user_role}</div>
+            <div className="role"></div>
           </div>
         </div>
 
@@ -136,7 +138,7 @@ function Courses() {
                 >
                   <div className="course-code">{course.course_code}</div>
                   <div className="course-title">{course.course_title}</div>
-                  <div className="course-credits">{course.total_credits} credits</div>
+                  <div className="course-credits">{course.course_total_credit} credits</div>
                 </div>
               ))}
             </div>
