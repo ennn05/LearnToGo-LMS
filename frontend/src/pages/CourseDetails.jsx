@@ -58,9 +58,30 @@ function CourseDetails() {
     console.log("Edit course clicked");
   };
 
-  const handlePublishCourse = () => {
+  const handlePublishCourse = async () => {
     // TODO: Implement publish course functionality
     console.log("Publish course clicked");
+
+    const courseUpdateData = {...course, course_status: 'published'};
+    console.log(courseUpdateData);
+
+    const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+      method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(courseUpdateData),
+    })
+
+    if (!res.ok)
+      {
+        console.error("Error fetching courses:", res);
+      }
+      const data = await res.json();
+
+      console.log("Course published:", data.data);
+      setCourse(data.data);
+    
   };
 
   const handleArchiveCourse = () => {
