@@ -1,5 +1,6 @@
 import express from 'express';
 import { authenticate, authorize } from '../middleware/authMiddleware.js';
+import { getLesson } from '../controllers/lessonControllers.js';
 import sql from '../db.js';
 
 const router = express.Router();
@@ -14,6 +15,8 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Internal server error: fail to get lessons" });
   }
 });
+
+router.get("/:id", getLesson);
 
 // Add Lesson
 router.post("/", async (req, res) => {

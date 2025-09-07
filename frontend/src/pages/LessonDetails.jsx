@@ -15,9 +15,15 @@ function LessonDetails() {
   // Fetch lesson details
   const fetchLessonDetails = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/lesson/${lessonId}`);
-      console.log("Lesson details:", res.data);
-      setLesson(res.data);
+      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`);
+      if (!res.ok)
+      {
+        console.error("Error fetching courses:", res);
+      }
+      const data = await res.json();
+      console.log("Lesson details:", data.data);
+      console.log("Lesson date", data.data.date_created);
+      setLesson(data.data);
     } catch (err) {
       console.error("Error fetching lesson:", err);
       setError("Lesson not found");
@@ -92,12 +98,12 @@ function LessonDetails() {
         <div className="lesson-details-container">
           {/* Top Section (metadata) */}
           <div className="lesson-header">
-            <h2>{lesson.lesson_title}</h2>
+            <h2>{lesson.lesson_title || "NULL"}</h2>
             <div className="lesson-meta">
-              <p><strong>ID:</strong> {lesson.lesson_id}</p>
-              <p><strong>By:</strong> {lesson.created_by || "Unknown"}</p>
-              <p><strong>Created:</strong> {new Date(lesson.created_at).toLocaleDateString()}</p>
-              <p><strong>Last Updated:</strong> {new Date(lesson.updated_at).toLocaleDateString()}</p>
+              <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p>
+              <p><strong>By:</strong> {lesson.lesson_designer || "Unknown"}</p>
+              <p><strong>Created:</strong> {new Date(lesson.lesson_date_created).toLocaleDateString() || "NULL"}</p>
+              <p><strong>Last Updated:</strong> {new Date(lesson.lesson_date_updated).toLocaleDateString() || "NULL"}</p>
             </div>
           </div>
 
@@ -105,15 +111,15 @@ function LessonDetails() {
           <div className="lesson-content">
             <div className="info-item">
               <label>Description:</label>
-              <p>{lesson.lesson_description}</p>
+              <p>{lesson.lesson_desc}</p>
             </div>
             <div className="info-item">
               <label>Objective:</label>
-              <p>{lesson.lesson_objective}</p>
+              <p>{lesson.lesson_obj}</p>
             </div>
             <div className="info-item">
               <label>Estimated Time:</label>
-              <p>{lesson.lesson_estimated_time} days</p>
+              <p>{lesson.lesson_estimated_time?? 0} days</p>
             </div>
           </div>
 
