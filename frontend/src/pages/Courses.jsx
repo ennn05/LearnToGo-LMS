@@ -72,7 +72,7 @@ function Courses() {
             <div className="name">
               {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
-            <div className="role"></div>
+            <div className="role">{user ? user.user_role : "Loading..."}</div>
           </div>
         </div>
 

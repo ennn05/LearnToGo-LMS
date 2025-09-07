@@ -321,6 +321,13 @@
 }
 
 
+.lesson-credits {
+  color: #7f8c8d;
+  font-size: 14px;
+  font-style: italic;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .flex {

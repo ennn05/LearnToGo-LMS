@@ -87,7 +87,7 @@ export const updateCourseLessons = async (courseCode, lessons) => {
     removeCourseLessons(courseCode)
 
     lessons.forEach(element => {
-        courseLessons.push(addCourseLesson(courseCode, element));
+        courseLessons.push(addCourseLesson(courseCode, element.lesson_id));
     });
 
     return courseLessons;

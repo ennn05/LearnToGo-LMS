@@ -76,7 +76,7 @@ export const addCourse = async (req, res) => {
         if (course) {
             try {
                 lessons.forEach(element => {
-                    addCourseLesson(code, element);
+                    addCourseLesson(code, element.lesson_id);
                 });
 
             } catch(error)
@@ -115,6 +115,9 @@ export const editCourse = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
     try {
+        
+        const total_credit = updateData.lessons.reduce((sum, lesson) => sum + (lesson.lesson_credit || 0), 0);
+        updateData.course_total_credit = total_credit;
         const updatedCourse = await updateCourse({id, updateData});
         if (!updatedCourse) 
         {
