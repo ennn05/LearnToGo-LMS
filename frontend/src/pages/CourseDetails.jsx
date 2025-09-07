@@ -93,6 +93,9 @@ function CourseDetails() {
     console.log("Archive course clicked");
 
     const courseUpdateData = {...course, course_status: 'archived'};
+    // console.log(courseUpdateData);
+    // const lessons = courseUpdateData.lessons.map(element => element);
+    // courseUpdateData.lessons = lessons;
     console.log(courseUpdateData);
 
     const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
@@ -264,11 +267,11 @@ function CourseDetails() {
           <div className="lessons-section">
             <h3>Lessons Assigned</h3>
             <div className="lessons-container">
-              {course.lessons.length === 0? (
+              {course.lessons?.length === 0? (
                 <p className="no-lessons">No lessons assigned yet.</p>
               ) : (
                 <div className="lessons-grid">
-                  {course.lessons.map((lesson) => (
+                  {course.lessons?.map((lesson) => (
                     <div
                       key={lesson.lesson_id}
                       className="lesson-card"

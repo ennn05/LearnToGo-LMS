@@ -72,19 +72,20 @@ export const addCourseLesson = async (courseCode, lessonId) => {
     VALUES
     (${courseCode}, ${lessonId}) RETURNING *;`;
 
+    console.log("Added course lesson:", courseLesson[0]);
     return courseLesson[0];
 }
 
 export const removeCourseLessons = async (courseCode) => {
     const courseLesson = await sql`DELETE FROM "LMS".course_lesson 
-    WHERE course_code = ${courseCode} RETURNING *;`;
+    WHERE cl_course_code = ${courseCode} RETURNING *;`;
 
     return courseLesson[0];
 }
 
 export const updateCourseLessons = async (courseCode, lessons) => {
     const courseLessons = [];
-    removeCourseLessons(courseCode)
+    console.log("Removed course lesson: ", removeCourseLessons(courseCode));
 
     lessons.forEach(element => {
         courseLessons.push(addCourseLesson(courseCode, element.lesson_id));
