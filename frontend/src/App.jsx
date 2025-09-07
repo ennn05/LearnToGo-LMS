@@ -14,9 +14,7 @@ const RootLayout = () => {
   setAuthToken(user?.token ?? "");
 
   return !user ? <Navigate to="/login" replace={true} /> : (
-    <div>
-      <Outlet />
-    </div>
+    <Outlet />
   );
 }
 
