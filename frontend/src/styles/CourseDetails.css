@@ -300,6 +300,27 @@
   background-color: #2980b9;
 }
 
+.lessons-grid {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+}
+
+.lessons-grid .lesson-card {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.lesson-card .lesson-title {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .flex {

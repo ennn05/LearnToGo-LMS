@@ -11,8 +11,28 @@ export const getCoursesByInstructor = async (instructorId) => {
 }
 
 export const getCourseByCode = async (courseCode) => {
-    const courses = await sql`SELECT * FROM "LMS".course c LEFT JOIN "LMS".instructor i ON c.course_creator = i.inst_user_id JOIN "LMS".user u
-    ON i.inst_user_id = u.user_id WHERE course_code = ${courseCode};`;
+    const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
+                            COALESCE(json_agg(
+                                json_build_object(
+                                    'lesson_id', l.lesson_id,
+                                    'lesson_title', l.lesson_title,
+                                    'lesson_credit', l.lesson_credit
+                                )
+                            ) FILTER (WHERE l.lesson_id IS NOT NULL),
+                                '[]' ::json)
+                            AS lessons
+                                FROM "LMS".course c 
+                                LEFT JOIN "LMS".instructor i 
+                                    ON c.course_creator = i.inst_user_id 
+                                LEFT JOIN "LMS".user u
+                                    ON i.inst_user_id = u.user_id 
+                                LEFT JOIN "LMS".course_lesson cl
+                                    ON c.course_code = cl.cl_course_code
+                                LEFT JOIN "LMS".lesson l
+                                    ON cl.cl_lesson_id = l.lesson_id
+                            WHERE c.course_code = ${courseCode}
+                            GROUP BY c.course_code, u.user_id;`;
+    
     return courses[0];
 }
 
@@ -44,4 +64,31 @@ export const updateCourse = async (courseData) => {
                     WHERE course_code = ${id} 
                     RETURNING *;`;
     return courses[0];
+}
+
+export const addCourseLesson = async (courseCode, lessonId) => {
+    const courseLesson = await sql`INSERT INTO "LMS".course_lesson 
+    (cl_course_code, cl_lesson_id)
+    VALUES
+    (${courseCode}, ${lessonId}) RETURNING *;`;
+
+    return courseLesson[0];
+}
+
+export const removeCourseLessons = async (courseCode) => {
+    const courseLesson = await sql`DELETE FROM "LMS".course_lesson 
+    WHERE course_code = ${courseCode} RETURNING *;`;
+
+    return courseLesson[0];
+}
+
+export const updateCourseLessons = async (courseCode, lessons) => {
+    const courseLessons = [];
+    removeCourseLessons(courseCode)
+
+    lessons.forEach(element => {
+        courseLessons.push(addCourseLesson(courseCode, element));
+    });
+
+    return courseLessons;
 }

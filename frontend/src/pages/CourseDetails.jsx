@@ -25,6 +25,7 @@ function CourseDetails() {
       const data = await res.json();
 
       console.log("Course details loaded:", data.data);
+      console.log(data.data.lessons);
       setCourse(data.data);
     } catch (error) {
       console.error("Error fetching course details:", error);
@@ -109,6 +110,10 @@ function CourseDetails() {
       console.log("Course archived:", data.data);
       setCourse(data.data);
   };
+
+  const handleLessonClick = (lessonId) => {
+    navigate(`/lessons/${lessonId}`);
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -257,7 +262,23 @@ function CourseDetails() {
           <div className="lessons-section">
             <h3>Lessons Assigned</h3>
             <div className="lessons-container">
-              <p className="no-lessons">No lessons assigned yet.</p>
+              {course.lessons.length === 0? (
+                <p className="no-lessons">No lessons assigned yet.</p>
+              ) : (
+                <div className="lessons-grid">
+                  {course.lessons.map((lesson) => (
+                    <div
+                      key={lesson.lesson_id}
+                      className="lesson-card"
+                      onClick={() => handleLessonClick(lesson.lesson_id)}
+                    >
+                      <h4 className="lesson-title">{lesson.lesson_title}</h4>
+                      <div className="lesson-credits">{lesson.lesson_credit?? 0} credits</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
             </div>
           </div>
 
