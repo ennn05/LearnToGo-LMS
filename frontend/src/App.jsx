@@ -6,6 +6,7 @@ import CourseDetails from "./pages/CourseDetails";
 import Students from "./pages/students";
 import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";
+import LessonDetails from "./pages/LessonDetails";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
@@ -54,6 +55,7 @@ function App() {
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:courseId" element={<CourseDetails />} />
           <Route path="/students" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Students /></ProtectedRoute>} />
+          <Route path="/lessons/:lessonId" element={<LessonDetails />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />

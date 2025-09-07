@@ -124,8 +124,8 @@ function Lessons() {
           ) : (
             <div className="lessons-grid">
               {lessons.map((lesson) => (
-                <div className="lesson-card" key={lesson.lesson_id}>
-                  
+                <div className="lesson-card" key={lesson.lesson_id} onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
+
                   {/* Section 1: Title + ID */}
                   <div className="lesson-section">
                     <p><span className="label">Title:</span> {lesson.lesson_title}</p>
