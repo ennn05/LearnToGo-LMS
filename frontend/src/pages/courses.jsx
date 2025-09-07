@@ -41,15 +41,6 @@ function Courses() {
       setUser(JSON.parse(storedUser));
       console.log("User: ", user);
     } 
-    else {
-      // For testing: create a mock user if no user is logged in
-      setUser({
-        user_fname: "Test",
-        user_lname: "User",
-        user_email: "test@example.com",
-        user_role: "Instructor",
-      });
-    }
     fetchCourses();
   }, []);
 
@@ -92,19 +83,19 @@ function Courses() {
           </button>
           <button
             className={activePage === "classrooms" ? "active" : ""}
-            onClick={() => setActivePage("classrooms")}
+            onClick={() => navigate("/classrooms")}
           >
             Classrooms
           </button>
           <button
             className={activePage === "students" ? "active" : ""}
-            onClick={() => setActivePage("students")}
+            onClick={() => navigate("/students")}
           >
             Students
           </button>
           <button
             className={activePage === "reports" ? "active" : ""}
-            onClick={() => setActivePage("reports")}
+            onClick={() => navigate("/reports")}
           >
             Reports & Statistics
           </button>

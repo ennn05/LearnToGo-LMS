@@ -6,7 +6,7 @@ import "../styles/students.css";
 
 const Students = () => {
     const [activePage, setActivePage] = useState("students");
-    
+    // const user = useStore((state) => state);
     const [user, setUser] = useState(null);
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -40,15 +40,7 @@ const Students = () => {
         console.log(storedUser);
         if (storedUser) {
             setUser(JSON.parse(storedUser));
-        } else {
-        // For testing: create a mock user if no user is logged in
-        setUser({
-            user_fname: "Test",
-            user_lname: "User",
-            user_email: "test@example.com",
-            user_role: "Instructor",
-        });
-        }
+        } 
         fetchStudents();
     }, []);
 
