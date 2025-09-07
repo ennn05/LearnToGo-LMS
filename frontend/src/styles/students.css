@@ -1,4 +1,4 @@
-/* Courses Page Styles */
+/* Student Page Styles */
 * {
   margin: 0;
   padding: 0;
@@ -10,7 +10,6 @@ body {
   margin: 0;
   padding: 0;
 }
-/* Course Details Page Styles */
 .flex {
   display: flex;
   height: 100vh;
@@ -126,116 +125,99 @@ body {
   font-size: 28px;
 }
 
-/* Courses Container */
-.courses-container {
+
+/* Students Container */
+.students-container {
   background-color: white;
   border-radius: 8px;
   padding: 25px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin:0 auto;
   flex: 1;
   display: flex;
   flex-direction: column;
   width: 95%;
-  /* min-height: calc(100vh - 100px); */
-  height: 85%;
+  min-height: calc(100vh - 200px);
+  overflow: auto;
+  margin: 0 auto;
+
 }
 
-.loading, .no-courses {
+
+.loading, .no-students {
   text-align: center;
   padding: 40px;
   color: #7f8c8d;
   font-size: 18px;
 }
 
-/* Courses Grid */
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 30px;
-  margin-bottom: 20px;
+.students-container table {
+  width: 100%;              
+  border-collapse: collapse; 
+  table-layout: fixed;       
+  overflow: auto;
 }
 
-.course-card {
-  background-color: #f8f9fa;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
+.students-container th,
+.students-container td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word; 
 }
 
-.course-card:hover {
-  border-color: #3498db;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
+.students-container th {
+  background-color: #f5f5f5;
+  font-weight: 600;
 }
 
-.course-card:active {
-  transform: translateY(0);
+/* Header Styling */
+.students-container th {
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 2px solid #e5e7eb;
 }
 
-.course-code {
-  font-weight: bold;
-  color: #2c3e50;
-  font-size: 18px;
-  margin-bottom: 8px;
+/* Row Styling */
+.students-container td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #444;
 }
 
-.course-title {
-  color: #34495e;
-  font-size: 16px;
-  margin-bottom: 8px;
-  line-height: 1.4;
+/* Zebra striping for better readability */
+.students-container tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-.course-credits {
-  color: #7f8c8d;
-  font-size: 14px;
-  font-style: italic;
+/* Hover effect */
+.students-container tbody tr:hover {
+  background-color: #f1f5f9;
 }
 
-/* Floating Action Button */
-.fab {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  background-color: #3498db;
+/* Action column small & centered */
+.students-container td.action,
+.students-container th.action {
+  text-align: right;
+  width: fit-content;
+}
+
+/* Button in action column */
+.students-container .action button {
+  padding: 6px 12px;
+  background-color: #ef4444;
   color: white;
   border: none;
-  border-radius: 50%;
-  font-size: 28px;
-  font-weight: bold;
+  border-radius: 4px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 13px;
+  width:fit-content;
 }
 
-.fab:hover {
-  background-color: #2980b9;
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-}
-
-.fab:active {
-  transform: scale(0.95);
+.students-container .action button:hover {
+  background-color: #dc2626;
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .courses-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
 
 @media (max-width: 768px) {
   .flex {
@@ -259,17 +241,46 @@ body {
     padding: 10px 15px;
     font-size: 14px;
   }
-  
-  .courses-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
+
+  .students-container table {
+    font-size: 13px;
+  }
+
+  .students-container .action button {
+    padding: 5px 10px;
+    font-size: 12px;
   }
   
-  .fab {
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-  }
+}
+
+.feedback {
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;   
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  animation: fadeIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; 
+}
+
+.feedback.success {
+  background-color: #e6ffed;
+  color: #1a7f37;
+  border: 1px solid #1a7f37;
+}
+
+.feedback.error {
+  background-color: #ffe6e6;
+  color: #b00020;
+  border: 1px solid #b00020;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateY(-10px); }
 }

@@ -2,6 +2,7 @@
 .flex {
   display: flex;
   height: 100vh;
+  width: 100%;
   font-family: 'Arial', sans-serif;
 }
 
@@ -13,6 +14,8 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
+  position:static;
+  z-index: 20;
 }
 
 .profile {
@@ -88,18 +91,21 @@
 .main-content {
   flex: 1;
   background-color: #ecf0f1;
-  padding: 30px;
+  padding: 0;
   overflow-y: auto;
-  max-width: 1600px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .topbar {
   background-color: white;
   padding: 20px;
-  border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  left: 0;
+  z-index: 0;
+  position: sticky;
 }
 
 .topbar h1 {
@@ -114,7 +120,7 @@
   border-radius: 8px;
   padding: 40px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  max-width: 1400px;
+  width: 90%;
   margin: 0 auto;
 }
 
@@ -267,6 +273,23 @@
   background-color: #229954;
 }
 
+.btn-delete {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
+
 /* Loading and Error States */
 .loading, .error {
   text-align: center;
@@ -293,6 +316,34 @@
 .error button:hover {
   background-color: #2980b9;
 }
+
+.lessons-grid {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+}
+
+.lessons-grid .lesson-card {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.lesson-card .lesson-title {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+
+.lesson-credits {
+  color: #7f8c8d;
+  font-size: 14px;
+  font-style: italic;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -342,4 +393,43 @@
   .course-footer {
     justify-content: center;
   }
+}
+
+.delete-confirmation-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.delete-confirmation-modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.delete-confirmation-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.delete-confirmation-btn-cancel {
+  background-color: #f4f4f4;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 12px 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+.delete-confirmation-btn-cancel:hover {
+  background-color: #e0e0e0;
+  border-color: #bbb;
 }
