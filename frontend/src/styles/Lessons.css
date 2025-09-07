@@ -225,34 +225,7 @@
   color: #111827; 
 }
 
-.lessons-list {
-  display: flex;
-  flex-direction: column; 
-  gap: 1rem;
-  margin-top: 5rem; /* below topbar */
-  margin-left: 0; 
-  padding-right: 1rem;
-  width: 100%;  /* take full width of main-content */
-}
-
-.lesson-card {
-  display: flex;
-  flex-direction: row;
-  background-color: white;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  width: 100%;       /* fill the available width */
-  max-width: none;   /* remove max-width restrictions */
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-  text-align: left; 
-}
-
-.lesson-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
+/* Lessons */
 .lessons-container {
   background-color: white;
   border-radius: 8px;
@@ -263,8 +236,15 @@
   display: flex;
   flex-direction: column;
   width: 95%;
-  min-height: 200px;   
-  height: auto;        
+  min-height: 200px;
+  height: auto;
+}
+
+.loading, .no-lessons {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+  font-size: 18px;
 }
 
 .lessons-grid {
@@ -276,12 +256,16 @@
 }
 
 .lesson-card {
-  background-color: #f8f9fa;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;  /* stack children vertically */
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  width: 100%;
+  max-width: none;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  text-align: left;
 }
 
 .lesson-card:hover {
@@ -290,42 +274,30 @@
   transform: translateY(-2px);
 }
 
-.lesson-title {
-  font-weight: bold;
-  color: #2c3e50;
-  font-size: 18px;
-  margin-bottom: 8px;
+.lesson-card:active {
+  transform: translateY(0);
 }
 
-.lesson-desc {
-  color: #34495e;
-  font-size: 16px;
-  margin-bottom: 8px;
-  line-height: 1.4;
-}
-
-.lesson-obj,
-.lesson-effort {
-  color: #7f8c8d;
-  font-size: 14px;
-  font-style: italic;
-}
-
-.lesson-row {
-  display: grid;
-  grid-template-columns: 150px 1fr 150px 1fr; /* label, value, label, value */
-  gap: 10px 20px;
-  margin-bottom: 8px;
-  font-size: 14px;
-  align-items: center;
-}
-
-.lesson-row .label {
+.lesson-header h3 {
+  margin: 0;
+  font-size: 2rem;
   font-weight: 600;
-  color: #374151; /* gray-700 */
-  text-align: right;
+  color: #222;
+}
+.lesson-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem; /* row gap, column gap */
 }
 
-.lesson-row .value {
-  color: #111827; /* gray-900 */
+.lesson-details p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.label span {
+  font-weight: 600;
+  color: #333;
+  margin-right: 0.3rem;
 }
