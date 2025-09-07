@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { mockCourseAPI } from "../data/mockCourses";
 import "../styles/CourseDetails.css";
 
+// temp test
+
 function CourseDetails() {
   const { courseId } = useParams();
   const navigate = useNavigate();
