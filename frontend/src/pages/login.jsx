@@ -23,7 +23,7 @@ function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate("/lessons");
+      navigate("/courses");
     }
   }, [user]);
 
@@ -59,7 +59,7 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
         setTimeout(() => {
-          navigate("/lessons");
+          navigate("/courses");
         }, 2000);
       }
       else {
@@ -86,7 +86,7 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
         setTimeout(() => {
-          navigate("/lessons");
+          navigate("/courses");
         }, 1500);
       }
       else {
