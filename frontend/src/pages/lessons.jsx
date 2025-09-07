@@ -11,17 +11,18 @@ function Lessons() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
     const fetchLessons = async () => {
-      try {
-        const { data: res } = await api.get("/lessons");
-        setLessons(res);
-      } catch (err) {
-        console.error("Failed to fetch lessons:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      const { data: res } = await api.get("/lessons");
+      setLessons(res);
+    } catch (err) {
+      console.error("Failed to fetch lessons:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchLessons();
   }, []);
 
