@@ -101,7 +101,7 @@ function LessonDetails() {
             <h2>{lesson.lesson_title || "NULL"}</h2>
             <div className="lesson-meta">
               <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p>
-              <p><strong>By:</strong> {lesson.lesson_designer || "Unknown"}</p>
+              <p><strong>By:</strong> {lesson.user_fname} {lesson.user_lname}</p>
               <p><strong>Created:</strong> {new Date(lesson.lesson_date_created).toLocaleDateString() || "NULL"}</p>
               <p><strong>Last Updated:</strong> {new Date(lesson.lesson_date_updated).toLocaleDateString() || "NULL"}</p>
             </div>

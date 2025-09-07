@@ -6,7 +6,11 @@ export const getAllLessons = async () => {
 }
 
 export const getLessonById = async (lessonId) => {
-    const lesson = await sql`SELECT * FROM "LMS".lesson WHERE lesson_id = ${lessonId};`;
+    const lesson = await sql`SELECT * FROM "LMS".lesson l 
+                                LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+                                LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
+                                WHERE l.lesson_id = ${lessonId}
+                            ;`;
     return lesson[0];
 }
 
