@@ -6,7 +6,7 @@ import "../styles/students.css";
 
 const Students = () => {
     const [activePage, setActivePage] = useState("students");
-
+    
     const [user, setUser] = useState(null);
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -37,6 +37,7 @@ const Students = () => {
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
+        console.log(storedUser);
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         } else {

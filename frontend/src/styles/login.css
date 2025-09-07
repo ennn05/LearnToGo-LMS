@@ -39,7 +39,7 @@ html, body, #root  {
 .form.active {
   display: block;
 }
-input {
+input, select{
   width: 100%;
   padding: 10px;
   margin: 8px 0;
@@ -48,7 +48,11 @@ input {
   background-color: #888;
   color: black;
 }
-input::placeholder {
+select > option {
+  background-color: white;
+
+}
+input::placeholder, select::placeholder{
   color: black; 
 }
 
