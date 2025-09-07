@@ -114,26 +114,39 @@ export const removeCourse = async (req, res) => {
 export const editCourse = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
+    console.log(`Update data: ${updateData}`);
+    console.log(`Update data lessons: ${updateData.lessons}`);
+
+    // try {
+    //     updateData.lessons = JSON.parse(updateData.lessons);
+    // } catch (e) {
+    //     console.error("Invalid lessons JSON:", updateData.lessons);
+    //     updateData.lessons = [];
+    // }
+    // console.log(`Update data: ${updateData}`);
+    // console.log(`lessons: ${updateData.lessons}`);
+
     try {
         
-        const total_credit = updateData.lessons.reduce((sum, lesson) => sum + (lesson.lesson_credit || 0), 0);
-        updateData.course_total_credit = total_credit;
+        // const total_credit = updateData.lessons.reduce((sum, lesson) => sum + (lesson.lesson_credit || 0), 0);
+        // updateData.course_total_credit = total_credit;
         const updatedCourse = await updateCourse({id, updateData});
         if (!updatedCourse) 
         {
             return res.status(404).json({ success: false, message: "Course does not exist" });
         }
 
-        try {
-            updateCourseLessons(id, updateData.lessons);
-            return res.status(200).json({ success: true, data: updatedCourse });
+        return res.status(200).json({ success: true, data: updateData });
+        // try {
+        //     updateCourseLessons(id, updateData.lessons);
+        //     return res.status(200).json({ success: true, data: updatedCourse });
 
-        } catch (error)
-        {
-            console.error("Error in updating course lessons:", error);
-            return res.status(500).json({ success: false, message: "Failed to update course lessons." });
+        // } catch (error)
+        // {
+        //     console.error("Error in updating course lessons:", error);
+        //     return res.status(500).json({ success: false, message: "Failed to update course lessons." });
 
-        }
+        // }
     }
     catch (error) {
         console.error("Error in updating course:", error);

@@ -13,6 +13,7 @@ function CourseDetails() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
   // Fetch course details from mock API
   const fetchCourseDetails = async () => {
@@ -93,6 +94,9 @@ function CourseDetails() {
     console.log("Archive course clicked");
 
     const courseUpdateData = {...course, course_status: 'archived'};
+    // console.log(courseUpdateData);
+    // const lessons = courseUpdateData.lessons.map(element => element);
+    // courseUpdateData.lessons = lessons;
     console.log(courseUpdateData);
 
     const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
@@ -120,6 +124,22 @@ function CourseDetails() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
+  };
+
+  const handleDeleteCourse = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        alert("Failed to delete course.");
+        return;
+      }
+      navigate("/courses");
+    } catch (error) {
+      alert("Error deleting course.");
+      console.error(error);
+    }
   };
 
   if (loading) {
@@ -264,11 +284,11 @@ function CourseDetails() {
           <div className="lessons-section">
             <h3>Lessons Assigned</h3>
             <div className="lessons-container">
-              {course.lessons.length === 0? (
+              {course.lessons?.length === 0? (
                 <p className="no-lessons">No lessons assigned yet.</p>
               ) : (
                 <div className="lessons-grid">
-                  {course.lessons.map((lesson) => (
+                  {course.lessons?.map((lesson) => (
                     <div
                       key={lesson.lesson_id}
                       className="lesson-card"
@@ -289,9 +309,25 @@ function CourseDetails() {
             <button className="btn-edit" onClick={handleEditCourse}>
               Edit
             </button>
+            <button className="btn-delete" onClick={() => setDeleteConfirm(true)}>
+              Delete
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Delete Course Confirmation */}
+      {DeleteConfirm && (
+        <div className="delete-confirmation-overlay">
+          <div className="delete-confirmation-modal">
+            <h3>Are you sure you want to delete this course?</h3>
+            <div className="delete-confirmation-actions">
+              <button onClick={() => { setDeleteConfirm(false); handleDeleteCourse(); }} className="btn-delete">Delete</button>
+              <button onClick={() => setDeleteConfirm(false)} className="delete-confirmation-btn-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
