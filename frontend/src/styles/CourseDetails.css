@@ -14,7 +14,7 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  position:static;
+  position: static;
   z-index: 20;
 }
 

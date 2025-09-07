@@ -11,6 +11,7 @@ function LessonDetails() {
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
   // Fetch lesson details
   const fetchLessonDetails = async () => {
@@ -45,6 +46,22 @@ function LessonDetails() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
+  };
+
+  const handleDeleteLesson = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        alert("Failed to delete lesson.");
+        return;
+      }
+      navigate("/lessons");
+    } catch (error) {
+      alert("Error deleting lesson.");
+      console.error(error);
+    }
   };
 
   if (loading) {
@@ -132,7 +149,7 @@ function LessonDetails() {
                   <div key={idx} className="list-item">{item}</div>
                 ))
               ) : (
-                <p>No reading materials yet.</p>
+                <p className="no-items">No reading materials yet.</p>
               )}
             </div>
             <button className="btn-add">+ Add Reading</button>
@@ -147,13 +164,36 @@ function LessonDetails() {
                   <div key={idx} className="list-item">{item}</div>
                 ))
               ) : (
-                <p>No assignments yet.</p>
+                <p className="no-items">No assignments yet.</p>
               )}
             </div>
             <button className="btn-add">+ Add Assignment</button>
           </div>
+
+          {/* Action Buttons */}
+          <div className="course-footer">
+            <button className="btn-edit">
+              Edit
+            </button>
+            <button className="btn-delete" onClick={() => setDeleteConfirm(true)}>
+              Delete
+            </button>
+          </div>
         </div>
       </div>
+      
+      {/* Delete Lesson Confirmation */}
+      {DeleteConfirm && (
+        <div className="delete-confirmation-overlay">
+          <div className="delete-confirmation-modal">
+            <h3>Are you sure you want to delete this lesson?</h3>
+            <div className="delete-confirmation-actions">
+              <button onClick={() => { setDeleteConfirm(false); handleDeleteLesson(); }} className="btn-delete">Delete</button>
+              <button onClick={() => setDeleteConfirm(false)} className="delete-confirmation-btn-cancel">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
