@@ -132,7 +132,7 @@ function Courses() {
         </div>
 
         {/* Add Course Button */}
-        <button className="fab" onClick={() => console.log("Add course clicked")}>
+        <button className="fab" onClick={() => navigate("/courses/create")}>
           +
         </button>
       </div>
