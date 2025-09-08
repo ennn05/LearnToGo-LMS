@@ -14,7 +14,7 @@ export const getCourses = async (req, res) => {
 
 export const getInstructorCourses = async (req, res) => {
     console.log("HI")
-    const instructorId = req?.user?.user_id;
+    const instructorId = req?.user?.id;
     console.log(instructorId);
     if (!instructorId) return res.status(401).json({success: false, error: "Unauthorized" });
 

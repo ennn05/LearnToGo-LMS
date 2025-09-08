@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../libs/apiCalls";
 import { mockCourseAPI } from "../data/mockCourses";
 import "../styles/Courses.css";
 
@@ -16,17 +17,17 @@ function Courses() {
     try {
       console.log("Fetching courses from mock API...");
       // const data = await mockCourseAPI.getAllCourses();
-      // const data = await api.get("courses/instructor");
-      const response = await fetch("http://localhost:5000/api/courses/instructor");
+      const {data: res} = await api.get("courses/instructor");
+      // const response = await fetch("http://localhost:5000/api/courses/instructor");
 
-      if (!response.ok)
+      if (!res.success)
       {
-        console.error("Error fetching courses:", response);
+        console.error("Error fetching courses:", res.message);
       }
-      const data = await response.json();
+      // const data = await response.json();
 
-      console.log("Courses loaded:", data.data);
-      setCourses(data.data);
+      console.log("Courses loaded:", res.data);
+      setCourses(res.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
