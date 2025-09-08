@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Lessons.css";
 import api from "../libs/apiCalls";
+import "../styles/Lessons.css";
 
 function Lessons() {
   const [activePage, setActivePage] = useState("lessons");
@@ -40,16 +40,8 @@ function Lessons() {
     fetchLessons();
   }, []);
 
-  const addLesson = async (lessonData) => {
+    const addLesson = async (lessonData) => {
     try {
-      // const response = await fetch("http://localhost:5000/api/lessons", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(lessonData),
-      // });
-
       const {data: res} = await api.post("lessons", lessonData);
 
       if (!res.success) {
@@ -58,13 +50,13 @@ function Lessons() {
       }
 
       console.log("Lesson saved:", res.data);
+      await fetchLessons();
       return res.data;
     } catch (error) {
       console.error("Error adding lesson:", error);
       alert("Failed to add lesson. Please try again.");
     }
   };
-
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -73,68 +65,106 @@ function Lessons() {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
   return (
     <div className="flex">
-
-      <div className="lessons-list">
-        {lessons.map((lesson) => (
-          <div className="lesson-card" key={lesson.lesson_id}>
-            <div className="lesson-info">
-              <h3>{lesson.lesson_title}</h3>
-              <p>{lesson.lesson_desc}</p>
-              <p>Objective: {lesson.lesson_obj}</p>
-              <p>Effort per week: {lesson.lesson_effort_per_week} days</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Sidebar */}
       <div className="sidebar">
         <div className="profile">
           <div className="avatar"></div>
           <div className="info">
-          <div className="name">{user? `${user.user_fname} ${user.user_lname}`: "Loading..."}</div>
-          <div className="role">Instructor</div>
+            <div className="name">
+              {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
+            </div>
+            <div className="role">{user ? user.user_role : "Instructor"}</div>
+          </div>
         </div>
+
+        <nav className="nav-menu">
+          <button
+            className={activePage === "courses" ? "active" : ""}
+            onClick={() => navigate("/courses")}
+          >
+            Courses
+          </button>
+          <button
+            className={activePage === "lessons" ? "active" : ""}
+            onClick={() => setActivePage("lessons")}
+          >
+            Lessons
+          </button>
+          <button
+            className={activePage === "classrooms" ? "active" : ""}
+            onClick={() => navigate("/classrooms")}
+          >
+            Classrooms
+          </button>
+          <button
+            className={activePage === "students" ? "active" : ""}
+            onClick={() => navigate("/students")}
+          >
+            Students
+          </button>
+          <button
+            className={activePage === "reports" ? "active" : ""}
+            onClick={() => navigate("/reports")}
+          >
+            Reports & Statistics
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            Log Out
+          </button>
+        </nav>
       </div>
 
-      {/* Lessons Button*/}
-      <button className={activePage === "lessons" ? "active" : ""}
-        onClick={() => setActivePage("lessons")}
-      > Lessons
-      </button>
-
-      {/* Courses Button*/}
-      <button
-        className={activePage === "courses" ? "active" : ""}
-        onClick={() => setActivePage("courses")}
-      > Courses
-      </button>
-
-    </div>
       {/* Main Content */}
       <div className="main-content">
+        <div className="topbar">
+          <h1>My Lessons</h1>
+        </div>
 
-        {/* Lessons Topbar */}
-        {activePage === "lessons" && (
-          <div>
-            <div className="topbar">Lessons</div>
-          </div>
-        )}
-        
-        {/* Courses Topbar */}
-        {activePage === "courses" && (
-          <div>
-            <div className="topbar">Courses</div>
-          </div>
-        )}
+        {/* Lessons Container */}
+        <div className="lessons-container">
+          {loading ? (
+            <div className="loading">Loading lessons...</div>
+          ) : lessons.length === 0 ? (
+            <div className="no-lessons">
+              <p>No lessons found. Create your first lesson!</p>
+            </div>
+          ) : (
+            <div className="lessons-grid">
+              {lessons.map((lesson) => (
+                <div className="lesson-card" key={lesson.lesson_id} onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
+                  {/* Title on top */}
+                  <div className="lesson-header">
+                    <h3>{lesson.lesson_title}</h3>
+                  </div>
+                  {/* Details in one row */}
+                  <div className="lesson-details">
+                    <p><span className="label">ID:</span> {lesson.lesson_id}</p>
+                    <p><span className="label">Status:</span> {lesson.status || "Draft"}</p>
+                    <p><span className="label">Created by:</span> {lesson.created_by || "Unknown"}</p>
+                    <p><span className="label">Classroom:</span> {lesson.classroom || "Not assigned"}</p>
+                    <p><span className="label">Students:</span> {lesson.students_count || 0}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
 
         {/* Add Lesson Button */}
-        <button className="fab" onClick={() => setShowModal(true)}> + </button>
+        <button className="fab" onClick={() => setShowModal(true)}>
+          +
+        </button>
 
-        {/* Modal */}
-        {showModal && (
+         {/* Modal */}
+         {showModal && (
           <div className="modal-overlay" onClick={() => setShowModal(false)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <h3>Add Lesson</h3>
@@ -154,7 +184,7 @@ function Lessons() {
                   
 
                   console.log("Lesson submitted:", lessonData);
-                  alert("Lesson added! (Hook this to backend)");
+                  alert("Lesson added!");
 
                   setShowModal(false);
                 }}
@@ -198,8 +228,6 @@ function Lessons() {
             </div>
           </div>
         )}
-
-
       </div>
     </div>
   );

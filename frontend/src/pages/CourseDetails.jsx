@@ -15,7 +15,7 @@ function CourseDetails() {
   const [error, setError] = useState(null);
   const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
-  // Fetch course details
+  // Fetch course details from mock API
   const fetchCourseDetails = async () => {
     try {
       // const data = await mockCourseAPI.getCourseById(courseId);
@@ -28,7 +28,7 @@ function CourseDetails() {
       const data = await res.json();
 
       console.log("Course details loaded:", data.data);
-      console.log(data.data.courses);
+      console.log(data.data.lessons);
       setCourse(data.data);
     } catch (error) {
       console.error("Error fetching course details:", error);

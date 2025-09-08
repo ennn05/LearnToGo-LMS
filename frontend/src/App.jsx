@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import Login from "./pages/login";
 import Lessons from "./pages/lessons";
-import Courses from "./pages/Courses";
+import Courses from "./pages/courses";
+import CourseDetails from "./pages/CourseDetails";
 import Students from "./pages/students";
 import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";
+import LessonDetails from "./pages/LessonDetails";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
@@ -13,9 +15,7 @@ const RootLayout = () => {
   setAuthToken(user?.token ?? "");
 
   return !user ? <Navigate to="/login" replace={true} /> : (
-    <div>
-      <Outlet />
-    </div>
+    <Outlet />
   );
 }
 
@@ -53,7 +53,9 @@ function App() {
           <Route path="/" element={<Navigate to="/courses" />} />
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:courseId" element={<CourseDetails />} />
           <Route path="/students" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Students /></ProtectedRoute>} />
+          <Route path="/lessons/:lessonId" element={<LessonDetails />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
