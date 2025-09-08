@@ -27,8 +27,8 @@ function LessonDetails() {
       }
       const data = await res.json();
       console.log("Lesson details:", data.data);
-      console.log("Lesson date", data.data.lesson_date_created);
-      console.log(data.data.lesson_prereq.split("\n"));
+      // console.log("Lesson date", data.data.lesson_date_created);
+      // console.log(data.data.lesson_prereq.split("\n"));
       setLesson(data.data);
     } catch (err) {
       console.error("Error fetching lesson:", err);

@@ -62,8 +62,8 @@ function Lessons() {
         ...lessonData,
         lesson_designer: user.user_id,
       }
-      const res = await api.post("lessons", lessonData);
-
+      const {data: res} = await api.post("lessons", createLessonData);
+      console.log(res)
       if (!res.success) {
         console.error("Server responded with:", res.message);
         throw new Error("Failed to add lesson");
