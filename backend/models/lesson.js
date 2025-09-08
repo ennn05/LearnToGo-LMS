@@ -1,18 +1,121 @@
+// import sql from "../db.js";
+
+// export const getAllLessons = async () => {
+//     const lessons = await sql`SELECT * FROM "LMS".lesson;`;
+//     return lessons;
+// }
+
+// export const getLessonById = async (lessonId) => {
+//     const lesson = await sql`SELECT * FROM "LMS".lesson l 
+//                                 LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+//                                 LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
+//                                 WHERE l.lesson_id = ${lessonId}
+//                             ;`;
+//     return lesson[0];
+// }
+
+// export const getLessonByInstructor = async (instructorId) => {
+//     const lessons = await sql`SELECT * FROM "LMS".lesson WHERE lesson_designer = ${instructorId};`;
+//     return lessons;
+// }
+
+// export const updateLesson = async (lessonData) => {
+//     const { id, updateData } = lessonData;
+
+//     const fields = [];
+//     if (updateData.lesson_title) fields.push(sql`lesson_title = ${updateData.lesson_title}`);
+//     if (updateData.lesson_credit) fields.push(sql`lesson_credit = ${updateData.lesson_credit}`);
+//     if (updateData.lesson_designer) fields.push(sql`lesson_designer = ${updateData.lesson_designer}`);
+//     if (updateData.lesson_status) fields.push(sql`lesson_status = ${updateData.lesson_status}`);
+//     if (updateData.lesson_date_updated) fields.push(sql`lesson_date_updated = ${updateData.lesson_date_updated}`);
+
+//     if (fields.length === 0) return null; // nothing to update
+
+//     const lessons = await sql`
+//         UPDATE "LMS".lesson
+//         SET ${sql.join(fields, sql`, `)}
+//         WHERE lesson_id = ${id}
+//         RETURNING *;
+//     `;
+//     return lessons[0];
+// };
+
 import sql from "../db.js";
 
+<<<<<<< Updated upstream
 const TABLE_NAME = '"LMS".lesson';
 
+=======
+// Get all lessons
+>>>>>>> Stashed changes
 export const getAllLessons = async () => {
-    const lessons = await sql`SELECT * FROM "LMS".lesson;`;
-    return lessons;
-}
+  const lessons = await sql`SELECT * FROM "LMS".lesson ORDER BY lesson_id ASC;`;
+  return lessons;
+};
 
+// Get lesson by ID
 export const getLessonById = async (lessonId) => {
+<<<<<<< Updated upstream
     const lesson = await sql`SELECT * FROM ${TABLE_NAME} WHERE lesson_id = ${lessonId};`;
     return lesson[0];
 }
+=======
+  const lesson = await sql`
+    SELECT * FROM "LMS".lesson l 
+    LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+    LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
+    WHERE l.lesson_id = ${lessonId};
+  `;
+  return lesson[0];
+};
+>>>>>>> Stashed changes
 
+// Get lessons by instructor
 export const getLessonByInstructor = async (instructorId) => {
+<<<<<<< Updated upstream
     const lessons = await sql`SELECT * FROM ${TABLE_NAME} WHERE lesson_designer = ${instructorId};`;
     return lessons;
 }
+=======
+  const lessons = await sql`
+    SELECT * FROM "LMS".lesson 
+    WHERE lesson_designer = ${instructorId};
+  `;
+  return lessons;
+};
+
+// Create lesson
+export const createLesson = async (lessonData) => {
+  const lesson = await sql`
+    INSERT INTO "LMS".lesson 
+      (lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_date_created, lesson_date_updated, lesson_status)
+    VALUES 
+      (${lessonData.title}, ${lessonData.description}, ${lessonData.objective}, ${lessonData.estimatedTime}, ${lessonData.date_created}, ${lessonData.date_updated}, ${lessonData.status})
+    RETURNING *;
+  `;
+  return lesson[0];
+};
+
+// Update lesson
+export const updateLesson = async (lessonData) => {
+  console.log(`ABCABCC: ${lessonData}`);
+    const { id, updateData } = lessonData;
+
+    // Always update date_updated on the backend
+    const today = new Date().toISOString().split("T")[0];
+
+    const lessons = await sql`
+        UPDATE "LMS".lesson
+        SET 
+            lesson_title = ${updateData.lesson_title},
+            lesson_credit = ${updateData.lesson_credit},
+            lesson_designer = ${updateData.lesson_designer},
+            lesson_status = ${updateData.lesson_status},
+            lesson_date_updated = ${today}
+        WHERE lesson_id = ${id}
+        RETURNING *;
+    `;
+    
+    return lessons[0];
+};
+>>>>>>> Stashed changes

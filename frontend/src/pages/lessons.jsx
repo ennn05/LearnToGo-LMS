@@ -7,6 +7,23 @@ function Lessons() {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [lessons, setLessons] = useState([]);
+<<<<<<< Updated upstream
+=======
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const fetchLessons = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/lessons/instructor");
+      const data = await response.json();
+      setLessons(data.data);
+    } catch (err) {
+      console.error("Failed to fetch lessons:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+>>>>>>> Stashed changes
 
   useEffect(() => {
     const fetchLessons = async () => {
