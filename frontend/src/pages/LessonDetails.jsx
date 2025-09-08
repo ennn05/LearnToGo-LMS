@@ -55,7 +55,9 @@ function LessonDetails() {
 
   const editLesson = async (lessonData) => {
     try {
-      const {data: res} = await api.put(`lessons/${lessonId}`, lessonData);
+      const updateLessonData = {...lesson, ...lessonData};
+      console.log(updateLessonData);
+      const {data: res} = await api.put(`lessons/${lessonId}`, updateLessonData);
 
       if (!res.success) {
         console.error("Server responded with:", res.message);
@@ -238,7 +240,7 @@ function LessonDetails() {
             </div>
             <div className="info-item">
               <label>Estimated Time:</label>
-              <p>{lesson.lesson_estimated_time ?? 0} days</p>
+              <p>{lesson.lesson_effort_per_week ?? 0} days</p>
             </div>
             <div className="info-item">
               <label>Lesson Credit:</label>
@@ -276,8 +278,8 @@ function LessonDetails() {
           <div className="list-section">
             <h3>Reading List</h3>
             <div className="scroll-list">
-              {lesson.reading_list?.length > 0 ? (
-                lesson.reading_list.map((item, idx) => (
+              {lesson.lesson_reading_list?.length > 0 ? (
+                lesson.lesson_reading_list.map((item, idx) => (
                   <div key={idx} className="list-item">
                     {item}
                   </div>
@@ -293,8 +295,8 @@ function LessonDetails() {
           <div className="list-section">
             <h3>Assignments</h3>
             <div className="scroll-list">
-              {lesson.assignments?.length > 0 ? (
-                lesson.assignments.map((item, idx) => (
+              {lesson.lesson_assignment?.length > 0 ? (
+                lesson.lesson_assignment.map((item, idx) => (
                   <div key={idx} className="list-item">
                     {item}
                   </div>
@@ -426,10 +428,11 @@ function LessonDetails() {
                 e.preventDefault();
 
                 const lessonData = {
-                  title: e.target.title.value,
-                  description: e.target.description.value,
-                  objective: e.target.objective.value,
-                  estimatedTime: e.target.estimatedTime.value,
+                  lesson_title: e.target.title.value,
+                  lesson_desc: e.target.description.value,
+                  lesson_obj: e.target.objective.value,
+                  lesson_effort_per_week: e.target.estimatedTime.value,
+                  lesson_credit: e.target.lessonCredit.value,
                 };
 
                 console.log("Editing lesson")
@@ -461,11 +464,22 @@ function LessonDetails() {
               <div className="form-group-inline">
                 <label>Estimated Time (days)</label>
                 <input
-                  type="text"
+                  type="number"
                   name="estimatedTime"
                   placeholder="e.g. 30"
                   required
-                  defaultValue={lesson.lesson_estimated_time ? lesson.lesson_estimated_time : 0}
+                  defaultValue={lesson.lesson_effort_per_week ? lesson.lesson_effort_per_week : 0}
+                />
+              </div>
+
+              <div className="form-group-inline">
+                <label>Lesson Credit (points)</label>
+                <input
+                  type="number"
+                  name="lessonCredit"
+                  placeholder="e.g. 6"
+                  required
+                  defaultValue={lesson.lesson_credit ? lesson.lesson_credit : 0}
                 />
               </div>
 
