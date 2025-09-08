@@ -1,4 +1,4 @@
-import {getAllLessons, getLessonById, getLessonByInstructor} from "../models/lesson.js";
+import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson} from "../models/lesson.js";
 export const getLessons = async (req, res) => {
     try {
         const lessons = await getAllLessons();

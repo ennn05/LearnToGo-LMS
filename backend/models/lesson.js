@@ -81,9 +81,8 @@ export const createLesson = async (lessonData) => {
 };
 
 // Update lesson
-export const updateLesson = async (lessonData) => {
+export const updateLesson = async (lessonId, lessonData) => {
   console.log(`ABCABCC: ${lessonData}`);
-    const { id, updateData } = lessonData;
 
     // Always update date_updated on the backend
     const today = new Date().toISOString().split("T")[0];
@@ -91,14 +90,20 @@ export const updateLesson = async (lessonData) => {
     const lessons = await sql`
         UPDATE "LMS".lesson
         SET 
-            lesson_title = ${updateData.lesson_title},
-            lesson_credit = ${updateData.lesson_credit},
-            lesson_designer = ${updateData.lesson_designer},
-            lesson_status = ${updateData.lesson_status},
+            lesson_title = ${lessonData.lesson_title},
+            lesson_desc = ${lessonData.lesson_desc},
+            lesson_obj = ${lessonData.lesson_obj},
+            lesson_credit = ${lessonData.lesson_credit},
+            lesson_status = ${lessonData.lesson_status},
             lesson_date_updated = ${today}
-        WHERE lesson_id = ${id}
+        WHERE lesson_id = ${lessonId}
         RETURNING *;
     `;
     
     return lessons[0];
 };
+
+export const deleteLesson = async (lessonId) => {
+    const lesson = await sql`DELETE FROM "LMS".lesson WHERE lesson_id = ${lessonId} RETURNING *;`;
+    return lesson[0];
+}
