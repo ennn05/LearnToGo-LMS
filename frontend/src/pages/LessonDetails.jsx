@@ -13,6 +13,7 @@ function LessonDetails() {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
   const [DeleteConfirm, setDeleteConfirm] = useState(false);
+  const [preReqModal, setShowPreReqModal] = useState(false);
   const [readingModal, setShowReadingModal] = useState(false);
   const [assignmentModal, setShowAssignmentModal] = useState(false);
 
@@ -244,7 +245,8 @@ function LessonDetails() {
               <p>{lesson.lesson_credit ?? 0} credit points</p>
             </div>
           </div>
-
+          
+          {/* Pre-Requisites */}
           <div className="list-section">
             <h3>Pre-Requisites</h3>
             <div className="scroll-list">
@@ -267,7 +269,7 @@ function LessonDetails() {
                 <p className="no-items">No pre-requisites yet.</p>
               )}
             </div>
-            <button className="btn-add">+ Add Pre-Requisites</button>
+            <button className="btn-add" onClick={() => setShowPreReqModal(true)}>+ Add Pre-Requisites</button>
           </div>
 
           {/* Reading List */}
@@ -319,6 +321,38 @@ function LessonDetails() {
         </div>
       </div>
 
+      {/* Pre-Requisites Modal */}
+      {preReqModal && (
+        <div className="modal-overlay" onClick={() => setShowPreReqModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Add a Pre-requisite</h3>
+            <form onSubmit={async (e) => {
+                e.preventDefault();
+
+                const preReqData = {
+                  item: e.target.item.value,
+                };
+
+                console.log("Adding pre-requisite");
+                // TODO: Send readingData to backend
+                const result = await addPreReq(preReqData);
+                console.log("Pre-requisite added:", preReqData);
+                alert("Pre-requisite added!");
+                setShowPreReqModal(false);
+            }}>
+              <div className="form-group">
+                <label>Add one pre-requisite: </label>
+                <input type="text" name="item" required />
+              </div>
+              <div className="modal-actions">
+                <button type="submit">Add to Pre-requisites</button>
+                <button onClick={() => setShowPreReqModal(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Reading List Modal */}
       {readingModal && (
         <div className="modal-overlay" onClick={() => setShowReadingModal(false)}>
@@ -363,11 +397,11 @@ function LessonDetails() {
                   item: e.target.item.value,
                 };
 
-                console.log("Adding reading")
+                console.log("Adding assignment")
                 // TODO: Send readingData to backend
                 const result = await addAssignment(assignmentData);
-                console.log("Reading added:", assignmentData);
-                alert("Reading added!");
+                console.log("Assignment added:", assignmentData);
+                alert("Assignment added!");
                 setShowAssignmentModal(false);
             }}>
               <div className="form-group">
