@@ -101,6 +101,9 @@ function Login() {
 
   return (
     <div className="container">
+        <h1 class="logo">
+          <span class="logo-gray">LearnTo</span><span class="logo-blue">Go</span>
+        </h1>
       <div className="tabs">
         <div
           className={`tab ${form === "login" ? "active" : ""}`}
@@ -123,14 +126,14 @@ function Login() {
             <input
               type="email"
               placeholder="Email"
-              required style={{ width: "290px" }}
+              required style={{ width: "310px" }}
               value={loginEmail}
               onChange={(e) => setLoginEmail(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
-              required style={{ width: "290px" }}
+              required style={{ width: "310px" }}
               value={loginPwd}
               onChange={(e) => setLoginPwd(e.target.value)}
             />
@@ -144,20 +147,20 @@ function Login() {
         <div className="form active">
           <h2>Register</h2>
           <form onSubmit={handleRegistration}>
-            <input type="text" placeholder="First Name" required style={{ width: "290px" }} value={fname} onChange={(e) => setFname(e.target.value)}
+            <input type="text" placeholder="First Name" required style={{ width: "310px" }} value={fname} onChange={(e) => setFname(e.target.value)}
             />
-            <input type="text" placeholder="Last Name" required style={{ width: "290px" }} value={lname} onChange={(e) => setLname(e.target.value)}
+            <input type="text" placeholder="Last Name" required style={{ width: "310px" }} value={lname} onChange={(e) => setLname(e.target.value)}
             />
-            <input type="text" placeholder="Registration PIN" required style={{ width: "290px" }} value={pin} onChange={(e) => setPin(e.target.value)}
+            <input type="text" placeholder="Registration PIN" required style={{ width: "310px" }} value={pin} onChange={(e) => setPin(e.target.value)}
             />
-            <select placeholder="Select Role" required style={{ width: "290px" }} value={role} onChange={(e) => setRole(e.target.value)}
+            <select placeholder="Select Role" required style={{ width: "310px" }} value={role} onChange={(e) => setRole(e.target.value)}
             >
               <option value="instructor">Instructor</option>
               <option value="student">Student</option>
             </select>
-            <input type="email" placeholder="Email" required style={{ width: "290px" }} value={regEmail} onChange={(e) => setRegEmail(e.target.value)}
+            <input type="email" placeholder="Email" required style={{ width: "310px" }} value={regEmail} onChange={(e) => setRegEmail(e.target.value)}
             />
-            <input type="password" placeholder="Password" required style={{ width: "290px" }} value={regPwd} onChange={(e) => setRegPwd(e.target.value)}
+            <input type="password" placeholder="Password" required style={{ width: "310px" }} value={regPwd} onChange={(e) => setRegPwd(e.target.value)}
             />
             <button type="submit">Register</button>
           </form>
