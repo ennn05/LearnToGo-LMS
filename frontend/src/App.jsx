@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import Login from "./pages/login";
 import Lessons from "./pages/lessons";
-import Courses from "./pages/courses";
+import Courses from "./pages/Courses";
 import Students from "./pages/students";
 import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";

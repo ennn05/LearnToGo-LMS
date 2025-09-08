@@ -42,12 +42,7 @@
 
 import sql from "../db.js";
 
-<<<<<<< Updated upstream
-const TABLE_NAME = '"LMS".lesson';
-
-=======
 // Get all lessons
->>>>>>> Stashed changes
 export const getAllLessons = async () => {
   const lessons = await sql`SELECT * FROM "LMS".lesson ORDER BY lesson_id ASC;`;
   return lessons;
@@ -55,11 +50,6 @@ export const getAllLessons = async () => {
 
 // Get lesson by ID
 export const getLessonById = async (lessonId) => {
-<<<<<<< Updated upstream
-    const lesson = await sql`SELECT * FROM ${TABLE_NAME} WHERE lesson_id = ${lessonId};`;
-    return lesson[0];
-}
-=======
   const lesson = await sql`
     SELECT * FROM "LMS".lesson l 
     LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
@@ -68,15 +58,9 @@ export const getLessonById = async (lessonId) => {
   `;
   return lesson[0];
 };
->>>>>>> Stashed changes
 
 // Get lessons by instructor
 export const getLessonByInstructor = async (instructorId) => {
-<<<<<<< Updated upstream
-    const lessons = await sql`SELECT * FROM ${TABLE_NAME} WHERE lesson_designer = ${instructorId};`;
-    return lessons;
-}
-=======
   const lessons = await sql`
     SELECT * FROM "LMS".lesson 
     WHERE lesson_designer = ${instructorId};
@@ -118,4 +102,3 @@ export const updateLesson = async (lessonData) => {
     
     return lessons[0];
 };
->>>>>>> Stashed changes

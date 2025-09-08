@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Lessons.css";
 import api from "../libs/apiCalls";
 
@@ -7,8 +8,6 @@ function Lessons() {
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [lessons, setLessons] = useState([]);
-<<<<<<< Updated upstream
-=======
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -23,22 +22,21 @@ function Lessons() {
       setLoading(false);
     }
   };
->>>>>>> Stashed changes
 
   useEffect(() => {
-    const fetchLessons = async () => {
-      try {
+    // const fetchLessons = async () => {
+    //   try {
         
-        // const response = await fetch("http://localhost:5000/api/lessons");
-        // const data = await response.json();
-        // setLessons(data);
+    //     // const response = await fetch("http://localhost:5000/api/lessons");
+    //     // const data = await response.json();
+    //     // setLessons(data);
 
-        const {data: res} = await api.get("/lessons");
-        setLessons(res);
-      } catch (err) {
-        console.error("Failed to fetch lessons:", err);
-      }
-    };
+    //     const {data: res} = await api.get("/lessons");
+    //     setLessons(res);
+    //   } catch (err) {
+    //     console.error("Failed to fetch lessons:", err);
+    //   }
+    // };
     fetchLessons();
   }, []);
 
