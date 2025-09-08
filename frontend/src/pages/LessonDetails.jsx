@@ -13,6 +13,8 @@ function LessonDetails() {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
   const [DeleteConfirm, setDeleteConfirm] = useState(false);
+  const [readingModal, setShowReadingModal] = useState(false);
+  const [assignmentModal, setShowAssignmentModal] = useState(false);
 
   // Fetch lesson details
   const fetchLessonDetails = async () => {
@@ -284,7 +286,7 @@ function LessonDetails() {
                 <p className="no-items">No reading materials yet.</p>
               )}
             </div>
-            <button className="btn-add">+ Add Reading</button>
+            <button className="btn-add" onClick={() => setShowReadingModal(true)}>+ Add Reading</button>
           </div>
 
           {/* Assignments */}
@@ -301,7 +303,7 @@ function LessonDetails() {
                 <p className="no-items">No assignments yet.</p>
               )}
             </div>
-            <button className="btn-add">+ Add Assignment</button>
+            <button className="btn-add" onClick={() => setShowAssignmentModal(true)}>+ Add Assignment</button>
           </div>
 
           {/* Footer */}
@@ -318,8 +320,72 @@ function LessonDetails() {
           </div>
         </div>
       </div>
+
+      {/* Reading List Modal */}
+      {readingModal && (
+        <div className="modal-overlay" onClick={() => setShowReadingModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Add Reading</h3>
+            <form onSubmit={async (e) => {
+                e.preventDefault();
+
+                const readingData = {
+                  item: e.target.item.value,
+                };
+
+                console.log("Adding reading")
+                // TODO: Send readingData to backend
+                const result = await addReading(readingData);
+                console.log("Reading added:", readingData);
+                alert("Reading added!");
+                setShowReadingModal(false);
+            }}>
+              <div className="form-group">
+                <label>Add a reading item: </label>
+                <input type="text" name="item" required />
+              </div>
+              <div className="modal-actions">
+                <button type="submit">Add Reading</button>
+                <button onClick={() => setShowReadingModal(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Assignment Modal */}
+      {assignmentModal && (
+        <div className="modal-overlay" onClick={() => setShowAssignmentModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Add Assignment</h3>
+            <form onSubmit={async (e) => {
+                e.preventDefault();
+
+                const assignmentData = {
+                  item: e.target.item.value,
+                };
+
+                console.log("Adding reading")
+                // TODO: Send readingData to backend
+                const result = await addAssignment(assignmentData);
+                console.log("Reading added:", assignmentData);
+                alert("Reading added!");
+                setShowAssignmentModal(false);
+            }}>
+              <div className="form-group">
+                <label>Add an assignment: </label>
+                <input type="text" name="item" required />
+              </div>
+              <div className="modal-actions">
+                <button type="submit">Add Assignment</button>
+                <button onClick={() => setShowAssignmentModal(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
        
-      {/* Modal */}
+      {/* Edit Modal */}
        {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>

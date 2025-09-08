@@ -68,3 +68,18 @@ button {
 button:hover {
   background: #125a9c;
 }
+
+.logo {
+  text-align: center;
+  font-size: 28px;
+  margin: 20px 0;
+  font-weight: bold;
+}
+
+.logo-gray {
+  color: #555;   /* gray */
+}
+
+.logo-blue {
+  color: #1976d2;  /* blue */
+}
