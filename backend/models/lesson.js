@@ -93,7 +93,11 @@ export const updateLesson = async (lessonId, lessonData) => {
             lesson_title = ${lessonData.lesson_title},
             lesson_desc = ${lessonData.lesson_desc},
             lesson_obj = ${lessonData.lesson_obj},
+            lesson_effort_per_week = ${lessonData.lesson_effort_per_week},
             lesson_credit = ${lessonData.lesson_credit},
+            lesson_prereq = ${lessonData.lesson_prereq},
+            lesson_reading_list = ${lessonData.lesson_reading_list},
+            lesson_assignment = ${lessonData.lesson_assignment},
             lesson_status = ${lessonData.lesson_status},
             lesson_date_updated = ${today}
         WHERE lesson_id = ${lessonId}

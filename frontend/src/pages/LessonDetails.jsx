@@ -25,6 +25,7 @@ function LessonDetails() {
       const data = await res.json();
       console.log("Lesson details:", data.data);
       console.log("Lesson date", data.data.date_created);
+      console.log(data.data.lesson_prereq.split("\n"));
       setLesson(data.data);
     } catch (err) {
       console.error("Error fetching lesson:", err);
@@ -208,7 +209,7 @@ function LessonDetails() {
               <strong>ID:</strong> {lesson.lesson_id || "NULL"}
             </p>
             <p>
-              <strong>By:</strong> {lesson.user_fname} {lesson.user_lname}
+              <strong>By:</strong> {lesson.user_fname && lesson.user_lname ? `${lesson.user_fname} ${lesson.user_lname}` : "Unknown"}
             </p>
             <p>
               <strong>Created:</strong>{" "}
@@ -236,6 +237,35 @@ function LessonDetails() {
               <label>Estimated Time:</label>
               <p>{lesson.lesson_estimated_time ?? 0} days</p>
             </div>
+            <div className="info-item">
+              <label>Lesson Credit:</label>
+              <p>{lesson.lesson_credit ?? 0} credit points</p>
+            </div>
+          </div>
+
+          <div className="list-section">
+            <h3>Pre-Requisites</h3>
+            <div className="scroll-list">
+              {/* {lesson.lesson_prereq?.length > 0 ? (
+                lesson.lesson_prereq.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    {item}
+                  </div>
+                ))
+              ) : (
+                <p className="no-items">No pre-requisites yet.</p>
+              )} */}
+              {lesson.lesson_prereq?.length > 0 ? (
+                lesson.lesson_prereq.split("\n").map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    {item}
+                  </div>
+                ))
+              ) : (
+                <p className="no-items">No pre-requisites yet.</p>
+              )}
+            </div>
+            <button className="btn-add">+ Add Pre-Requisites</button>
           </div>
 
           {/* Reading List */}
@@ -274,7 +304,9 @@ function LessonDetails() {
 
           {/* Footer */}
           <div className="course-footer">
-            <button className="btn-edit">Edit</button>
+            <button className="btn-edit" onClick={() => setShowModal(true)}>
+              Edit
+            </button>
             <button
               className="btn-delete"
               onClick={() => setDeleteConfirm(true)}
@@ -284,7 +316,73 @@ function LessonDetails() {
           </div>
         </div>
       </div>
+       
+      {/* Modal */}
+       {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Edit Lesson</h3>
+            <form onSubmit={async (e) => {
+                e.preventDefault();
 
+                const lessonData = {
+                  title: e.target.title.value,
+                  description: e.target.description.value,
+                  objective: e.target.objective.value,
+                  estimatedTime: e.target.estimatedTime.value,
+                };
+
+                console.log("Editing lesson")
+                // TODO: Send lessonData to backend
+                const result = await editLesson(lessonData);
+                
+
+                console.log("Lesson edited:", lessonData);
+                alert("Lesson change appended!");
+
+                setShowModal(false);
+              }}
+          > 
+              <div className="form-group">
+                <label>Lesson Title</label>
+                <input type="text" name="title" required defaultValue={lesson.lesson_title}/>
+              </div>
+
+              <div className="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="2" required defaultValue={lesson.lesson_desc}/>
+              </div>
+
+              <div className="form-group">
+                <label>Objective</label>
+                <textarea name="objective" rows="2" required defaultValue={lesson.lesson_obj}/>
+              </div>
+
+              <div className="form-group-inline">
+                <label>Estimated Time (days)</label>
+                <input
+                  type="text"
+                  name="estimatedTime"
+                  placeholder="e.g. 30"
+                  required
+                  defaultValue={lesson.lesson_estimated_time ? lesson.lesson_estimated_time : 0}
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button type="submit">Save</button>
+                <button
+                  type="button"
+                  className="cancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {/* Delete Lesson Confirmation */}
       {DeleteConfirm && (
         <div className="delete-confirmation-overlay">
