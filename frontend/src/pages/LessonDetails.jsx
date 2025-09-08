@@ -25,6 +25,7 @@ function LessonDetails() {
       const data = await res.json();
       console.log("Lesson details:", data.data);
       console.log("Lesson date", data.data.date_created);
+      console.log(data.data.lesson_prereq.split("\n"));
       setLesson(data.data);
     } catch (err) {
       console.error("Error fetching lesson:", err);
@@ -208,7 +209,7 @@ function LessonDetails() {
               <strong>ID:</strong> {lesson.lesson_id || "NULL"}
             </p>
             <p>
-              <strong>By:</strong> {lesson.user_fname} {lesson.user_lname}
+              <strong>By:</strong> {lesson.user_fname && lesson.user_lname ? `${lesson.user_fname} ${lesson.user_lname}` : "Unknown"}
             </p>
             <p>
               <strong>Created:</strong>{" "}
@@ -236,6 +237,35 @@ function LessonDetails() {
               <label>Estimated Time:</label>
               <p>{lesson.lesson_estimated_time ?? 0} days</p>
             </div>
+            <div className="info-item">
+              <label>Lesson Credit:</label>
+              <p>{lesson.lesson_credit ?? 0} credit points</p>
+            </div>
+          </div>
+
+          <div className="list-section">
+            <h3>Pre-Requisites</h3>
+            <div className="scroll-list">
+              {/* {lesson.lesson_prereq?.length > 0 ? (
+                lesson.lesson_prereq.map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    {item}
+                  </div>
+                ))
+              ) : (
+                <p className="no-items">No pre-requisites yet.</p>
+              )} */}
+              {lesson.lesson_prereq?.length > 0 ? (
+                lesson.lesson_prereq.split("\n").map((item, idx) => (
+                  <div key={idx} className="list-item">
+                    {item}
+                  </div>
+                ))
+              ) : (
+                <p className="no-items">No pre-requisites yet.</p>
+              )}
+            </div>
+            <button className="btn-add">+ Add Pre-Requisites</button>
           </div>
 
           {/* Reading List */}
