@@ -125,25 +125,18 @@ function Lessons() {
             <div className="lessons-grid">
               {lessons.map((lesson) => (
                 <div className="lesson-card" key={lesson.lesson_id} onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
-
-                  {/* Section 1: Title + ID */}
-                  <div className="lesson-section">
-                    <p><span className="label">Title:</span> {lesson.lesson_title}</p>
-                    <p><span className="label">ID:</span> {lesson.lesson_id}</p>
+                  {/* Title on top */}
+                  <div className="lesson-header">
+                    <h3>{lesson.lesson_title}</h3>
                   </div>
-
-                  {/* Section 2: Status + Created by */}
-                  <div className="lesson-section">
+                  {/* Details in one row */}
+                  <div className="lesson-details">
+                    <p><span className="label">ID:</span> {lesson.lesson_id}</p>
                     <p><span className="label">Status:</span> {lesson.status || "Draft"}</p>
                     <p><span className="label">Created by:</span> {lesson.created_by || "Unknown"}</p>
-                  </div>
-
-                  {/* Section 3: Classroom + Students */}
-                  <div className="lesson-section">
                     <p><span className="label">Classroom:</span> {lesson.classroom || "Not assigned"}</p>
                     <p><span className="label">Students:</span> {lesson.students_count || 0}</p>
                   </div>
-
                 </div>
               ))}
             </div>
