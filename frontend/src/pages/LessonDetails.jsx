@@ -252,17 +252,8 @@ function LessonDetails() {
           <div className="list-section">
             <h3>Pre-Requisites</h3>
             <div className="scroll-list">
-              {/* {lesson.lesson_prereq?.length > 0 ? (
-                lesson.lesson_prereq.map((item, idx) => (
-                  <div key={idx} className="list-item">
-                    {item}
-                  </div>
-                ))
-              ) : (
-                <p className="no-items">No pre-requisites yet.</p>
-              )} */}
               {lesson.lesson_prereq?.length > 0 ? (
-                lesson.lesson_prereq.split("\n").map((item, idx) => (
+                lesson.lesson_prereq.trim().split("\n").map((item, idx) => (
                   <div key={idx} className="list-item">
                     {item}
                   </div>
@@ -279,7 +270,7 @@ function LessonDetails() {
             <h3>Reading List</h3>
             <div className="scroll-list">
               {lesson.lesson_reading_list?.length > 0 ? (
-                lesson.lesson_reading_list.split("\n").map((item, idx) => (
+                lesson.lesson_reading_list.trim().split("\n").map((item, idx) => (
                   <div key={idx} className="list-item">
                     {item}
                   </div>
@@ -299,7 +290,7 @@ function LessonDetails() {
             <h3>Assignments</h3>
             <div className="scroll-list">
               {lesson.lesson_assignment?.length > 0 ? (
-                lesson.lesson_assignment.map((item, idx) => (
+                lesson.lesson_assignment.trim().split("\n").map((item, idx) => (
                   <div key={idx} className="list-item">
                     {item}
                   </div>
@@ -335,23 +326,24 @@ function LessonDetails() {
                 e.preventDefault();
 
                 const preReqData = {
-                  item: e.target.item.value,
+                  lesson_prereq: e.target.prereqItem.value.trim(),
                 };
 
                 console.log("Adding pre-requisite");
                 // TODO: Send readingData to backend
-                const result = await addPreReq(preReqData);
+                const result = await editLesson(preReqData);
                 console.log("Pre-requisite added:", preReqData);
                 alert("Pre-requisite added!");
                 setShowPreReqModal(false);
             }}>
               <div className="form-group">
-                <label>Add one pre-requisite: </label>
-                <input type="text" name="item" required />
+                <label>Add a pre-requisite: </label>
+                {/* <input type="text" name="prereqItem" required /> */}
+                <textarea name="prereqItem" rows="6" defaultValue={lesson.lesson_prereq}/>
               </div>
               <div className="modal-actions">
                 <button type="submit">Add to Pre-requisites</button>
-                <button onClick={() => setShowPreReqModal(false)}>Cancel</button>
+                <button className="cancel" onClick={() => setShowPreReqModal(false)}>Cancel</button>
               </div>
             </form>
           </div>
@@ -367,7 +359,7 @@ function LessonDetails() {
                 e.preventDefault();
 
                 const readingData = {
-                  lesson_reading_list: e.target.readingItem.value,
+                  lesson_reading_list: e.target.readingItem.value.trim(),
                 };
 
                 console.log("Adding reading")
@@ -400,23 +392,24 @@ function LessonDetails() {
                 e.preventDefault();
 
                 const assignmentData = {
-                  item: e.target.item.value,
+                  lesson_assignment: e.target.asgItem.value.trim(),
                 };
 
                 console.log("Adding assignment")
                 // TODO: Send readingData to backend
-                const result = await addAssignment(assignmentData);
+                const result = await editLesson(assignmentData);
                 console.log("Assignment added:", assignmentData);
                 alert("Assignment added!");
                 setShowAssignmentModal(false);
             }}>
               <div className="form-group">
                 <label>Add an assignment: </label>
-                <input type="text" name="item" required />
+                {/* <input type="text" name="item" required /> */}
+                <textarea name="asgItem" rows="6" defaultValue={lesson.lesson_assignment}/>
               </div>
               <div className="modal-actions">
                 <button type="submit">Add Assignment</button>
-                <button onClick={() => setShowAssignmentModal(false)}>Cancel</button>
+                <button className="cancel" onClick={() => setShowAssignmentModal(false)}>Cancel</button>
               </div>
             </form>
           </div>
