@@ -227,7 +227,7 @@ function Lessons() {
                 </div>
 
                 <div className="form-group-inline">
-                  <label>Estimated Time (days)</label>
+                  <label>Estimated Time (hours per week)</label>
                   <input
                     type="number"
                     name="estimatedTime"

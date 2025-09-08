@@ -240,7 +240,7 @@ function LessonDetails() {
             </div>
             <div className="info-item">
               <label>Estimated Time:</label>
-              <p>{lesson.lesson_effort_per_week ?? 0} days</p>
+              <p>{lesson.lesson_effort_per_week ?? 0} hours per week</p>
             </div>
             <div className="info-item">
               <label>Lesson Credit:</label>
@@ -459,7 +459,7 @@ function LessonDetails() {
               </div>
 
               <div className="form-group-inline">
-                <label>Estimated Time (days)</label>
+                <label>Estimated Time (hours per week)</label>
                 <input
                   type="number"
                   name="estimatedTime"
