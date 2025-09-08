@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/CreateCourse.css"; // ✅ renamed stylesheet for consistency
+import "../styles/CreateCourse.css"; 
 
 function CreateCourse() {
   const [activePage, setActivePage] = useState("courses");
@@ -41,18 +41,36 @@ function CreateCourse() {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      // For testing: create a mock user if no user is logged in
-      setUser({
-        user_fname: "Test",
-        user_lname: "User",
-        user_email: "test@example.com",
-        user_role: "Instructor",
-      });
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      // fetch instructor info
+      fetch(`http://localhost:5000/api/courses/instructor`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.instr_user_id) {
+            setUser(prev => ({ ...prev, instr_user_id: data.instr_user_id }));
+          }
+        })
+        .catch(err => console.error("Error fetching instructor:", err));
     }
+
     fetchLessons();
   }, []);
+
+
+  const buildCoursePayload = (statusOverride = null) => ({
+    code: courseData.courseCode,
+    title: courseData.courseTitle,
+    total_credit: parseInt(courseData.totalCredits),
+    date_created: new Date().toISOString(),
+    date_updated: new Date().toISOString(),
+    creator: user ? user.instr_user_id : null,
+    status: statusOverride || courseData.status || "draft",
+    lessons: assignedLessons.map(l => l.lesson_id)
+  });
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,48 +89,33 @@ function CreateCourse() {
 
   const handlePublishCourse = async () => {
     try {
-      // First validate required fields
       if (!courseData.courseCode || !courseData.courseTitle || !courseData.totalCredits) {
-        alert("Please fill in all required fields (Course Code, Title, and Credits) before publishing.");
+        alert("Please fill in all required fields.");
         return;
       }
 
-      // Update status to published
-      const publishedCourseData = {
-        ...courseData,
-        status: 'published'
-      };
-      setCourseData(publishedCourseData);
+      const courseToSave = buildCoursePayload("published"); 
 
-      // Save the course with published status
-      const courseToSave = {
-        course_code: publishedCourseData.courseCode,
-        course_title: publishedCourseData.courseTitle,
-        total_credits: parseInt(publishedCourseData.totalCredits),
-        status: 'published',
-        assignedLessons: assignedLessons.map(l => l.lesson_id)
-      };
+      const response = await fetch("http://localhost:5000/api/courses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(courseToSave)
+      });
 
-      console.log("Publishing course:", courseToSave);
-      
-      // TODO: Replace with actual API call
-      // const response = await fetch("http://localhost:5000/api/courses", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(courseToSave)
-      // });
-      
-      // if (!response.ok) {
-      //   throw new Error("Failed to publish course");
-      // }
-      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to publish course");
+      }
+
       alert("Course published successfully!");
       navigate("/courses");
     } catch (error) {
       console.error("Error publishing course:", error);
-      alert("Failed to publish course. Please try again.");
+      alert(error.message);
     }
   };
+
+
 
 
   const addLessonToCourse = (lesson) => {
@@ -135,41 +138,32 @@ function CreateCourse() {
 
   const handleSaveCourse = async () => {
     try {
-      // Validate required fields
       if (!courseData.courseCode || !courseData.courseTitle || !courseData.totalCredits) {
-        alert("Please fill in all required fields (Course Code, Title, and Credits) before saving.");
+        alert("Please fill in all required fields.");
         return;
       }
 
-      const courseToSave = {
-        course_code: courseData.courseCode,
-        course_title: courseData.courseTitle,
-        total_credits: parseInt(courseData.totalCredits),
-        status: courseData.status,
-        assignedLessons: assignedLessons.map(l => l.lesson_id)
-      };
+      const courseToSave = buildCoursePayload("draft"); 
+
       const response = await fetch("http://localhost:5000/api/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(courseToSave)
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to save course");
       }
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to publish course");
-      }
-      alert("Course saved successfully!");
+
+      alert("Course saved as draft!");
       navigate("/courses");
     } catch (error) {
       console.error("Error saving course:", error);
-      alert("Failed to save course. Please try again.");
+      alert(error.message);
     }
   };
+
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -310,7 +304,7 @@ function CreateCourse() {
               <div className="form-group">
                 <label>Created By:</label>
                 <span className="readonly-field">
-                  {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
+                  {user ? user.instr_user_id : "Unknown"}
                 </span>
               </div>
             </div>

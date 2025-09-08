@@ -3,10 +3,8 @@ import Login from "./pages/login";
 import Lessons from "./pages/lessons";
 import Courses from "./pages/Courses";
 import CourseDetails from "./pages/CourseDetails";
-<<<<<<< HEAD
 import CreateCourse from "./pages/CreateCourse";
 
-=======
 import Students from "./pages/students";
 import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";
@@ -48,18 +46,15 @@ function Unauthorized() {
     </div>
   );
 }
->>>>>>> 12ab597337e4c053431a32501dc41fb94d6fb5f0
 
 function App() {
   return (
       <Routes>
-<<<<<<< HEAD
         <Route path="/" element={<Login />} />
         <Route path="/lessons" element={<Lessons />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:courseId" element={<CourseDetails />} />
         <Route path="/courses/create" element={<CreateCourse />} />
-=======
         <Route element={<RootLayout />}>
           <Route path="/" element={<Navigate to="/courses" />} />
           <Route path="/lessons" element={<Lessons />} />
@@ -71,7 +66,6 @@ function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
->>>>>>> 12ab597337e4c053431a32501dc41fb94d6fb5f0
       </Routes>
   );
 }
