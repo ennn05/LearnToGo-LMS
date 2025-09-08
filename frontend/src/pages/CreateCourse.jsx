@@ -28,8 +28,11 @@ function CreateCourse() {
       return;
     }
     const data = await response.json();
-    console.log("Lessons fetched:", data);
-    setAvailableLessons(Array.isArray(data) ? data : []);
+    const lessonsFetched = data.data;
+    console.log("Lessons fetched:", lessonsFetched);
+    // console.log(lessonsFetched.filter(lesson => lesson.lesson_status == 'published') );
+    setAvailableLessons(lessonsFetched.filter(lesson => lesson.lesson_status == 'published'));
+    console.log(availableLessons);
   } catch (error) {
     console.error("Error fetching lessons:", error);
     setAvailableLessons([]); // fallback
@@ -58,8 +61,10 @@ function CreateCourse() {
     const { name, value } = e.target;
     setCourseData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
+      totalCredits: assignedLessons.reduce((sum, lesson) => lesson.lesson_credit + sum, 0)
     }));
+    
   };
 
   const handleStatusChange = (newStatus) => {
@@ -136,17 +141,18 @@ function CreateCourse() {
   const handleSaveCourse = async () => {
     try {
       // Validate required fields
-      if (!courseData.courseCode || !courseData.courseTitle || !courseData.totalCredits) {
+      if (!courseData.courseCode || !courseData.courseTitle) {
         alert("Please fill in all required fields (Course Code, Title, and Credits) before saving.");
         return;
       }
 
       const courseToSave = {
-        course_code: courseData.courseCode,
-        course_title: courseData.courseTitle,
-        total_credits: parseInt(courseData.totalCredits),
+        code: courseData.courseCode,
+        title: courseData.courseTitle,
         status: courseData.status,
-        assignedLessons: assignedLessons.map(l => l.lesson_id)
+        creator: user.user_id,
+        credit: courseData.totalCredits,
+        lessons: assignedLessons.map(l => l.lesson_id)
       };
       const response = await fetch("http://localhost:5000/api/courses", {
         method: "POST",
@@ -197,7 +203,7 @@ function CreateCourse() {
             <div className="name">
               {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
-            <div className="role">Instructor</div>
+            <div className="role">{user?.user_role ?? "Instructor"}</div>
           </div>
         </div>
 
@@ -223,7 +229,7 @@ function CreateCourse() {
           </button>
           <button
             className={activePage === "students" ? "active" : ""}
-            onClick={() => setActivePage("students")}
+            onClick={() => navigate("/students")}
           >
             Students
           </button>
@@ -308,13 +314,16 @@ function CreateCourse() {
             <div className="form-row">
               <div className="form-group">
                 <label>Total Credits:</label>
-                <input
+                {/* <input
                   type="number"
                   name="totalCredits"
                   value={courseData.totalCredits}
                   onChange={handleInputChange}
                   placeholder="e.g., 3"
-                />
+                /> */}
+                <span className="readonly-field">
+                  {courseData.totalCredits}
+                </span>
               </div>
               <div className="form-group">
                 <label>Created By:</label>
