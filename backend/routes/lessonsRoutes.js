@@ -1,5 +1,5 @@
 // import express from 'express';
-// import { authenticate, authorize } from '../middleware/authMiddleware.js';
+import { authenticate, authorize } from '../middleware/authMiddleware.js';
 // import { getLesson } from '../controllers/lessonControllers.js';
 // import sql from '../db.js';
 
@@ -55,7 +55,7 @@ import {
 const router = express.Router();
 
 router.get("/", getLessons);
-router.get("/instructor", getLessons); 
+router.get("/instructor", authenticate, getLessonsByInstructor); 
 router.get("/:id", getLesson);
 router.post("/", addLesson);
 router.put("/:id", editLesson);

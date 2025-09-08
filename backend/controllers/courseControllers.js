@@ -45,7 +45,7 @@ export const getCourse = async (req, res) => {
 };
 
 export const addCourse = async (req, res) => {
-    const { code, title, creator, lessons  } = req.body;
+    const { code, title, creator, lessons, status  } = req.body;
     try {
         if (!code || !title)
         {
@@ -69,14 +69,14 @@ export const addCourse = async (req, res) => {
             date_created: today,
             date_updated: today,
             creator,
-            status: 'draft',
+            status
         };
 
         const course = await createCourse(courseData);
         if (course) {
             try {
                 lessons.forEach(element => {
-                    addCourseLesson(code, element.lesson_id);
+                    addCourseLesson(code, element);
                 });
 
             } catch(error)

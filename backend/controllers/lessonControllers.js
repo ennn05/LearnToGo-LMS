@@ -1,4 +1,4 @@
-import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson} from "../models/lesson.js";
+import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson, createLesson} from "../models/lesson.js";
 export const getLessons = async (req, res) => {
     try {
         const lessons = await getAllLessons();
@@ -27,13 +27,17 @@ export const getLesson = async (req, res) => {
 };
 
 export const getLessonsByInstructor = async (req, res) => {
-    const { instructorId } = req.params;
+  console.log("REQ USR",req.user);
+    const { id } = req.user;
     try {
-        const lessons = await getLessonByInstructor(instructorId);
-        if (lessons.length > 0) {
-            return res.status(200).json({ success: true, data: lessons });
-        }
-        return res.status(404).json({ success: false, message: "No lessons found for this instructor." });
+        const lessons = await getLessonByInstructor(id);
+        console.log(lessons);
+        // if (lessons.length > 0) {
+        //     return res.status(200).json({ success: true, data: lessons });
+        // }
+        // return res.status(404).json({ success: false, message: "No lessons found for this instructor." });
+
+        return res.status(200).json({ success: true, data: lessons });
     }
     catch (error) {
         console.error("Error fetching lessons by instructor:", error);
@@ -43,17 +47,19 @@ export const getLessonsByInstructor = async (req, res) => {
 
 // Add lesson
 export const addLesson = async (req, res) => {
-  const { title, description, objective, estimatedTime } = req.body;
+  const { lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_credit, lesson_designer } = req.body;
   try {
     const today = new Date().toISOString().split("T")[0];
     const lessonData = {
-      title,
-      description,
-      objective,
-      estimatedTime,
-      date_created: today,
-      date_updated: today,
-      status: "draft"
+      lesson_title,
+      lesson_desc,
+      lesson_obj,
+      lesson_effort_per_week,
+      lesson_date_created: today,
+      lesson_date_updated: today,
+      lesson_credit: lesson_credit,
+      lesson_designer: lesson_designer,
+      lesson_status: "draft"
     };
     const newLesson = await createLesson(lessonData);
     return res.status(201).json({ success: true, data: newLesson });

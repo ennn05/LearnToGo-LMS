@@ -72,9 +72,9 @@ export const getLessonByInstructor = async (instructorId) => {
 export const createLesson = async (lessonData) => {
   const lesson = await sql`
     INSERT INTO "LMS".lesson 
-      (lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_date_created, lesson_date_updated, lesson_status)
+      (lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_date_created, lesson_date_updated, lesson_credit, lesson_designer, lesson_status)
     VALUES 
-      (${lessonData.title}, ${lessonData.description}, ${lessonData.objective}, ${lessonData.estimatedTime}, ${lessonData.date_created}, ${lessonData.date_updated}, ${lessonData.status})
+      (${lessonData.lesson_title}, ${lessonData.lesson_desc}, ${lessonData.lesson_obj}, ${lessonData.lesson_effort_per_week}, ${lessonData.lesson_date_created}, ${lessonData.lesson_date_updated}, ${lessonData.lesson_credit}, ${lessonData.lesson_designer}, ${lessonData.lesson_status})
     RETURNING *;
   `;
   return lesson[0];
