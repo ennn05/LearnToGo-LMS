@@ -251,7 +251,6 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-top: 30px;
   margin-bottom: 20px;
 }
 
@@ -292,12 +291,12 @@
 
 .lesson-details p {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: #555;
 }
 
-.label span {
-  font-weight: 600;
+.label {
+  font-weight: bold;
   color: #333;
   margin-right: 0.3rem;
 }

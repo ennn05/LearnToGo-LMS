@@ -10,6 +10,7 @@ function LessonDetails() {
   const [user, setUser] = useState(null);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
   const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
@@ -46,6 +47,24 @@ function LessonDetails() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
+  };
+
+  const editLesson = async (lessonData) => {
+    try {
+      const {data: res} = await api.put(`lessons/${lessonId}`, lessonData);
+
+      if (!res.success) {
+        console.error("Server responded with:", res.message);
+        throw new Error("Failed to edit lesson");
+      }
+
+      console.log("Lesson updated:", res.data);
+      await fetchLessonDetails();
+      return res.data;
+    } catch (error) {
+      console.error("Error editing lesson:", error);
+      alert("Failed to edit lesson. Please try again.");
+    }
   };
 
   const handleDeleteLesson = async () => {
@@ -172,7 +191,7 @@ function LessonDetails() {
 
           {/* Action Buttons */}
           <div className="course-footer">
-            <button className="btn-edit">
+            <button className="btn-edit" onClick={() => setShowModal(true)}>
               Edit
             </button>
             <button className="btn-delete" onClick={() => setDeleteConfirm(true)}>
@@ -181,6 +200,75 @@ function LessonDetails() {
           </div>
         </div>
       </div>
+       
+      {/* Modal */}
+       {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Edit Lesson</h3>
+            <form onSubmit={async (e) => {
+                e.preventDefault();
+
+                const lessonData = {
+                  title: e.target.title.value,
+                  description: e.target.description.value,
+                  objective: e.target.objective.value,
+                  estimatedTime: e.target.estimatedTime.value,
+                };
+
+                console.log("Editing lesson")
+                // TODO: Send lessonData to backend
+                const result = await editLesson(lessonData);
+                
+
+                console.log("Lesson edited:", lessonData);
+                alert("Lesson change appended!");
+
+                setShowModal(false);
+              }}
+          > 
+              <div className="form-group">
+                <label>Lesson Title</label>
+                <input type="text" name="title" required defaultValue={lesson.lesson_title}/>
+              </div>
+
+              <div className="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="2" required defaultValue={lesson.lesson_desc}/>
+              </div>
+
+              <div className="form-group">
+                <label>Objective</label>
+                <textarea name="objective" rows="2" required defaultValue={lesson.lesson_obj}/>
+              </div>
+
+              <div className="form-group-inline">
+                <label>Estimated Time (days)</label>
+                <input
+                  type="text"
+                  name="estimatedTime"
+                  placeholder="e.g. 30"
+                  required
+                  defaultValue={lesson.lesson_estimated_time ? lesson.lesson_estimated_time : 0}
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button type="submit">Save</button>
+                <button
+                  type="button"
+                  className="cancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
       
       {/* Delete Lesson Confirmation */}
       {DeleteConfirm && (
