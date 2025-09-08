@@ -27,7 +27,7 @@ function LessonDetails() {
       }
       const data = await res.json();
       console.log("Lesson details:", data.data);
-      console.log("Lesson date", data.data.date_created);
+      console.log("Lesson date", data.data.lesson_date_created);
       console.log(data.data.lesson_prereq.split("\n"));
       setLesson(data.data);
     } catch (err) {
@@ -58,7 +58,7 @@ function LessonDetails() {
       const updateLessonData = {...lesson, ...lessonData};
       console.log(updateLessonData);
       const {data: res} = await api.put(`lessons/${lessonId}`, updateLessonData);
-
+      console.log(res);
       if (!res.success) {
         console.error("Server responded with:", res.message);
         throw new Error("Failed to edit lesson");

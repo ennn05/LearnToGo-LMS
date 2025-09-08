@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
+// import useStore from "../store";
 import "../styles/Lessons.css";
 
 function Lessons() {
   const [activePage, setActivePage] = useState("lessons");
+  // const user = useStore((state) => state);
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [lessons, setLessons] = useState([]);
@@ -13,9 +15,17 @@ function Lessons() {
 
   const fetchLessons = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/lessons/instructor");
-      const data = await response.json();
-      setLessons(data.data);
+      // const response = await fetch(`http://localhost:5000/api/lessons/instructor/${user.user_id}`);
+      const {data: res} = await api.get("lessons/instructor");
+      console.log(res);
+      if (!res.success) {
+        console.error("Server responded with:", res.message);
+        throw new Error("Failed to edit lesson");
+      }
+
+      // const data = await response.json();
+      console.log(res.data);
+      setLessons(res.data);
     } catch (err) {
       console.error("Failed to fetch lessons:", err);
     } finally {
@@ -37,12 +47,22 @@ function Lessons() {
     //     console.error("Failed to fetch lessons:", err);
     //   }
     // };
+    const storedUser = localStorage.getItem("user");
+    console.log(storedUser);
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      console.log(user);
+    }
     fetchLessons();
   }, []);
 
     const addLesson = async (lessonData) => {
     try {
-      const {data: res} = await api.post("lessons", lessonData);
+      const createLessonData = {
+        ...lessonData,
+        lesson_designer: user.user_id,
+      }
+      const res = await api.post("lessons", lessonData);
 
       if (!res.success) {
         console.error("Server responded with:", res.message);
@@ -58,12 +78,12 @@ function Lessons() {
     }
   };
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -146,10 +166,11 @@ function Lessons() {
                   {/* Details in one row */}
                   <div className="lesson-details">
                     <p><span className="label">ID:</span> {lesson.lesson_id}</p>
-                    <p><span className="label">Status:</span> {lesson.status || "Draft"}</p>
-                    <p><span className="label">Created by:</span> {lesson.created_by || "Unknown"}</p>
-                    <p><span className="label">Classroom:</span> {lesson.classroom || "Not assigned"}</p>
-                    <p><span className="label">Students:</span> {lesson.students_count || 0}</p>
+                    <p><span className="label">Status:</span> {lesson.lesson_status || "Draft"}</p>
+                    <p><span className="label">Created by:</span> {lesson.lesson_designer || "Unknown"}</p>
+                    {/* <p><span className="label">Classroom:</span> {lesson.classroom || "Not assigned"}</p>
+                    <p><span className="label">Students:</span> {lesson.students_count || 0}</p> */}
+                    <p><span className="label">Lesson credit:</span> {lesson.lesson_credit || 0} points</p>
                   </div>
                 </div>
               ))}
@@ -172,10 +193,11 @@ function Lessons() {
                   e.preventDefault();
 
                   const lessonData = {
-                    title: e.target.title.value,
-                    description: e.target.description.value,
-                    objective: e.target.objective.value,
-                    estimatedTime: e.target.estimatedTime.value,
+                    lesson_title: e.target.title.value,
+                    lesson_desc: e.target.description.value,
+                    lesson_obj: e.target.objective.value,
+                    lesson_effort_per_week: e.target.estimatedTime.value,
+                    lesson_credit: e.target.lessonCredit.value,
                   };
 
                   console.log("Adding lesson")
@@ -207,9 +229,19 @@ function Lessons() {
                 <div className="form-group-inline">
                   <label>Estimated Time (days)</label>
                   <input
-                    type="text"
+                    type="number"
                     name="estimatedTime"
                     placeholder="e.g. 30"
+                    required
+                  />
+                </div>
+
+                <div className="form-group-inline">
+                  <label>Lesson Credit (points)</label>
+                  <input
+                    type="nunmber"
+                    name="lessonCredit"
+                    placeholder="e.g. 6"
                     required
                   />
                 </div>

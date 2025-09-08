@@ -101,8 +101,8 @@ function Login() {
 
   return (
     <div className="container">
-        <h1 class="logo">
-          <span class="logo-gray">LearnTo</span><span class="logo-blue">Go</span>
+        <h1 className="logo">
+          <span className="logo-gray">LearnTo</span><span className="logo-blue">Go</span>
         </h1>
       <div className="tabs">
         <div
