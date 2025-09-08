@@ -277,11 +277,14 @@ function LessonDetails() {
             <h3>Reading List</h3>
             <div className="scroll-list">
               {lesson.lesson_reading_list?.length > 0 ? (
-                lesson.lesson_reading_list.map((item, idx) => (
+                lesson.lesson_reading_list.split("\n").map((item, idx) => (
                   <div key={idx} className="list-item">
                     {item}
                   </div>
                 ))
+                // <div className="list-item">
+                //     {lesson.lesson_reading_list}
+                //   </div>
               ) : (
                 <p className="no-items">No reading materials yet.</p>
               )}
@@ -330,23 +333,24 @@ function LessonDetails() {
                 e.preventDefault();
 
                 const readingData = {
-                  item: e.target.item.value,
+                  lesson_reading_list: e.target.readingItem.value,
                 };
 
                 console.log("Adding reading")
                 // TODO: Send readingData to backend
-                const result = await addReading(readingData);
+                const result = await editLesson(readingData);
                 console.log("Reading added:", readingData);
                 alert("Reading added!");
                 setShowReadingModal(false);
             }}>
               <div className="form-group">
                 <label>Add a reading item: </label>
-                <input type="text" name="item" required />
+                {/* <input type="text" name="readingItem" defaultValue={lesson.lesson_reading_list} /> */}
+                <textarea name="readingItem" rows="6" defaultValue={lesson.lesson_reading_list}/>
               </div>
               <div className="modal-actions">
                 <button type="submit">Add Reading</button>
-                <button onClick={() => setShowReadingModal(false)}>Cancel</button>
+                <button className="cancel" onClick={() => setShowReadingModal(false)}>Cancel</button>
               </div>
             </form>
           </div>
