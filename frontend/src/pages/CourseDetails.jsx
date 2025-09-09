@@ -15,14 +15,14 @@ function CourseDetails() {
   const [error, setError] = useState(null);
   const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
-  // Fetch course details from mock API
+  // Fetch course details from API
   const fetchCourseDetails = async () => {
     try {
+      // TODO: Replace with api wrapper instead of fetch
       // const data = await mockCourseAPI.getCourseById(courseId);
       // const data = await api.get(`courses/instructor/${courseId}`);
       const res = await fetch(`http://localhost:5000/api/courses/instructor/${courseId}`);
-      if (!res.ok)
-      {
+      if (!res.ok) {
         console.error("Error fetching courses:", res);
       }
       const data = await res.json();
@@ -39,6 +39,7 @@ function CourseDetails() {
   };
 
   useEffect(() => {
+    // Load user from localStorage (fallback to mock user if none found)
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -67,59 +68,62 @@ function CourseDetails() {
     // TODO: Implement publish course functionality
     console.log("Publish course clicked");
 
-    const courseUpdateData = {...course, course_status: 'published'};
+    const courseUpdateData = { ...course, course_status: "published" };
     console.log(courseUpdateData);
 
-    const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-      method: "PUT",
+    try {
+      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(courseUpdateData),
-    })
+      });
 
-    if (!res.ok)
-      {
-        console.error("Error fetching courses:", res);
+      if (!res.ok) {
+        console.error("Error publishing course:", res);
       }
-      const data = await res.json();
 
+      const data = await res.json();
       console.log("Course published:", data.data);
       setCourse(data.data);
-    
+    } catch (error) {
+      console.error("Error publishing course:", error);
+    }
   };
 
   const handleArchiveCourse = async () => {
     // TODO: Implement archive course functionality
     console.log("Archive course clicked");
 
-    const courseUpdateData = {...course, course_status: 'archived'};
-    // console.log(courseUpdateData);
-    // const lessons = courseUpdateData.lessons.map(element => element);
-    // courseUpdateData.lessons = lessons;
+    const courseUpdateData = { ...course, course_status: "archived" };
     console.log(courseUpdateData);
 
-    const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-      method: "PUT",
+    try {
+      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(courseUpdateData),
-    })
+      });
 
-    if (!res.ok)
-      {
-        console.error("Error fetching courses:", res);
+      if (!res.ok) {
+        console.error("Error archiving course:", res);
       }
-      const data = await res.json();
 
+      const data = await res.json();
       console.log("Course archived:", data.data);
       setCourse(data.data);
+    } catch (error) {
+      console.error("Error archiving course:", error);
+    }
   };
 
   const handleLessonClick = (lessonId) => {
+    // Navigate to lesson details page
     navigate(`/lessons/${lessonId}`);
-  }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -128,20 +132,24 @@ function CourseDetails() {
 
   const handleDeleteCourse = async () => {
     try {
+      // Send DELETE request
       const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
         method: "DELETE",
       });
+
       if (!res.ok) {
         alert("Failed to delete course.");
         return;
       }
-      navigate("/courses");
+
+      navigate("/courses"); // Redirect back after deletion
     } catch (error) {
       alert("Error deleting course.");
       console.error(error);
     }
   };
 
+  // Loading state
   if (loading) {
     return (
       <div className="flex">
@@ -161,6 +169,7 @@ function CourseDetails() {
     );
   }
 
+  // Error state
   if (error || !course) {
     return (
       <div className="flex">
@@ -168,7 +177,9 @@ function CourseDetails() {
           <div className="profile">
             <div className="avatar"></div>
             <div className="info">
-              <div className="name">{user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</div>
+              <div className="name">
+                {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
+              </div>
               <div className="role">{user.user_role}</div>
             </div>
           </div>
@@ -184,6 +195,7 @@ function CourseDetails() {
     );
   }
 
+  // Main course details UI
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -200,24 +212,13 @@ function CourseDetails() {
 
         {/* Navigation Menu */}
         <nav className="nav-menu">
-          <button
-            className="active"
-            onClick={handleBackToCourses}
-          >
+          <button className="active" onClick={handleBackToCourses}>
             Courses
           </button>
-          <button onClick={() => navigate("/lessons")}>
-            Lessons
-          </button>
-          <button onClick={() => console.log("Classrooms clicked")}>
-            Classrooms
-          </button>
-          <button onClick={() => console.log("Students clicked")}>
-            Students
-          </button>
-          <button onClick={() => console.log("Reports clicked")}>
-            Reports & Statistics
-          </button>
+          <button onClick={() => navigate("/lessons")}>Lessons</button>
+          <button onClick={() => console.log("Classrooms clicked")}>Classrooms</button>
+          <button onClick={() => console.log("Students clicked")}>Students</button>
+          <button onClick={() => console.log("Reports clicked")}>Reports & Statistics</button>
           <button className="logout-btn" onClick={handleLogout}>
             Log Out
           </button>
@@ -234,21 +235,25 @@ function CourseDetails() {
           {/* Course Status and Actions */}
           <div className="course-header">
             <div className="course-status">
-              <span className={`status-badge ${course.course_status || 'draft'}`}>
-                {course.course_status || 'Draft'}
+              <span className={`status-badge ${course.course_status || "draft"}`}>
+                {course.course_status || "Draft"}
               </span>
             </div>
             <div className="course-actions">
-              {course.course_status !== 'published'? (
+              {course.course_status !== "published" ? (
                 <button className="btn-publish" onClick={handlePublishCourse}>
                   Publish
                 </button>
-              ) : ''}              
-              {course.course_status !== 'archived'? (
+              ) : (
+                ""
+              )}
+              {course.course_status !== "archived" ? (
                 <button className="btn-archive" onClick={handleArchiveCourse}>
                   Archive
                 </button>
-                ) : ''}    
+              ) : (
+                ""
+              )}
             </div>
           </div>
 
@@ -284,7 +289,7 @@ function CourseDetails() {
           <div className="lessons-section">
             <h3>Lessons Assigned</h3>
             <div className="lessons-container">
-              {course.lessons?.length === 0? (
+              {course.lessons?.length === 0 ? (
                 <p className="no-lessons">No lessons assigned yet.</p>
               ) : (
                 <div className="lessons-grid">
@@ -295,16 +300,17 @@ function CourseDetails() {
                       onClick={() => handleLessonClick(lesson.lesson_id)}
                     >
                       <h4 className="lesson-title">{lesson.lesson_title}</h4>
-                      <div className="lesson-credits">{lesson.lesson_credit?? 0} credits</div>
+                      <div className="lesson-credits">
+                        {lesson.lesson_credit ?? 0} credits
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
-              
             </div>
           </div>
 
-          {/* Edit Button */}
+          {/* Edit/Delete Buttons */}
           <div className="course-footer">
             <button className="btn-edit" onClick={handleEditCourse}>
               Edit
@@ -322,8 +328,21 @@ function CourseDetails() {
           <div className="delete-confirmation-modal">
             <h3>Are you sure you want to delete this course?</h3>
             <div className="delete-confirmation-actions">
-              <button onClick={() => { setDeleteConfirm(false); handleDeleteCourse(); }} className="btn-delete">Delete</button>
-              <button onClick={() => setDeleteConfirm(false)} className="delete-confirmation-btn-cancel">Cancel</button>
+              <button
+                onClick={() => {
+                  setDeleteConfirm(false);
+                  handleDeleteCourse();
+                }}
+                className="btn-delete"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(false)}
+                className="delete-confirmation-btn-cancel"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
