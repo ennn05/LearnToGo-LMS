@@ -61,5 +61,10 @@ CREATE TABLE LMS.lesson (
 CREATE TABLE LMS.course_lesson (
     cl_id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     cl_course_code CHAR(10) NOT NULL,
-    cl_lesson_id   INTEGER NOT NULL
+    cl_lesson_id   INTEGER NOT NULL,
+    CONSTRAINT course_cl_fkey FOREIGN KEY (cl_course_code)
+        REFERENCES LMS.course (course_code),
+    CONSTRAINT lesson_cl_fkey FOREIGN KEY (cl_lesson_id)
+        REFERENCES LMS.lesson (lesson_id),
+    CONSTRAINT course_lesson_n_key UNIQUE (cl_course_code, cl_lesson_id)
 );
