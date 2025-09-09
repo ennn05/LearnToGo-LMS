@@ -1,52 +1,58 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/CreateCourse.css"; // ✅ renamed stylesheet for consistency
+import "../styles/CreateCourse.css"; // Stylesheet for page
 
 function CreateCourse() {
+  // State for sidebar navigation
   const [activePage, setActivePage] = useState("courses");
+
+  // User information (fetched from localStorage or mock user)
   const [user, setUser] = useState(null);
+
+  // Course data with default status as "draft"
   const [courseData, setCourseData] = useState({
     courseCode: "",
     courseTitle: "",
     totalCredits: "",
     status: "draft"
   });
+
+  // Lessons management
   const [assignedLessons, setAssignedLessons] = useState([]);
   const [availableLessons, setAvailableLessons] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
-  // Fetch available lessons
-  // Instead of crashing, log the error and set empty array
+  // Fetch published lessons from backend
   const fetchLessons = async () => {
-  try {
-    const response = await fetch("http://localhost:5000/api/lessons");
-    if (!response.ok) {
-      console.error("API error:", response.status, response.statusText);
-      setAvailableLessons([]); // fallback to empty list
-      return;
+    try {
+      const response = await fetch("http://localhost:5000/api/lessons");
+      if (!response.ok) {
+        console.error("API error:", response.status, response.statusText);
+        setAvailableLessons([]);
+        return;
+      }
+      const data = await response.json();
+      setAvailableLessons(
+        data.data.filter(lesson => lesson.lesson_status === "published")
+      );
+    } catch (error) {
+      console.error("Error fetching lessons:", error);
+      setAvailableLessons([]);
+    } finally {
+      setLoading(false);
     }
-    const data = await response.json();
-    const lessonsFetched = data.data;
-    console.log("Lessons fetched:", lessonsFetched);
-    // console.log(lessonsFetched.filter(lesson => lesson.lesson_status == 'published') );
-    setAvailableLessons(lessonsFetched.filter(lesson => lesson.lesson_status == 'published'));
-    console.log(availableLessons);
-  } catch (error) {
-    console.error("Error fetching lessons:", error);
-    setAvailableLessons([]); // fallback
-  } finally {
-    setLoading(false);
-  }
   };
 
+  // Load user and lessons on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
-      // For testing: create a mock user if no user is logged in
+      // Mock user for testing
       setUser({
         user_fname: "Test",
         user_lname: "User",
@@ -57,6 +63,7 @@ function CreateCourse() {
     fetchLessons();
   }, []);
 
+  // Update course data when inputs change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCourseData(prev => ({
@@ -64,9 +71,9 @@ function CreateCourse() {
       [name]: value,
       totalCredits: assignedLessons.reduce((sum, lesson) => lesson.lesson_credit + sum, 0)
     }));
-    
   };
 
+  // Change course status (draft, published, archived)
   const handleStatusChange = (newStatus) => {
     setCourseData(prev => ({
       ...prev,
@@ -74,43 +81,26 @@ function CreateCourse() {
     }));
   };
 
+  // Publish course (validate required fields then save with status "published")
   const handlePublishCourse = async () => {
     try {
-      // First validate required fields
       if (!courseData.courseCode || !courseData.courseTitle || !courseData.totalCredits) {
         alert("Please fill in all required fields (Course Code, Title, and Credits) before publishing.");
         return;
       }
 
-      // Update status to published
-      const publishedCourseData = {
-        ...courseData,
-        status: 'published'
-      };
+      const publishedCourseData = { ...courseData, status: "published" };
       setCourseData(publishedCourseData);
 
-      // Save the course with published status
       const courseToSave = {
         course_code: publishedCourseData.courseCode,
         course_title: publishedCourseData.courseTitle,
         total_credits: parseInt(publishedCourseData.totalCredits),
-        status: 'published',
+        status: "published",
         assignedLessons: assignedLessons.map(l => l.lesson_id)
       };
 
       console.log("Publishing course:", courseToSave);
-      
-      // TODO: Replace with actual API call
-      // const response = await fetch("http://localhost:5000/api/courses", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(courseToSave)
-      // });
-      
-      // if (!response.ok) {
-      //   throw new Error("Failed to publish course");
-      // }
-      
       alert("Course published successfully!");
       navigate("/courses");
     } catch (error) {
@@ -119,28 +109,30 @@ function CreateCourse() {
     }
   };
 
-
+  // Add a lesson to course (avoid duplicates)
   const addLessonToCourse = (lesson) => {
     if (!assignedLessons.find(l => l.lesson_id === lesson.lesson_id)) {
       setAssignedLessons(prev => [...prev, lesson]);
     }
   };
 
+  // Remove a lesson from course
   const removeLessonFromCourse = (lessonId) => {
     setAssignedLessons(prev => prev.filter(l => l.lesson_id !== lessonId));
   };
 
+  // Filter lessons based on search input
   const filteredLessons = Array.isArray(availableLessons)
-   ? availableLessons.filter(
+    ? availableLessons.filter(
         (lesson) =>
-         lesson.lesson_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         lesson.lesson_desc?.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+          lesson.lesson_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          lesson.lesson_desc?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     : [];
 
+  // Save course as draft
   const handleSaveCourse = async () => {
     try {
-      // Validate required fields
       if (!courseData.courseCode || !courseData.courseTitle) {
         alert("Please fill in all required fields (Course Code, Title, and Credits) before saving.");
         return;
@@ -154,21 +146,18 @@ function CreateCourse() {
         credit: courseData.totalCredits,
         lessons: assignedLessons.map(l => l.lesson_id)
       };
+
       const response = await fetch("http://localhost:5000/api/courses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(courseToSave)
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to save course");
       }
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to publish course");
-      }
+
       alert("Course saved successfully!");
       navigate("/courses");
     } catch (error) {
@@ -177,15 +166,12 @@ function CreateCourse() {
     }
   };
 
-  const handleCancel = async () => {
-    try {
-      navigate("/courses");
-    } catch (error) {
-      console.error("Error cancelling adding course:", error);
-      alert("Failed to cancel course. Please try again.");
-    }
-  }
+  // Cancel course creation and return to courses page
+  const handleCancel = () => {
+    navigate("/courses");
+  };
 
+  // Log out user and return to login page
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
@@ -260,15 +246,12 @@ function CreateCourse() {
               </span>
             </div>
             <div className="course-actions">
-              <button 
-                className="btn-publish" 
-                onClick={handlePublishCourse}
-              >
+              <button className="btn-publish" onClick={handlePublishCourse}>
                 Publish
               </button>
               <button 
                 className="btn-archive" 
-                onClick={() => handleStatusChange('archived')}
+                onClick={() => handleStatusChange("archived")}
               >
                 Archive
               </button>
@@ -314,16 +297,7 @@ function CreateCourse() {
             <div className="form-row">
               <div className="form-group">
                 <label>Total Credits:</label>
-                {/* <input
-                  type="number"
-                  name="totalCredits"
-                  value={courseData.totalCredits}
-                  onChange={handleInputChange}
-                  placeholder="e.g., 3"
-                /> */}
-                <span className="readonly-field">
-                  {courseData.totalCredits}
-                </span>
+                <span className="readonly-field">{courseData.totalCredits}</span>
               </div>
               <div className="form-group">
                 <label>Created By:</label>
@@ -385,11 +359,11 @@ function CreateCourse() {
                         <p>{lesson.lesson_desc}</p>
                       </div>
                       <button
-                        className={`add-btn ${assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? 'added' : ''}`}
+                        className={`add-btn ${assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? "added" : ""}`}
                         onClick={() => addLessonToCourse(lesson)}
                         disabled={assignedLessons.find(l => l.lesson_id === lesson.lesson_id)}
                       >
-                        {assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? '✓' : '+'}
+                        {assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? "✓" : "+"}
                       </button>
                     </div>
                   ))
@@ -398,7 +372,7 @@ function CreateCourse() {
             </div>
           </div>
 
-          {/* Save Button */}
+          {/* Save and Cancel */}
           <div className="save-section">
             <button className="btn-save" onClick={handleSaveCourse}>
               Save
