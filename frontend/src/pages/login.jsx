@@ -1,109 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css"; 
 import useStore from "../store/index.js";
-import { useEffect } from "react";
 import api from "../libs/apiCalls.js";  
 
 function Login() {
+  // State for switching between login/register forms
   const [form, setForm] = useState("login");
+
+  // Login state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPwd, setLoginPwd] = useState("");
+  const [loginResMsg, setLoginMsg] = useState("");
+
+  // Registration state
   const [regEmail, setRegEmail] = useState("");
   const [regPwd, setRegPwd] = useState("");
-  const [loginResMsg, setLoginMsg] = useState("");
   const [regResMsg, setRegMsg] = useState("");
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
   const [pin, setPin] = useState("");
   const [role, setRole] = useState("student");
-  const {user, setCredentials} = useStore((state) => state);
+
+  // Global store
+  const { user, setCredentials } = useStore((state) => state);
 
   const navigate = useNavigate();
 
+  /** Redirect to courses if already logged in */
   useEffect(() => {
     if (user) {
       navigate("/courses");
     }
-  }, [user]);
+  }, [user, navigate]);
 
-  
-  // Function to handle login form submission
-  const handleLogin = async(e) => {
+  /** Handle login form submission */
+  const handleLogin = async (e) => {
     e.preventDefault();
-
-    // const res = await fetch("/api/auth/login", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ email: loginEmail, password: loginPwd }),
-    // });
-
-    // const data = await res.json();
-    // if (res.ok) {
-    //   console.log("Login successful", data.user);
-    //   localStorage.setItem("user", JSON.stringify(data.user));
-    //   navigate("/lessons"); // use React Router
-    // } else {
-    //   setLoginMsg("Invalid email or password");
-    // }
-
     try {
+      const { data: res } = await api.post("/auth/login", {
+        email: loginEmail,
+        password: loginPwd,
+      });
 
-      const { data : res } = await api.post("/auth/login", { email: loginEmail, password: loginPwd });
-
-      if (res?.user)
-      {
+      if (res?.user) {
         console.log("Login successful", res.user);
-        setLoginMsg("Login successful");
-        const userInfo = {...res.user, token: res.token };
+        setLoginMsg(" Login successful");
+
+        const userInfo = { ...res.user, token: res.token };
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
-        setTimeout(() => {
-          navigate("/courses");
-        }, 2000);
-      }
-      else {
-        setLoginMsg("NO  USER?");
+
+        setTimeout(() => navigate("/courses"), 2000);
+      } else {
+        setLoginMsg(" No user found");
       }
     } catch (error) {
       console.error("Login error:", error);
-      setLoginMsg(`❌ Login failed: ${error.response?.data?.message || ''}`);
+      setLoginMsg(` Login failed: ${error.response?.data?.message || ""}`);
     }
   };
 
-  const handleRegistration = async(e) => {
+  /** Handle registration form submission */
+  const handleRegistration = async (e) => {
     e.preventDefault();
-
     try {
+      const { data: res } = await api.post("/auth/register", {
+        fname,
+        lname,
+        pin,
+        role,
+        email: regEmail,
+        password: regPwd,
+      });
 
-      const { data : res } = await api.post("/auth/register", { fname: fname, lname: lname, pin: pin, role: role, email: regEmail, password: regPwd });
-
-      if (res?.user)
-      {
+      if (res?.user) {
         console.log("Registration successful", res.user);
-        setRegMsg("Registration successful");
-        const userInfo = {...res.user, token: res.token };
+        setRegMsg(" Registration successful");
+
+        const userInfo = { ...res.user, token: res.token };
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
-        setTimeout(() => {
-          navigate("/courses");
-        }, 1500);
-      }
-      else {
-        setRegMsg("NO  USER?");
+
+        setTimeout(() => navigate("/courses"), 1500);
+      } else {
+        setRegMsg(" No user returned");
       }
     } catch (error) {
       console.error("Registration error:", error);
-      setRegMsg(`❌ Registration failed: ${error.response?.data?.message || ''}`);
+      setRegMsg(` Registration failed: ${error.response?.data?.message || ""}`);
     }
-
   };
 
   return (
     <div className="container">
-        <h1 className="logo">
-          <span className="logo-gray">LearnTo</span><span className="logo-blue">Go</span>
-        </h1>
+      {/* Logo */}
+      <h1 className="logo">
+        <span className="logo-gray">LearnTo</span>
+        <span className="logo-blue">Go</span>
+      </h1>
+
+      {/* Tabs */}
       <div className="tabs">
         <div
           className={`tab ${form === "login" ? "active" : ""}`}
@@ -119,6 +116,7 @@ function Login() {
         </div>
       </div>
 
+      {/* Login Form */}
       {form === "login" && (
         <div className="form active">
           <h2>Login</h2>
@@ -126,14 +124,16 @@ function Login() {
             <input
               type="email"
               placeholder="Email"
-              required style={{ width: "310px" }}
+              required
+              style={{ width: "310px" }}
               value={loginEmail}
               onChange={(e) => setLoginEmail(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
-              required style={{ width: "310px" }}
+              required
+              style={{ width: "310px" }}
               value={loginPwd}
               onChange={(e) => setLoginPwd(e.target.value)}
             />
@@ -143,24 +143,59 @@ function Login() {
         </div>
       )}
 
+      {/* Registration Form */}
       {form === "register" && (
         <div className="form active">
           <h2>Register</h2>
           <form onSubmit={handleRegistration}>
-            <input type="text" placeholder="First Name" required style={{ width: "310px" }} value={fname} onChange={(e) => setFname(e.target.value)}
+            <input
+              type="text"
+              placeholder="First Name"
+              required
+              style={{ width: "310px" }}
+              value={fname}
+              onChange={(e) => setFname(e.target.value)}
             />
-            <input type="text" placeholder="Last Name" required style={{ width: "310px" }} value={lname} onChange={(e) => setLname(e.target.value)}
+            <input
+              type="text"
+              placeholder="Last Name"
+              required
+              style={{ width: "310px" }}
+              value={lname}
+              onChange={(e) => setLname(e.target.value)}
             />
-            <input type="text" placeholder="Registration PIN" required style={{ width: "310px" }} value={pin} onChange={(e) => setPin(e.target.value)}
+            <input
+              type="text"
+              placeholder="Registration PIN"
+              required
+              style={{ width: "310px" }}
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
             />
-            <select placeholder="Select Role" required style={{ width: "310px" }} value={role} onChange={(e) => setRole(e.target.value)}
+            <select
+              required
+              style={{ width: "310px" }}
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
             >
               <option value="instructor">Instructor</option>
               <option value="student">Student</option>
             </select>
-            <input type="email" placeholder="Email" required style={{ width: "310px" }} value={regEmail} onChange={(e) => setRegEmail(e.target.value)}
+            <input
+              type="email"
+              placeholder="Email"
+              required
+              style={{ width: "310px" }}
+              value={regEmail}
+              onChange={(e) => setRegEmail(e.target.value)}
             />
-            <input type="password" placeholder="Password" required style={{ width: "310px" }} value={regPwd} onChange={(e) => setRegPwd(e.target.value)}
+            <input
+              type="password"
+              placeholder="Password"
+              required
+              style={{ width: "310px" }}
+              value={regPwd}
+              onChange={(e) => setRegPwd(e.target.value)}
             />
             <button type="submit">Register</button>
           </form>
