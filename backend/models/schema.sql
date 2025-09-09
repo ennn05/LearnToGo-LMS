@@ -8,3 +8,9 @@ CREATE TABLE LMS.user (
     user_role      user_role NOT NULL
 );
 
+-- INSTRUCTOR TABLE
+CREATE TABLE LMS.instructor (
+    inst_user_id   INTEGER PRIMARY KEY,
+    CONSTRAINT user_inst_fkey FOREIGN KEY (inst_user_id)
+        REFERENCES LMS.user (user_id)
+);
