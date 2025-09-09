@@ -46,13 +46,16 @@ function LessonDetails() {
     fetchLessonDetails();
   }, [lessonId]);
 
+  // Navigate back to the lessons page
   const handleBackToLessons = () => navigate("/lessons");
 
+  // Log the user out and navigate to the login page
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
   };
 
+  // Edit the lesson using the API and update the local state
   const editLesson = async (lessonData) => {
     try {
       const updateLessonData = {...lesson, ...lessonData};
@@ -74,9 +77,8 @@ function LessonDetails() {
   };
 
 
-  // --- NEW: Update status ---
+  // Update the lesson status to 'published'
   const handlePublishLesson = async () => {
-    
     console.log("Publish lesson clicked");
     const updatedLesson = { ...lesson, lesson_status: 'published'};
     console.log(updatedLesson);
@@ -97,6 +99,7 @@ function LessonDetails() {
     setLesson(data.data);
   };
 
+  // Update the lesson status to 'archived'
   const handleArchiveLesson = async () => {
     try {
       const updatedLesson = { ...lesson, lesson_status: "archived" };
@@ -116,6 +119,7 @@ function LessonDetails() {
   };
 
 
+  // Delete the lesson from the API and navigate to the lessons page
   const handleDeleteLesson = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
@@ -133,10 +137,16 @@ function LessonDetails() {
   };
 
 
+  // If the component is still loading, display a "Loading lesson..."
+  // message. This prevents the component from attempting to render
+  // a lesson that hasn't been fetched yet.
   if (loading) {
     return <div className="loading">Loading lesson...</div>;
   }
 
+  
+  // If there is an error or the lesson is not found, 
+  // display an error message with a "Back to Lessons" button
   if (error || !lesson) {
     return (
       <div className="error">
@@ -161,6 +171,7 @@ function LessonDetails() {
           </div>
         </div>
 
+        {/* Navigation Menu */}
         <nav className="nav-menu">
           <button onClick={() => navigate("/courses")}>Courses</button>
           <button onClick={() => navigate("/lessons")} className="active">
@@ -183,8 +194,8 @@ function LessonDetails() {
           <h1>Lesson Details</h1>
         </div>
 
+        {/* Lesson Details */}
         <div className="lesson-details-container">
-          {/* Status + Actions (SAME LAYOUT as CourseDetails) */}
           <div className="lesson-header">
             <div className="lesson-status">
               <span
@@ -433,10 +444,8 @@ function LessonDetails() {
                 };
 
                 console.log("Editing lesson")
-                // TODO: Send lessonData to backend
                 const result = await editLesson(lessonData);
                 
-
                 console.log("Lesson edited:", lessonData);
                 alert("Lesson change appended!");
 
