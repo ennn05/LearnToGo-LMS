@@ -23,3 +23,14 @@ CREATE TABLE LMS.student (
     CONSTRAINT user_stu_fkey FOREIGN KEY (stu_user_id)
         REFERENCES LMS.user (user_id)
 );
+
+-- COURSE TABLE
+CREATE TABLE LMS.course (
+    course_code        CHAR(10) PRIMARY KEY,
+    course_title       VARCHAR(50) NOT NULL,
+    course_date_created DATE NOT NULL,
+    course_date_updated DATE NOT NULL,
+    course_creator     INTEGER NOT NULL,
+    course_status      lesson_status NOT NULL,
+    course_total_credit NUMERIC(5,0) NOT NULL DEFAULT 0
+);
