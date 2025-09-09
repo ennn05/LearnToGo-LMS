@@ -14,3 +14,12 @@ CREATE TABLE LMS.instructor (
     CONSTRAINT user_inst_fkey FOREIGN KEY (inst_user_id)
         REFERENCES LMS.user (user_id)
 );
+
+-- STUDENT TABLE
+CREATE TABLE LMS.student (
+    stu_user_id   INTEGER PRIMARY KEY,
+    stu_dob       DATE,
+    stu_grade     NUMERIC(5,2),
+    CONSTRAINT user_stu_fkey FOREIGN KEY (stu_user_id)
+        REFERENCES LMS.user (user_id)
+);
