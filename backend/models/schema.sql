@@ -32,5 +32,7 @@ CREATE TABLE LMS.course (
     course_date_updated DATE NOT NULL,
     course_creator     INTEGER NOT NULL,
     course_status      lesson_status NOT NULL,
-    course_total_credit NUMERIC(5,0) NOT NULL DEFAULT 0
+    course_total_credit NUMERIC(5,0) NOT NULL DEFAULT 0,
+    CONSTRAINT inst_course_fkey FOREIGN KEY (course_creator)
+        REFERENCES LMS.instructor (inst_user_id)
 );
