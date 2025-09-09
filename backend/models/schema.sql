@@ -56,3 +56,10 @@ CREATE TABLE LMS.lesson (
         REFERENCES LMS.instructor (inst_user_id)
         ON DELETE SET NULL
 );
+
+-- COURSE_LESSON TABLE (Bridge table for Many-to-Many)
+CREATE TABLE LMS.course_lesson (
+    cl_id          INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cl_course_code CHAR(10) NOT NULL,
+    cl_lesson_id   INTEGER NOT NULL
+);
