@@ -36,3 +36,20 @@ CREATE TABLE LMS.course (
     CONSTRAINT inst_course_fkey FOREIGN KEY (course_creator)
         REFERENCES LMS.instructor (inst_user_id)
 );
+
+-- LESSON TABLE
+CREATE TABLE LMS.lesson (
+    lesson_id        INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    lesson_title     VARCHAR(50) NOT NULL,
+    lesson_desc      VARCHAR(100),
+    lesson_obj       VARCHAR(100),
+    lesson_reading_list VARCHAR(255),
+    lesson_effort_per_week INTEGER,
+    lesson_date_created DATE NOT NULL,
+    lesson_date_updated DATE NOT NULL,
+    lesson_status    lesson_status,
+    lesson_credit    NUMERIC(3,0),
+    lesson_designer  INTEGER,
+    lesson_prereq    VARCHAR(255),
+    lesson_assignment VARCHAR(255)
+);
