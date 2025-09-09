@@ -51,5 +51,8 @@ CREATE TABLE LMS.lesson (
     lesson_credit    NUMERIC(3,0),
     lesson_designer  INTEGER,
     lesson_prereq    VARCHAR(255),
-    lesson_assignment VARCHAR(255)
+    lesson_assignment VARCHAR(255),
+    CONSTRAINT inst_lesson_fkey FOREIGN KEY (lesson_designer)
+        REFERENCES LMS.instructor (inst_user_id)
+        ON DELETE SET NULL
 );
