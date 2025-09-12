@@ -29,7 +29,7 @@ function Courses() {
       // Example with mock:
       // const data = await mockCourseAPI.getAllCourses();
 
-      const { data: res } = await api.get("courses/instructor");
+      const { data: res } = await api.get("courses");
 
       if (!res.success) {
         console.error("Error fetching courses:", res.message);
