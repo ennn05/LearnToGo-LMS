@@ -29,7 +29,7 @@ function Courses() {
       // Example with mock:
       // const data = await mockCourseAPI.getAllCourses();
 
-      const { data: res } = await api.get("courses");
+      const { data: res } = await api.get("courses"); // Fetch all courses instead of Instructor's courses only
 
       if (!res.success) {
         console.error("Error fetching courses:", res.message);

@@ -15,7 +15,7 @@ function Lessons() {
   /** Fetch lessons from API */
   const fetchLessons = async () => {
     try {
-      const { data: res } = await api.get("lessons/");
+      const { data: res } = await api.get("lessons"); // Fetch all lessons instead of Instructor's lessons only
       console.log(res);
 
       if (!res.success) {
@@ -124,7 +124,7 @@ function Lessons() {
       {/* Main Content */}
       <div className="main-content">
         <div className="topbar">
-          <h1>All Lessons</h1>
+          <h1>All Lessons</h1> 
         </div>
 
         {/* Lessons List */}
