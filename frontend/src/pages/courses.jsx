@@ -135,7 +135,7 @@ function Courses() {
       <div className="main-content">
         {/* Topbar */}
         <div className="topbar">
-          <h1>My Courses</h1>
+          <h1>All Courses</h1>
         </div>
 
         {/* Courses Grid */}

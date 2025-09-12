@@ -124,7 +124,7 @@ function Lessons() {
       {/* Main Content */}
       <div className="main-content">
         <div className="topbar">
-          <h1>My Lessons</h1>
+          <h1>All Lessons</h1>
         </div>
 
         {/* Lessons List */}
