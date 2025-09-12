@@ -15,7 +15,7 @@ function Lessons() {
   /** Fetch lessons from API */
   const fetchLessons = async () => {
     try {
-      const { data: res } = await api.get("lessons/instructor");
+      const { data: res } = await api.get("lessons/");
       console.log(res);
 
       if (!res.success) {
