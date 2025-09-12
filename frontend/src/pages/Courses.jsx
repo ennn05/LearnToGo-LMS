@@ -10,6 +10,8 @@ function Courses() {
   const [user, setUser] = useState(null);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all'); // e.g., all, created by me, created by others
+  // const [filteredCourses, setFilteredCourses] = useState([]);
   const navigate = useNavigate();
 
   // Fetch courses from mock API
@@ -28,6 +30,7 @@ function Courses() {
 
       console.log("Courses loaded:", res.data);
       setCourses(res.data);
+      setFilter("all");
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
@@ -44,6 +47,27 @@ function Courses() {
     } 
     fetchCourses();
   }, []);
+
+  // useEffect(() => {
+  //   setFilteredCourses(
+  //     filter === "all"
+  //       ? courses
+  //       : filter === "mine"
+  //       ? courses.filter((course) => course.course_creator === user?.user_id)
+  //       : courses.filter((course) => course.course_creator !== user?.user_id)
+  //   );
+  // }, [filter]);
+
+  const filteredCourses = courses.filter((course) => {
+      if (filter === "mine") {
+        return course.course_creator === user?.user_id; 
+      } else if (filter === "others") {
+        return course.course_creator !== user?.user_id; 
+      }
+      return true; // "all"
+    });
+
+    console.log(filteredCourses);
 
   const handleCourseClick = (courseId) => {
     navigate(`/courses/${courseId}`);
@@ -114,6 +138,18 @@ function Courses() {
 
         {/* Courses Grid */}
         <div className="courses-container">
+          <div className="filter-dropdown">
+            <label htmlFor="courseFilter">Filter by Creator: </label>
+            <select
+              id="courseFilter"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="all">All Courses</option>
+              <option value="mine">Created by Me</option>
+              <option value="others">Created by Others</option>
+            </select>
+          </div>
           {loading ? (
             <div className="loading">Loading courses...</div>
           ) : courses.length === 0 ? (
@@ -122,7 +158,7 @@ function Courses() {
             </div>
           ) : (
             <div className="courses-grid">
-              {courses.map((course) => (
+              {filteredCourses.map((course) => (
                 <div
                   key={course.course_code}
                   className="course-card"
