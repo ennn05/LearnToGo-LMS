@@ -10,6 +10,11 @@ export const getCoursesByInstructor = async (instructorId) => {
     return courses;
 }
 
+export const getEnrolledCoursesByStudent = async (studentId) => {
+    const courses = [{course_code: "DUMMY", course_title: "Courses enrolled by student - to be implemented"}];
+    return courses;
+}
+
 export const getCourseByCode = async (courseCode) => {
     const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
                             COALESCE(json_agg(

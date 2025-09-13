@@ -1,10 +1,20 @@
 import express from 'express';
 import authenticate from '../middleware/authMiddleware.js';
-import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse } from "../controllers/courseControllers.js"
+import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getStudentCourses } from "../controllers/courseControllers.js"
 
 const router = express.Router();
 
-router.get("/", getCourses);
+router.get("/", authenticate, (req, res) => {
+    switch (req?.user?.role) {
+        case "student":
+            return getStudentCourses(req, res);
+        case "instructor":
+        case "admin":
+            return getCourses(req, res);
+        default:
+            return res.status(403).json({ message: "Unauthorized" });
+    }
+});
 router.get("/instructor", authenticate, getInstructorCourses);
 // router.get("/instructor/:id", getInstructorCourses);
 router.get("/instructor/:id", getCourse);

@@ -20,7 +20,7 @@ function InstructorCourses() {
     try {
       console.log("Fetching courses from mock API...");
       // const data = await mockCourseAPI.getAllCourses();
-      const {data: res} = await api.get("courses/instructor");
+      const {data: res} = await api.get("courses");
       // const response = await fetch("http://localhost:5000/api/courses/instructor");
 
       if (!res.success)
