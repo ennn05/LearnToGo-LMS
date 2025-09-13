@@ -30,7 +30,7 @@ function Login() {
   /** Redirect to courses if already logged in */
   useEffect(() => {
     if (user) {
-      navigate("/courses");
+      setTimeout(() => navigate("/"), 500);
     }
   }, [user, navigate]);
 
@@ -51,7 +51,7 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
 
-        setTimeout(() => navigate("/courses"), 2000);
+        // setTimeout(() => navigate("/"), 1000);
       } else {
         setLoginMsg(" No user found");
       }
@@ -82,7 +82,7 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
 
-        setTimeout(() => navigate("/courses"), 1500);
+        // setTimeout(() => navigate("/"), 1000);
       } else {
         setRegMsg(" No user returned");
       }
