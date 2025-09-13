@@ -4,6 +4,7 @@ import api from "../libs/apiCalls";
 import useStore from "../store";
 import { mockCourseAPI } from "../data/mockCourses";
 import "../styles/Courses.css";
+// import "../../styles/Course.css";
 
 function InstructorCourses() {
   const [activePage, setActivePage] = useState("courses");
