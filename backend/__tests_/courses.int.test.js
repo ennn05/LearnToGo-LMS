@@ -2,7 +2,8 @@ import request from "supertest";
 import express from "express";
 import courseRoutes from "../routes/coursesRoutes.js";
 import authenticate from "../middleware/authMiddleware.js";
-import { getAllCourses, getEnrolledCoursesByStudent, getAvailableCoursesForStudent } from "../models/course.js";
+import { getAllCourses, getEnrolledCoursesByStudent, getAvailableCoursesForStudent, addCourseEnrollment } from "../models/course.js";
+import { enrollCourse } from "../controllers/courseControllers.js";
 
 // We don't mock controllers here → we want them to run with real logic
 // But for DB integration, you can use a test database or sqlite memory
@@ -24,6 +25,9 @@ jest.mock("../models/course.js", () => ({
     Promise.resolve([
       { course_code: "CSE101", course_title: "Intro to CS", course_status: "published", course_total_credit: 3 },
     ])
+  ),
+  addCourseEnrollment: jest.fn((studentId, courseCode) =>
+    Promise.resolve({ student_id: studentId, course_code: courseCode })
   ),
 }));
 
@@ -107,5 +111,51 @@ describe("Integration: GET /courses/available", () => {
     expect(res.status).toBe(403);
     expect(res.body).toEqual({ message: "Unauthorized" });
 
+  });
+});
+
+
+describe("Integration: POST /courses/:courseCode/enroll", () => {
+  it("enrolls student successfully", async () => {
+    const res = await request(app)
+      .post("/courses/CSE101/enroll")
+      .set("x-role", "student");
+
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual(
+        { course_code: "CSE101", student_id: 1 }
+      );
+  });
+
+  it("prevents duplicate enrollment", async () => {
+    addCourseEnrollment.mockResolvedValueOnce(undefined);
+
+    const res = await request(app)
+      .post("/courses/CSE101/enroll")
+      .set("x-role", "student");
+
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBe("Already enrolled");
+  });
+
+  it("handle internal server error", async () => {
+    addCourseEnrollment.mockRejectedValue(new Error("DB Error"));
+
+    const res = await request(app)
+      .post("/courses/CSE101/enroll")
+      .set("x-role", "student");
+
+    expect(res.status).toBe(500);
+    expect(res.body.message).toBe("Internal Server Error");
+  });
+
+  it("blocks non-students", async () => {
+    const res = await request(app)
+      .post("/courses/CSE101/enroll")
+      .set("x-role", "instructor");
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ message: "Unauthorized" });
   });
 });
