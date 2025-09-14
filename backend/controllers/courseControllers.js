@@ -29,7 +29,7 @@ export const getInstructorCourses = async (req, res) => {
 };
 
 export const getStudentCourses = async (req, res) => {
-    console.log("HI")
+    
     const studentId = req?.user?.id;
     console.log(studentId);
     if (!studentId) return res.status(401).json({success: false, error: "Unauthorized" });
@@ -45,6 +45,18 @@ export const getStudentCourses = async (req, res) => {
 };
 
 export const getAvailableCoursesForEnrollment = async (req, res) => {
+    /*
+        Pre-conditions: User must be authenticated and have role "student"
+        
+        Return:
+            Return all published courses that the student is not enrolled in yet.
+            With res status 200 and JSON body { success: true, data: [...] }
+
+            Or 
+
+            (If there is an error)
+            With res status 500 and JSON body { success: false, message: "Failed to fetch available courses for student." }
+    */
     const studentId = req?.user?.id;
     if (!studentId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
