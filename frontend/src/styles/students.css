@@ -61,6 +61,29 @@ body {
   font-size: 14px;
 }
 
+/* StudentCourses Tab Buttons */
+.student-tabbar {
+  display: flex;
+  width: 100%;
+}
+
+.student-tab-btn {
+  width: 50%;
+  height: 56px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  background: #fff;
+  color: #37495c;
+  transition: background 0.3s, color 0.3s;
+}
+.student-tab-btn.active {
+  background: #27ae60;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(39,174,96,0.12);
+}
+
 /* Navigation Menu */
 .nav-menu {
   display: flex;
@@ -81,7 +104,7 @@ body {
 }
 
 .nav-menu button:hover {
-  background-color: #34495e;
+  background-color: #3a4f64;
 }
 
 .nav-menu button.active {
