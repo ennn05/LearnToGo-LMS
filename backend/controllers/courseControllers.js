@@ -81,13 +81,13 @@ export const enrollCourse = async (req, res) => {
         const enrollment = await addCourseEnrollment(studentId, courseCode);
         console.log(enrollment);
         if (enrollment) {
-            return res.status(201).json({ success: true, data: enrollment });
+            return res.status(201).json({ success: true, data: enrollment, message: "Enrolled successfully." });
         }
         return res.status(409).json({ success: false, message: "Failed to enroll in course." });
     }
     catch (error) {
         console.error("Error enrolling course:", error);
-        return res.status(500).json({ success: false, message: "Failed to enroll in course." });
+        return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
 

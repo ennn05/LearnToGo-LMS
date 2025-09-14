@@ -1,4 +1,4 @@
-import { getAvailableCoursesForEnrollment } from "../courseControllers.js";
+import { getAvailableCoursesForEnrollment, enrollCourse } from "../courseControllers.js";
 import * as courseModel from "../../models/course.js"; // we will spyOn here
 
 // Helper to mock Express res
@@ -62,6 +62,87 @@ describe("Controller: getAvailableCoursesForEnrollment", () => {
     expect(mockRes.json).toHaveBeenCalledWith({
       success: false,
       message: "Failed to fetch available courses for student.",
+    });
+  });
+});
+
+
+describe("Controller: enrollCourse", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns 400 if courseCode is missing", async () => {
+    const req = { user: { id: 1 }, params: {} };
+    const res = mockResponse();
+
+    await enrollCourse(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Course code is required",
+    });
+  });
+
+  it("returns 401 if user is not authenticated", async () => {
+    const req = { user: null, params: { courseCode: "CSE101" } };
+    const res = mockResponse();
+
+    await enrollCourse(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      error: "Unauthorized",
+    });
+  });
+
+  it("returns 201 and enrollment data on success", async () => {
+    const req = { user: { id: 1 }, params: { courseCode: "CSE101" } };
+    const res = mockResponse();
+
+    const mockEnrollment = { student_id: 1, course_code: "CSE101" };
+    jest.spyOn(courseModel, "addCourseEnrollment").mockResolvedValue(mockEnrollment);
+
+    await enrollCourse(req, res);
+
+    expect(courseModel.addCourseEnrollment).toHaveBeenCalledWith(1, "CSE101");
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      message: "Enrolled successfully.",
+      data: mockEnrollment,
+    });
+  });
+
+  it("returns 409 if already enrolled", async () => {
+    const req = { user: { id: 1 }, params: { courseCode: "CSE101" } };
+    const res = mockResponse();
+
+    jest.spyOn(courseModel, "addCourseEnrollment").mockResolvedValue(undefined);
+
+    await enrollCourse(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Failed to enroll in course.",
+    });
+  });
+
+  it("returns 500 on internal server error", async () => {
+    const req = { user: { id: 1 }, params: { courseCode: "CSE101" } };
+    const res = mockResponse();
+
+    jest.spyOn(courseModel, "addCourseEnrollment").mockRejectedValue(new Error("DB error"));
+
+    await enrollCourse(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Internal server error.",
     });
   });
 });
