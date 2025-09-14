@@ -16,8 +16,8 @@ export const getEnrolledCoursesByStudent = async (studentId) => {
     return courses;
 }
 
-// To be implemented: fetch only courses that are published
-export const getPublishedCourses = async () => {
+// To be implemented: fetch only courses that are published and not yet enrolled by the student
+export const getAvailableCoursesForStudent = async (studentId) => {
     const courses = [{course_code: "DUMMY-PUBLISHED", course_title: "Published Courses - to be implemented"}];
     return courses;
 }

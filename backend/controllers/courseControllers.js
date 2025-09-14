@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getPublishedCourses } from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -45,13 +45,16 @@ export const getStudentCourses = async (req, res) => {
 };
 
 export const getAvailableCoursesForEnrollment = async (req, res) => {
+    const studentId = req?.user?.id;
+    if (!studentId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
     try {
-        const courses = await getPublishedCourses();
+        const courses = await getAvailableCoursesForStudent(studentId);
         return res.status(200).json({ success: true, data: courses });
     }
     catch (error) {
-        console.error("Error fetching available courses for enrollment:", error);
-        return res.status(500).json({ success: false, message: "Failed to fetch available courses for enrollment." });
+        console.error("Error fetching available courses for student:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch available courses for student." });
     }
 };
 
