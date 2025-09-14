@@ -10,8 +10,15 @@ export const getCoursesByInstructor = async (instructorId) => {
     return courses;
 }
 
+// To be implemented: fetch only courses that the student is enrolled in
 export const getEnrolledCoursesByStudent = async (studentId) => {
-    const courses = [{course_code: "DUMMY", course_title: "Courses enrolled by student - to be implemented"}];
+    const courses = [{course_code: "DUMMY-ENROLLED", course_title: "Courses enrolled by student - to be implemented"}];
+    return courses;
+}
+
+// To be implemented: fetch only courses that are published
+export const getPublishedCourses = async () => {
+    const courses = [{course_code: "DUMMY-PUBLISHED", course_title: "Published Courses - to be implemented"}];
     return courses;
 }
 
