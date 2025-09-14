@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent } from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent, addCourseEnrollment } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -28,6 +28,7 @@ export const getInstructorCourses = async (req, res) => {
     }
 };
 
+// To be implemented - get all courses that a student is enrolled in
 export const getStudentCourses = async (req, res) => {
     
     const studentId = req?.user?.id;
@@ -67,6 +68,26 @@ export const getAvailableCoursesForEnrollment = async (req, res) => {
     catch (error) {
         console.error("Error fetching available courses for student:", error);
         return res.status(500).json({ success: false, message: "Failed to fetch available courses for student." });
+    }
+};
+
+export const enrollCourse = async (req, res) => {
+    try {
+        const { courseCode } = req.params;
+        const studentId = req?.user?.id;
+        if (!studentId) return res.status(401).json({ success: false, error: "Unauthorized" });
+        if (!courseCode) return res.status(400).json({ success: false, message: "Course code is required." });
+
+        const enrollment = await addCourseEnrollment(studentId, courseCode);
+        console.log(enrollment);
+        if (enrollment) {
+            return res.status(201).json({ success: true, data: enrollment });
+        }
+        return res.status(409).json({ success: false, message: "Failed to enroll in course." });
+    }
+    catch (error) {
+        console.error("Error enrolling course:", error);
+        return res.status(500).json({ success: false, message: "Failed to enroll in course." });
     }
 };
 
