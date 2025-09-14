@@ -32,6 +32,16 @@ export const getAvailableCoursesForStudent = async (studentId) => {
     return courses;
 }
 
+// To be implemented: add a record to enrollment table
+// Awaiting enrollment table to be created
+export const addCourseEnrollment = async (studentId, courseCode) => {
+    // const course = await sql`INSERT INTO "LMS".enrollment (student_id, course_code)
+    // VALUES (${studentId}, ${courseCode}) RETURNING *;`;
+
+    const course = [{student_id: studentId, course_code: courseCode}]; // temporary placeholder
+    return course[0];
+}   
+
 export const getCourseByCode = async (courseCode) => {
     const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
                             COALESCE(json_agg(
