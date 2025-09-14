@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate, authorize } from '../middleware/authMiddleware.js';
-import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getStudentCourses, getAvailableCoursesForEnrollment } from "../controllers/courseControllers.js"
+import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getStudentCourses, getAvailableCoursesForEnrollment, enrollCourse } from "../controllers/courseControllers.js"
 
 const router = express.Router();
 
@@ -17,6 +17,7 @@ router.get("/", authenticate, (req, res) => {
 });
 
 router.get("/available", authenticate, authorize("student"), getAvailableCoursesForEnrollment);
+router.post("/:courseCode/enroll", authenticate, authorize("student"), enrollCourse);
 
 router.get("/instructor", authenticate, getInstructorCourses);
 // router.get("/instructor/:id", getInstructorCourses);
