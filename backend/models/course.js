@@ -17,7 +17,17 @@ export const getEnrolledCoursesByStudent = async (studentId) => {
 }
 
 // To be implemented: fetch only courses that are published and not yet enrolled by the student
+// Awaiting enrollment table to be created
 export const getAvailableCoursesForStudent = async (studentId) => {
+    // const courses = await sql`SELECT *
+    // FROM courses c
+    // WHERE c.course_status = 'published'
+    //   AND NOT EXISTS (
+    //     SELECT 1
+    //     FROM enrollment e
+    //     WHERE e.student_id = ${studentId}
+    //       AND e.course_code = c.course_code
+    //   )`;
     const courses = [{course_code: "DUMMY-PUBLISHED", course_title: "Published Courses - to be implemented"}];
     return courses;
 }
