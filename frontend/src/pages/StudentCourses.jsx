@@ -14,6 +14,7 @@ function StudentCourses() {
   const { user, signOut } = useStore((state) => state);
 
   useEffect(() => {
+    // Fetch enrolled courses for the student
     const fetchStudentCourses = async () => {
       try {
         const { data: response } = await api.get("courses");
@@ -22,6 +23,8 @@ function StudentCourses() {
         setStudentCourses([]);
       }
     };
+    
+    // Fetch published courses available for enrollment
     const fetchAvailableCourses = async () => {
       try {
         const { data: response } = await api.get("courses/available");
