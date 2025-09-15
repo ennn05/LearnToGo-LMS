@@ -22,7 +22,7 @@ function InstructorCourseDetails() {
       // TODO: Replace with api wrapper instead of fetch
       // const data = await mockCourseAPI.getCourseById(courseId);
       // const data = await api.get(`courses/instructor/${courseId}`);
-      const res = await fetch(`http://localhost:5000/api/courses/instructor/${courseId}`);
+      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`);
       if (!res.ok) {
         console.error("Error fetching courses:", res);
       }

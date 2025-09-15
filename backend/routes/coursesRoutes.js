@@ -21,7 +21,7 @@ router.post("/:courseCode/enroll", authenticate, authorize("student"), enrollCou
 
 router.get("/instructor", authenticate, getInstructorCourses);
 // router.get("/instructor/:id", getInstructorCourses);
-router.get("/instructor/:id", getCourse);
+router.get("/:id", getCourse);
 router.post("/", addCourse);
 router.delete("/:id", removeCourse);
 router.put("/:id", editCourse);
