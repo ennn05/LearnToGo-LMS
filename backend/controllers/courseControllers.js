@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons } from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getPublishedCourses} from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -154,3 +154,13 @@ export const editCourse = async (req, res) => {
     }
 };
 
+export const getPublished = async (req, res) => {
+    try {
+        const courses = await getPublishedCourses();
+        return res.status(200).json({ success: true, data: courses });
+    } 
+    catch (error) {
+        console.error("Error fetching published courses:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch published courses." });
+    }
+};
