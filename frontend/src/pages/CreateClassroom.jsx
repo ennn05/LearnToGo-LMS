@@ -33,7 +33,7 @@ function CreateClassroom() {
 
     // All courses are fetched
     // TODO: api changes to filter courses by instructor_id
-    const fetchCourses = async _ => {
+    const fetchCourses = async () => {
         try {
             const response = await fetch("http://localhost:5000/api/courses");
             if (!response.ok) {
@@ -71,7 +71,7 @@ function CreateClassroom() {
     };
 
     // Mount: load user and courses
-    useEffect(_ => {
+    useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
             setUser(JSON.parse(storedUser));
@@ -108,7 +108,7 @@ function CreateClassroom() {
     };
 
     // Publishing classroom
-    const handlePublishClassroom = async _ => {
+    const handlePublishClassroom = async () => {
         try {
             if (!classroomData.classroomId || !classroomData.startDate || !assignedCourse) {
                 alert("Please fill in all required fields before submitting.")
@@ -139,7 +139,7 @@ function CreateClassroom() {
     }
 
     // Save current state of classroom
-    const handleSaveClassroom = async _ => {
+    const handleSaveClassroom = async () => {
         try {
             if (!classroomData.classroomId || !classroomData.startDate) {
                 alert("Please fill in all required fields before submitting.")
@@ -176,12 +176,12 @@ function CreateClassroom() {
     };
 
     // Cancel btn fn
-    const handleCancel = _ => {
+    const handleCancel = () => {
         navigate("/classrooms");
     };
 
     // Logout btn fn
-    const handleLogout = _ => {
+    const handleLogout = () => {
         localStorage.removeItem("user");
         navigate("/");
     };
@@ -212,19 +212,19 @@ function CreateClassroom() {
                 </div>
                 {/** Navigation Menu */}
                 <nav className="nav-menu">
-                    <button className={activePage === "courses" ? "active" : ""} onClick={_ => navigate("/courses")}>
+                    <button className={activePage === "courses" ? "active" : ""} onClick={() => navigate("/courses")}>
                         Courses
                     </button>
-                    <button className={activePage === "lessons" ? "active" : ""} onClick={_ => navigate("/lessons")}>
+                    <button className={activePage === "lessons" ? "active" : ""} onClick={() => navigate("/lessons")}>
                         Lessons
                     </button>
-                    <button className={activePage === "classrooms" ? "active" : ""} onClick={_ => navigate("/classrooms")}>
+                    <button className={activePage === "classrooms" ? "active" : ""} onClick={() => setActivePage("classrooms")}>
                         Classrooms
                     </button>
-                    <button className={activePage === "students" ? "active" : ""} onClick={_ => navigate("/students")}>
+                    <button className={activePage === "students" ? "active" : ""} onClick={() => navigate("/students")}>
                         Students
                     </button>
-                    <button className={activePage === "reports" ? "active" : ""} onClick={_ => navigate("/reports")}>
+                    <button className={activePage === "reports" ? "active" : ""} onClick={() => setActivePage("reports")}>
                         Reports & Statistics
                     </button>
                     <button className="logout-btn" onClick={handleLogout}>
@@ -237,7 +237,7 @@ function CreateClassroom() {
                 <div className="topbar">
                     <h1>New Classroom</h1>
                 </div>
-                <div className="create-course-container">
+                <div className="create-classroom-container">
                     {/** Classroom Header with Status and Actions */}
                     <div className="classroom-header">
                         <div className="classroom-status">
@@ -245,11 +245,11 @@ function CreateClassroom() {
                                 {classroomData.status.charAt(0).toUpperCase() + classroomData.status.slice(1)}
                             </span>
                         </div>
-                        <div className="course-actions">
+                        <div className="classroom-actions">
                             <button className="btn-publish" onClick={handlePublishClassroom}>
                                 Publish
                             </button>
-                            <button className="btn-archive" onClick={_ => handleStatusChange("archived")}>
+                            <button className="btn-archive" onClick={() => handleStatusChange("archived")}>
                                 Archive
                             </button>
                         </div>
@@ -318,6 +318,7 @@ function CreateClassroom() {
                                     name="supervisor"
                                     value={classroomData.supervisor}
                                     onChange={handleInputChange}
+                                    className="supervisor-select"
                                 >
                                     {/** For now, only current instructor */}
                                     {user && (
@@ -335,6 +336,7 @@ function CreateClassroom() {
                                 <select 
                                     value={assignedCourse.course_code || ""}
                                     onChange={handleCourseSelect}
+                                    className="course-select"
                                 >
                                     <option value="">-- Select a course --</option>
                                     {/** For now, all courses will be fetched */}
@@ -363,8 +365,8 @@ function CreateClassroom() {
                                                 <p>{lesson.lesson_desc}</p>
                                             </div>
                                             <div className="lesson-actions">
-                                                <span className="assign-button">✓</span>
-                                                <button className="remove-button" onClick={_ => removeLessonFromClassroom(lesson)}>×</button>
+                                                <span className="check-icon">✓</span>
+                                                <button className="remove-button" onClick={() => removeLessonFromClassroom(lesson)}>×</button>
                                             </div>
                                         </div>
                                     ))
@@ -394,7 +396,7 @@ function CreateClassroom() {
                                             </div>
                                             <button
                                                 className={`add-btn ${assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? "added" : ""}`}
-                                                onClick={_ => addLessonToClassroom(lesson)}
+                                                onClick={() => addLessonToClassroom(lesson)}
                                                 disabled={assignedLessons.find(l => l.lesson_id === lesson.lesson_id)}
                                             >
                                                 {assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? "✓" : "+"}
