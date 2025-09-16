@@ -30,7 +30,20 @@ export const getInstructorCourses = async (req, res) => {
 
 
 export const getStudentCourses = async (req, res) => {
-    
+    /*
+        Pre-conditions: User must be authenticated and have role "student"
+                        i.e. req has user object with id and role "student"
+        
+        Return:
+            Return a response containing all courses that the student is enrolled in:
+            With res status 200 and JSON body { success: true, data: [{enrolled_course1}, {enrolled_course2}, ...] }
+
+            Or 
+
+            (If there is an error)
+            Return a response:
+            With res status 500 and JSON body { success: false, message: "Failed to fetch enrolled courses for student." }
+    */
     const studentId = req?.user?.id;
     console.log(studentId);
     if (!studentId) return res.status(401).json({success: false, error: "Unauthorized" });
