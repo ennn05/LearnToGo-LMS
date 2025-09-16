@@ -1,10 +1,11 @@
 import express from 'express';
 import authenticate from '../middleware/authMiddleware.js';
-import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse } from "../controllers/courseControllers.js"
+import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getPublished } from "../controllers/courseControllers.js"
 
 const router = express.Router();
 
 router.get("/", getCourses);
+router.get("/published", getPublished);
 router.get("/instructor", authenticate, getInstructorCourses);
 // router.get("/instructor/:id", getInstructorCourses);
 router.get("/instructor/:id", getCourse);
