@@ -1,1 +1,304 @@
-import "../styles/CreateClassroom.css";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/CreateClassroom.css"; // Stylesheet for page
+
+function CreateClassroom() {
+    // Sidebar state
+    const [activePage, setActivePage] = useState("classrooms")
+
+    // User info
+    const [user, setUser] = useState(null);
+
+    // Default classroom
+    const [classroomData, setClassroomData] = useState({
+        classroomId: "",
+        startDate: "",
+        duration: "",
+        createdDate: "",
+        updatedDate: "",
+        author: "",
+        supervisor: "",
+        status: "draft"
+    })
+
+    // Lessons & Courses
+    const [assignedCourse, setAssignedCourse] = useState(null);
+    const [availableCourses, setAvailableCourses] = useState([]);
+    const [assignedLessons, setAssignedLessons] = useState([]);
+    const [availableLessons, setAvailableLessons] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    const navigate = useNavigate();
+
+    const fetchCourses = async _ => {
+        try {
+            const response = await fetch("http://localhost:5000/api/courses");
+            if (!response.ok) {
+                console.error("API error:", response.status, response.statusText);
+                setAvailableCourses([]);
+                return;
+            }
+            const data = await response.json();
+            setAvailableCourses(
+                data.data.filter(course => course.status === "published")
+            );
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+            setAvailableCourses([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchLessonsForCourse = async courseId => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`);
+            if (!response.ok) {
+                console.error("API error:", response.status, response.statusText);
+                setAvailableLessons([]);
+                return;
+            }
+            const data = await response.json();
+            setAvailableLessons(data.data);
+        } catch (error) {
+            console.error("Error fetching lessons:", error);
+            setAvailableLessons([]);
+        }
+    };
+
+    // Mount: load user and courses
+    useEffect(_ => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        } else {
+            setUser({
+                user_fname: "Test",
+                user_lname: "User",
+                user_email: "test@example.com",
+                user_role: "Instructor",
+            });
+        }
+        fetchCourses();
+    }, []);
+
+    // When a course is selected, fetch its lessons
+    const handleCourseSelect = course => {
+        setAssignedCourse(course);
+        setAssignedLessons([]);
+        fetchLessonsForCourse(course.course_code);
+    };
+
+    const handleInputChange = e => {
+        const { name, value } = e.target;
+        setClassroomData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleStatusChange = newStatus => {
+        setClassroomData(prev => ({
+            ...prev,
+            status: newStatus,
+        }));
+    };
+
+    const handlePublishClassroom = async _ => {
+        try {
+            if (!classroomData.classroomId || !classroomData.startDate || !assignedCourse) {
+                alert("Please fill in all required fields before submitting.")
+                return;
+            }
+
+            const publishedClassroomData = { ...classroomData, status: "published" };
+            setClassroomData(publishedClassroomData);
+            console.log("Publishing classroom:", classroomData);
+            alert("Classroom published successfully!");
+            navigate("/classrooms");
+        } catch (error) {
+            console.error("Error publishing classroom:", error);
+            alert("Failed to publish classroom! Try again.");
+        }
+    };
+
+    const addLessonToClassroom = lesson => {
+        if (!assignedLessons.find(l => l.lesson_id === lesson.lesson_id)) {
+            setAssignedLessons(prev => [...prev, lesson]);
+        }
+    };
+
+    const removeLessonFromClassroom = lesson => {
+        setAssignedLessons(prev => prev.filter(l => l.lesson_id === lesson.lesson_id))
+    }
+
+    const handleSaveClassroom = async _ => {
+        try {
+            if (!classroomData.classroomId || !classroomData.startDate) {
+                alert("Please fill in all required fields before submitting.")
+                return;
+            }
+
+            const classroomToSave = {
+                classroom_id: classroomData.classroomId,
+                start_date: classroomData.startDate,
+                duration: classroomData.duration,
+                status: classroomData.status,
+                course: assignedCourse.course_id,
+                lessons: assignedLessons.map(l => l.lesson_id),
+                author: user.user_id,
+            };
+
+            const response = await fetch("http://localhost:5000/api/classrooms", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(classroomToSave),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to save classroom!");
+            }
+
+            alert("Classroom saved successfully!");
+            navigate("/classrooms");
+        } catch (error) {
+            console.error("Error saving classroom:", error);
+            alert("Failed to save classroom! Try again.");
+        }
+    };
+
+    const handleCancel = _ => {
+        navigate("/classrooms");
+    };
+
+    const handleLogout = _ => {
+        localStorage.removeItem("user");
+        navigate("/");
+    };
+
+    const currentDate = new Date().toLocaleDateString();
+
+    const filteredLessons = Array.isArray(availableLessons) ? availableLessons.filter(
+        lesson =>
+            lesson.lesson_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            lesson.lesson_desc?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : [];
+
+    return (
+        <div className="flex">
+            {/** Sidebar */}
+            <div className="sidebar">
+                <div className="profile">
+                    <div className="avatar"></div>
+                    <div className="info">
+                        <div className="name">
+                            {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
+                        </div>
+                        <div className="role">
+                            {user?.user_role ?? "Instructor"}
+                        </div>
+                    </div>
+                </div>
+                {/** Navigation Menu */}
+                <nav className="nav-menu">
+                    <button className={activePage === "courses" ? "active" : ""} onClick={_ => navigate("/courses")}>
+                        Courses
+                    </button>
+                    <button className={activePage === "lessons" ? "active" : ""} onClick={_ => navigate("/lessons")}>
+                        Lessons
+                    </button>
+                    <button className={activePage === "classrooms" ? "active" : ""} onClick={_ => navigate("/classrooms")}>
+                        Classrooms
+                    </button>
+                    <button className={activePage === "students" ? "active" : ""} onClick={_ => navigate("/students")}>
+                        Students
+                    </button>
+                    <button className={activePage === "reports" ? "active" : ""} onClick={_ => navigate("/reports")}>
+                        Reports & Statistics
+                    </button>
+                    <button className="logout-btn" onClick={handleLogout}>
+                        Log Out
+                    </button>
+                </nav>
+            </div>
+            {/** Main Content */}
+            <div className="main-content">
+                <div className="topbar">
+                    <h1>New Classroom</h1>
+                </div>
+                <div className="create-course-container">
+                    {/** Classroom Header with Status and Actions */}
+                    <div className="classroom-header">
+                        <div className="classroom-status">
+                            <span className={`status-badge ${classroomData.status}`}>
+                                {classroomData.status.charAt(0).toUpperCase() + classroomData.status.slice(1)}
+                            </span>
+                        </div>
+                        <div className="course-actions">
+                            <button className="btn-publish" onClick={handlePublishClassroom}>
+                                Publish
+                            </button>
+                            <button className="btn-archive" onClick={_ => handleStatusChange("archived")}>
+                                Archive
+                            </button>
+                        </div>
+                    </div>
+                    {/** Classroom Form */}
+                    <div className="classroom-form">
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Course Code:</label>
+                                <input 
+                                    type="text"
+                                    name="classroomId"
+                                    value={classroomData.classroomId}
+                                    onChange={handleInputChange}
+                                    placeholder="e.g. C2001"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Date Created:</label>
+                                <span className="readonly-field">{currentDate}</span>
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Start Date:</label>
+                                <input 
+                                    type="date"
+                                    name="startDate"
+                                    value={classroomData.startDate}
+                                    onChange={handleInputChange}
+                                    placeholder={currentDate}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Last Updated:</label>
+                                <span className="readonly-field">{currentDate}</span>
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Duration:</label>
+                                <input 
+                                    type="number"
+                                    name="duration"
+                                    value={classroomData.duration}
+                                    onChange={handleInputChange}
+                                    min="1"
+                                />
+                                <label>week(s)</label>
+                            </div>
+                            <div className="form-group">
+                                <label>Created By:</label>
+                                <span className="readonly-field">
+                                    {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {/** Supervisor & Course Selection */}
+                </div>
+            </div>
+        </div>
+    )
+}
