@@ -328,6 +328,7 @@ function CreateClassroom() {
                                 </select>
                             </div>
                         </div>
+                        {/** Course Selection */}
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Assign Course:</label>
@@ -343,6 +344,64 @@ function CreateClassroom() {
                                         </option>
                                     ))}
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+                    {/** Lessons Section */}
+                    <div className="lesson-section">
+                        {/** Assigned Lessons */}
+                        <div className="lessons-assigned">
+                            <h3>Lessons Assigned</h3>
+                            <div className="assigned-lessons-container">
+                                {assignedLessons.length === 0 ? (
+                                    <p className="no-lessons">No lessons assigned yet.</p>
+                                ) : (
+                                    assignedLessons.map(lesson => (
+                                        <div key={lesson.lesson_id} className="assigned-lesson-card">
+                                            <div className="lesson-info">
+                                                <h4>{lesson.lesson_title}</h4>
+                                                <p>{lesson.lesson_desc}</p>
+                                            </div>
+                                            <div className="lesson-actions">
+                                                <span className="assign-button">✓</span>
+                                                <button className="remove-button" onClick={_ => removeLessonFromClassroom(lesson)}>×</button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                        {/** Available Lessons */}
+                        <div className="lessons-available">
+                            <div className="search-container">
+                                <input
+                                    type="text"
+                                    placeholder="Search lessons..."
+                                    value={searchTerm}
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                    className="search-input"
+                                />
+                            </div>
+                            <div className="available-lessons-grid">
+                                {loading ? (
+                                    <div className="loading">Loading lessons...</div>
+                                ) : (
+                                    filteredLessons.map(lesson => (
+                                        <div key={lesson.lesson_id} className="available-lesson-card">
+                                            <div className="lesson-content">
+                                                <h4>{lesson.lesson_title}</h4>
+                                                <p>{lesson.lesson_desc}</p>
+                                            </div>
+                                            <button
+                                                className={`add-btn ${assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? "added" : ""}`}
+                                                onClick={_ => addLessonToClassroom(lesson)}
+                                                disabled={assignedLessons.find(l => l.lesson_id === lesson.lesson_id)}
+                                            >
+                                                {assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? "✓" : "+"}
+                                            </button>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>
