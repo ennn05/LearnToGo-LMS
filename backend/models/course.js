@@ -93,3 +93,10 @@ export const updateCourseLessons = async (courseCode, lessons) => {
 
     return courseLessons;
 }
+
+export const getPublishedCourses = async () => {
+    const courses = await sql`SELECT * 
+                              FROM "LMS".course 
+                              WHERE course_status = 'published';`;
+    return courses;
+};
