@@ -1,4 +1,4 @@
-import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson, createLesson} from "../models/lesson.js";
+import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson, createLesson, getPublishedLessons} from "../models/lesson.js";
 export const getLessons = async (req, res) => {
     try {
         const lessons = await getAllLessons();
@@ -101,6 +101,16 @@ export const removeLesson = async (req, res) => {
   }
 };
 
+// Get published lessons
+export const getPublished = async (req, res) => {
+  try {
+    const lessons = await getPublishedLessons();
+    return res.status(200).json({ success: true, data: lessons });
+  } catch (error) {
+    console.error("Error fetching published lessons:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch published lessons." });
+  }
+};
 // import {
 //   getAllLessons,
 //   getLessonById,
