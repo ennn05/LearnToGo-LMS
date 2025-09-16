@@ -111,3 +111,19 @@ export const deleteLesson = async (lessonId) => {
     const lesson = await sql`DELETE FROM "LMS".lesson WHERE lesson_id = ${lessonId} RETURNING *;`;
     return lesson[0];
 }
+
+export const getPublishedLessons = async () => {
+    const lessons = await sql`
+        SELECT 
+            cl.cl_course_code, 
+            l.lesson_id, 
+            l.lesson_title, 
+            l.lesson_credit, 
+            l.lesson_status
+        FROM "LMS".course_lesson cl
+        LEFT JOIN "LMS".lesson l 
+            ON cl.cl_lesson_id = l.lesson_id
+        WHERE l.lesson_status = 'published';
+    `;
+    return lessons;
+};
