@@ -28,7 +28,7 @@ export const getInstructorCourses = async (req, res) => {
     }
 };
 
-// To be implemented - get all courses that a student is enrolled in
+
 export const getStudentCourses = async (req, res) => {
     
     const studentId = req?.user?.id;
@@ -37,11 +37,12 @@ export const getStudentCourses = async (req, res) => {
 
     try {
         const courses = await getEnrolledCoursesByStudent(studentId);
-        return res.status(200).json({ success: true, data: courses });
+        
+        return res.status(200).json({ success: true, data: courses || [] });
     }
     catch (error) {
         console.error("Error fetching courses by student:", error);
-        return res.status(500).json({ success: false, message: "Failed to fetch courses by student." });
+        return res.status(500).json({ success: false, message: "Failed to fetch enrolled courses for student." });
     }
 };
 
