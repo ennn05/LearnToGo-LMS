@@ -405,8 +405,15 @@ function CreateClassroom() {
                             </div>
                         </div>
                     </div>
+                    {/** Save & Cancel btns */}
+                    <div className="save-section">
+                        <button className="btn-save" onClick={handleSaveClassroom}>Save</button>
+                        <button className="btn-cancel" onClick={handleCancel}>Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>
     )
 }
+
+export default CreateClassroom;
