@@ -49,12 +49,14 @@ import {
   getLessonsByInstructor,
   addLesson,
   editLesson,
-  removeLesson
+  removeLesson,
+  getPublished
 } from "../controllers/lessonControllers.js";
 
 const router = express.Router();
 
 router.get("/", getLessons);
+router.get("/published", getPublished);
 router.get("/instructor", authenticate, getLessonsByInstructor); 
 router.get("/:id", getLesson);
 router.post("/", addLesson);
