@@ -31,6 +31,8 @@ function CreateClassroom() {
 
     const navigate = useNavigate();
 
+    // All courses are fetched
+    // TODO: api changes to filter courses by instructor_id
     const fetchCourses = async _ => {
         try {
             const response = await fetch("http://localhost:5000/api/courses");
@@ -51,9 +53,10 @@ function CreateClassroom() {
         }
     };
 
-    const fetchLessonsForCourse = async courseId => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`);
+    // Fetches specific lessons assigned based on course_code
+    const fetchLessonsForCourse = async course_code => {
+        try {course_code
+            const response = await fetch(`http://localhost:5000/api/courses/${course_code}/lessons`);
             if (!response.ok) {
                 console.error("API error:", response.status, response.statusText);
                 setAvailableLessons([]);
@@ -90,11 +93,13 @@ function CreateClassroom() {
         fetchLessonsForCourse(course.course_code);
     };
 
+    // Input change method
     const handleInputChange = e => {
         const { name, value } = e.target;
         setClassroomData((prev) => ({ ...prev, [name]: value }));
     };
 
+    // Status change method
     const handleStatusChange = newStatus => {
         setClassroomData(prev => ({
             ...prev,
@@ -102,6 +107,7 @@ function CreateClassroom() {
         }));
     };
 
+    // Publishing classroom
     const handlePublishClassroom = async _ => {
         try {
             if (!classroomData.classroomId || !classroomData.startDate || !assignedCourse) {
@@ -120,16 +126,19 @@ function CreateClassroom() {
         }
     };
 
+    // Assign lesson to classroom
     const addLessonToClassroom = lesson => {
         if (!assignedLessons.find(l => l.lesson_id === lesson.lesson_id)) {
             setAssignedLessons(prev => [...prev, lesson]);
         }
     };
 
+    // Remove lesson from classroom
     const removeLessonFromClassroom = lesson => {
         setAssignedLessons(prev => prev.filter(l => l.lesson_id === lesson.lesson_id))
     }
 
+    // Save current state of classroom
     const handleSaveClassroom = async _ => {
         try {
             if (!classroomData.classroomId || !classroomData.startDate) {
@@ -142,7 +151,7 @@ function CreateClassroom() {
                 start_date: classroomData.startDate,
                 duration: classroomData.duration,
                 status: classroomData.status,
-                course: assignedCourse.course_id,
+                course: assignedCourse.course_code,
                 lessons: assignedLessons.map(l => l.lesson_id),
                 author: user.user_id,
             };
@@ -166,10 +175,12 @@ function CreateClassroom() {
         }
     };
 
+    // Cancel btn fn
     const handleCancel = _ => {
         navigate("/classrooms");
     };
 
+    // Logout btn fn
     const handleLogout = _ => {
         localStorage.removeItem("user");
         navigate("/");
@@ -177,6 +188,7 @@ function CreateClassroom() {
 
     const currentDate = new Date().toLocaleDateString();
 
+    // Lesson searchbar filtering
     const filteredLessons = Array.isArray(availableLessons) ? availableLessons.filter(
         lesson =>
             lesson.lesson_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -296,7 +308,44 @@ function CreateClassroom() {
                             </div>
                         </div>
                     </div>
-                    {/** Supervisor & Course Selection */}
+                    {/** Supervisor & Course Section */}
+                    <div className="supervisor-course-section">
+                        {/** Supervisor Selection */}
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Supervisor:</label>
+                                <select 
+                                    name="supervisor"
+                                    value={classroomData.supervisor}
+                                    onChange={handleInputChange}
+                                >
+                                    {/** For now, only current instructor */}
+                                    {user && (
+                                        <option value={user.user_id || "instructor"}>
+                                            {user.user_fname} {user.user_lname}
+                                        </option>
+                                    )}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Assign Course:</label>
+                                <select 
+                                    value={assignedCourse.course_code || ""}
+                                    onChange={handleCourseSelect}
+                                >
+                                    <option value="">-- Select a course --</option>
+                                    {/** For now, all courses will be fetched */}
+                                    {availableCourses.map(course => (
+                                        <option value={course.course_code}>
+                                            {course.course_code} - {course.course_title}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
