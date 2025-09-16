@@ -81,7 +81,7 @@ describe("Controller: enrollCourse", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
-      message: "Course code is required",
+      message: "Course code is required.",
     });
   });
 

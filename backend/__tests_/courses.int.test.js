@@ -136,7 +136,7 @@ describe("Integration: POST /courses/:courseCode/enroll", () => {
       .set("x-role", "student");
 
     expect(res.status).toBe(409);
-    expect(res.body.message).toBe("Already enrolled");
+    expect(res.body.message).toBe("Failed to enroll in course.");
   });
 
   it("handle internal server error", async () => {
@@ -147,7 +147,7 @@ describe("Integration: POST /courses/:courseCode/enroll", () => {
       .set("x-role", "student");
 
     expect(res.status).toBe(500);
-    expect(res.body.message).toBe("Internal Server Error");
+    expect(res.body.message).toBe("Internal server error.");
   });
 
   it("blocks non-students", async () => {
