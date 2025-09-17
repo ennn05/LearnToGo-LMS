@@ -32,10 +32,10 @@ function CreateClassroom() {
     const navigate = useNavigate();
 
     // All courses are fetched
-    // TODO: api changes to filter courses by instructor_id
+    // TODO: api changes neded in the future
     const fetchCourses = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/courses");
+            const response = await fetch("http://localhost:5000/api/courses/published");
             if (!response.ok) {
                 console.error("API error:", response.status, response.statusText);
                 setAvailableCourses([]);
@@ -55,15 +55,18 @@ function CreateClassroom() {
 
     // Fetches specific lessons assigned based on course_code
     const fetchLessonsForCourse = async course_code => {
-        try {course_code
-            const response = await fetch(`http://localhost:5000/api/courses/${course_code}/lessons`);
+        try {
+            const response = await fetch(`http://localhost:5000/api/lessons/published`);
             if (!response.ok) {
                 console.error("API error:", response.status, response.statusText);
                 setAvailableLessons([]);
                 return;
             }
             const data = await response.json();
-            setAvailableLessons(data.data);
+            const filteredLessons = data.data.filter(
+                lesson => lesson.cl_course_code === course_code
+            );
+            setAvailableLessons(filteredLessons);
         } catch (error) {
             console.error("Error fetching lessons:", error);
             setAvailableLessons([]);
@@ -339,7 +342,6 @@ function CreateClassroom() {
                                     className="course-select"
                                 >
                                     <option value="">-- Select a course --</option>
-                                    {/** For now, all courses will be fetched */}
                                     {availableCourses.map(course => (
                                         <option value={course.course_code}>
                                             {course.course_code} - {course.course_title}
