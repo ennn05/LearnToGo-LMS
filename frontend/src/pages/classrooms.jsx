@@ -14,7 +14,7 @@ function Classrooms() {
   const fetchClassrooms = async () => {
     try {
       console.log("Fetching classrooms from API...");
-      const { data: res } = await api.get("classrooms/instructor");
+      const { data: res } = await api.get("classrooms");
 
       if (!res.success) {
         console.error("Error fetching classrooms:", res.message);
@@ -38,7 +38,7 @@ function Classrooms() {
   }, []);
 
   const handleClassroomClick = (classroomCode) => {
-    console.log("CLASSROON CLICKED")
+    console.log("CLASSROOM CLICKED");
     navigate(`/classrooms/${classroomCode}`);
   };
 
