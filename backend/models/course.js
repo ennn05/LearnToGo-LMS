@@ -31,13 +31,12 @@ export const getAvailableCoursesForStudent = async (studentId) => {
     return courses;
 }
 
-// To be implemented: add a record to enrollment table
-// Awaiting enrollment table to be created
+// Add a record new enrollment to student_course table
 export const addCourseEnrollment = async (studentId, courseCode) => {
-    // const course = await sql`INSERT INTO "LMS".enrollment (student_id, course_code)
-    // VALUES (${studentId}, ${courseCode}) RETURNING *;`;
+    const course = await sql`INSERT INTO "LMS".student_course (stu_user_id, course_code)
+    VALUES (${studentId}, ${courseCode}) RETURNING *;`;
 
-    const course = [{student_id: studentId, course_code: courseCode}]; // temporary placeholder
+    // const course = [{student_id: studentId, course_code: courseCode}]; // temporary placeholder
     return course[0];
 }   
 

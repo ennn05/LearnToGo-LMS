@@ -32,9 +32,14 @@ function StudentCourseDetails() {
   const handleEnroll = async () => {
     setEnrolling(true);
     try {
-      await api.post(`courses/${courseId}/enroll`);
-      setEnrolled(true);
-      setSuccess(true);
+      const {data: res} = await api.post(`courses/${courseId}/enroll`);
+      if (res?.success) {
+        setEnrolled(true);
+        setSuccess(true);
+        console.log("Enrolled successfully", res);
+      } else {
+        setError(res?.message || "Enrollment failed");
+      }
     } catch (err) {
       setError("Failed to enroll. Try again later.");
     } finally {
