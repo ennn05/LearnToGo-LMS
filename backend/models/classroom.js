@@ -14,12 +14,12 @@ export const getClassroomByCode = async (classroomCode) => {
     //const classrooms = await sql
 }
 
-export const deleteCourse = async (classroomId) => {
+export const deleteClassroom = async (classroomId) => {
     const courses = await sql`DELETE FROM "LMS".course WHERE course_code = ${classroomId} RETURNING *;`;
     return courses[0];
 }
 
-export const updateCourse = async (classroomData) => {
+export const updateClassroom = async (classroomData) => {
     const {id, updateData} = classroomData;
     console.log(classroomData);
     const classrooms = await sql`UPDATE "LMS".classroom 

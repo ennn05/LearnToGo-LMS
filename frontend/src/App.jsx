@@ -8,6 +8,7 @@ import Students from "./pages/students";
 import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";
 import LessonDetails from "./pages/LessonDetails";
+import Classrooms from "./pages/classrooms";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
@@ -63,6 +64,9 @@ function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
+
+        {/* classroom */}
+        <Route path="/classrooms" element={<Classrooms />} />
       </Routes>
   );
 }
