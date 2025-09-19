@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css";
+import useStore from "../store";
 
 function StudentCourseDetails() {
+  const {user, setCredentials, signOut} = useStore((state) => state);
+  console.log("User from store:", user);
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
@@ -49,7 +52,8 @@ function StudentCourseDetails() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    navigate("/login");
+    signOut();
+    navigate("/");
   };
 
   if (loading) {
@@ -59,8 +63,8 @@ function StudentCourseDetails() {
           <div className="profile">
             <div className="avatar"></div>
             <div className="info">
-              <div className="name">Student</div>
-              <div className="role">Student</div>
+              <div className="name">{user.user_fname} {user.user_lname}</div>
+              <div className="role">{user.user_role || "Student"}</div>
             </div>
           </div>
           <nav className="nav-menu">
@@ -84,8 +88,8 @@ function StudentCourseDetails() {
           <div className="profile">
             <div className="avatar"></div>
             <div className="info">
-              <div className="name">Student</div>
-              <div className="role">Student</div>
+              <div className="name">{user.user_fname} {user.user_lname}</div>
+              <div className="role">{user.user_role || "Student"}</div>
             </div>
           </div>
           <nav className="nav-menu">
@@ -113,8 +117,8 @@ function StudentCourseDetails() {
         <div className="profile">
           <div className="avatar"></div>
           <div className="info">
-            <div className="name">Student</div>
-            <div className="role">Student</div>
+            <div className="name">{user.user_fname} {user.user_lname}</div>
+            <div className="role">{user.user_role || "Student"}</div>
           </div>
         </div>
         <nav className="nav-menu">
@@ -129,7 +133,20 @@ function StudentCourseDetails() {
         <div className="topbar">
           <h1>Course Details</h1>
         </div>
+        
         <div className="course-details-container">
+            {success && <span style={{ display: "block", color: "#27ae60", textAlign: "center", padding: "0 12px" }}>Enrolled successfully!</span>}
+          {/* Enroll Button */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
+
+            {enrolled ? (
+              <button style={{width: "fit-content"}} className="btn-edit" disabled>Enrolled</button>
+            ) : (
+              <button style={{width: "fit-content"}} className="btn-edit" onClick={handleEnroll} disabled={enrolling}>
+                {enrolling ? "Enrolling..." : "Enroll"}
+              </button>
+            )}
+          </div>
           {/* Course Information */}
           <div className="course-info">
             <div className="info-item">
@@ -148,17 +165,6 @@ function StudentCourseDetails() {
               <label>Created by:</label>
               <span>{course.user_fname} {course.user_lname}</span>
             </div>
-          </div>
-          {/* Enroll Button */}
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 24 }}>
-            {enrolled ? (
-              <button className="btn-edit" disabled>Enrolled</button>
-            ) : (
-              <button className="btn-edit" onClick={handleEnroll} disabled={enrolling}>
-                {enrolling ? "Enrolling..." : "Enroll"}
-              </button>
-            )}
-            {success && <span style={{ color: "#27ae60", marginLeft: 16 }}>Enrolled successfully!</span>}
           </div>
           {/* Lessons Assigned */}
           <div className="lessons-section">
