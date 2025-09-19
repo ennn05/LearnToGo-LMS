@@ -97,9 +97,9 @@ function Classrooms() {
             <div className="classrooms-grid">
               {classrooms.map((classroom) => (
                 <div
-                  key={classroom.classroom_code}
+                  key={classroom.cr_id}
                   className="classroom-card"
-                  onClick={() => handleClassroomClick(classroom.classroom_code)}
+                  onClick={() => handleClassroomClick(classroom.cr_id)}
                 >
                   <div className="classroom-code">
                     <strong>Classroom ID:</strong> {classroom.cr_id}

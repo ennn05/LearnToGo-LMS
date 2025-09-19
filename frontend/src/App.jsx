@@ -9,6 +9,7 @@ import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";
 import LessonDetails from "./pages/LessonDetails";
 import Classrooms from "./pages/classrooms";
+import ClassroomDetails from "./pages/ClassroomDetails";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
@@ -67,6 +68,7 @@ function App() {
 
         {/* classroom */}
         <Route path="/classrooms" element={<Classrooms />} />
+        <Route path="/classrooms/:classroomId" element={<ClassroomDetails />} />
       </Routes>
   );
 }
