@@ -102,13 +102,14 @@ function Classrooms() {
                   onClick={() => handleClassroomClick(classroom.classroom_code)}
                 >
                   <div className="classroom-code">
-                    {classroom.classroom_code}
+                    <strong>Classroom ID:</strong> {classroom.cr_id}
                   </div>
-                  <div className="classroom-name">
-                    {classroom.classroom_name}
+                  <div className="classroom-course-title">
+                    <strong>Course:</strong>{" "}
+                    {classroom.course_title || classroom.course_code || "N/A"}   
                   </div>
-                  <div className="classroom-capacity">
-                    Capacity: {classroom.classroom_capacity}
+                  <div className="classroom-supervisor">
+                    <strong>Supervisor ID:</strong> {classroom.supervisor_id}
                   </div>
                 </div>
               ))}
