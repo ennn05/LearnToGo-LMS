@@ -33,9 +33,9 @@ export const getInstructorClassrooms = async (req, res) => {
 
 // ✅ Get a classroom by code
 export const getClassroom = async (req, res) => {
-  const { code } = req.params;
+  const { classroomCode } = req.params;
   try {
-    const classroom = await getClassroomByCode(code);
+    const classroom = await getClassroomByCode(classroomCode);
     if (!classroom) {
       return res.status(404).json({ success: false, message: "Classroom not found." });
     }

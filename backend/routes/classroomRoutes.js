@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get("/", getClassrooms);
 router.get("/instructor", authenticate, getInstructorClassrooms);
-router.get("/:code", getClassroom);
+router.get("/:classroomCode", getClassroom);
 router.delete("/:id", authenticate, removeClassroom);
 router.put("/:id", authenticate, editClassroom);
 
