@@ -55,11 +55,6 @@ export const getClassroomByCode = async (classroomCode) => {
     return classroom[0];
 }
 
-export const deleteClassroom = async (classroomId) => {
-    const courses = await sql`DELETE FROM "LMS".course WHERE course_code = ${classroomId} RETURNING *;`;
-    return courses[0];
-}
-
 export const updateClassroom = async (classroomData) => {
     const {id, updateData} = classroomData;
     console.log(classroomData);
@@ -91,4 +86,32 @@ export const createClassroom = async (classroomData) => {
     `;
 
     return classroom[0];
+};
+
+export const deleteClassroom = async (classroomId) => {
+    const courses = await sql`DELETE FROM "LMS".course WHERE course_code = ${classroomId} RETURNING *;`;
+    return courses[0];
+}
+
+// Add one lesson mapping from course_lesson into classroom_course_lesson
+export const addClassroomLesson = async (classroomId, clId) => {
+    const classroomLesson = await sql`
+        INSERT INTO "LMS".classroom_course_lesson 
+            (crcl_cr_id, crcl_cl_id)
+        VALUES
+            (${classroomId}, ${clId})
+        RETURNING *;
+    `;
+    console.log("Added classroom lesson:", classroomLesson[0]);
+    return classroomLesson[0];
+};
+
+// Remove all lessons for a classroom
+export const removeClassroomLessons = async (classroomId) => {
+    const removed = await sql`
+        DELETE FROM "LMS".classroom_course_lesson 
+        WHERE crcl_cr_id = ${classroomId}
+        RETURNING *;
+    `;
+    return removed;
 };
