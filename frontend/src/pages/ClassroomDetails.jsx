@@ -103,7 +103,7 @@ function ClassroomDetails() {
 
           {/* Lessons Section */}
           <div className="lessons-section">
-            <h3>Lessons in this Classroom</h3>
+            <h3>Lessons</h3>
             <div className="lessons-container">
               {classroom.lessons?.length === 0 ? (
                 <p className="no-lessons">No lessons assigned yet.</p>

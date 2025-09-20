@@ -110,12 +110,10 @@
 
 /* Classroom container */
 .classroom-details-container {
-  background-color: white;
-  border-radius: 8px;
-  padding: 40px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  width: 90%;
-  margin: 0 auto;
+  width: 100%;             /* span entire .main-content */
+  max-width: none;         /* remove any max width limit */
+  margin: 0;               /* no auto-centering */
+  border-radius: 0;        /* optional → makes it flush */
 }
 
 /* Header (status + actions) */
@@ -188,16 +186,25 @@
 
 .section h3 {
   color: #2c3e50;
-  margin-bottom: 15px;
+  margin-bottom: 10px; /* tighter spacing */
   font-size: 20px;
+  text-align: left; /* align title left */
 }
 
 .section-content {
   background-color: #f8f9fa;
   border: 2px dashed #bdc3c7;
   border-radius: 8px;
-  padding: 40px;
-  text-align: center;
+  padding: 20px;
+  text-align: left;
+  width: 100%; /* full width inside parent */
+  box-sizing: border-box;
+
+  /* NEW: stretch lessons wider */
+  margin-left: -20px;   /* pull left */
+  margin-right: -20px;  /* pull right */
+  padding-left: 30px;   /* balance padding */
+  padding-right: 30px;
 }
 
 .no-items {
