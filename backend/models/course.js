@@ -29,7 +29,27 @@ export const getEnrolledCoursesByStudent = async (studentId) => {
     return courses;
 }
 
-
+// Fetch only courses that are published and not yet enrolled by the student
+export const getAvailableCoursesForStudent = async (studentId) => {
+    const courses = await sql `SELECT 
+            c.course_code,
+            c.course_title,
+            c.course_status,
+            c.course_total_credit,
+            u.user_fname AS instructor_fname,
+            u.user_lname AS instructor_lname
+        FROM "LMS".course c
+        JOIN "LMS".instructor i ON c.course_creator = i.inst_user_id
+        JOIN "LMS".user u ON i.inst_user_id = u.user_id
+        WHERE c.course_status = 'published'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM "LMS".student_course sc
+            WHERE sc.stu_user_id = ${studentId}
+            AND sc.course_code = c.course_code
+  );`
+    return courses;
+}
 
 // Add a record new enrollment to student_course table
 export const addCourseEnrollment = async (studentId, courseCode) => {
