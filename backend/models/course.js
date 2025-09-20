@@ -10,26 +10,26 @@ export const getCoursesByInstructor = async (instructorId) => {
     return courses;
 }
 
-// To be implemented: fetch only courses that the student is enrolled in
+//Fetch only courses that the student is enrolled in
 export const getEnrolledCoursesByStudent = async (studentId) => {
-    const courses = [{course_code: "DUMMY-ENROLLED", course_title: "Courses enrolled by student - to be implemented"}];
+    const courses = await sql `
+    SELECT 
+        c.course_code,
+        c.course_title,
+        c.course_status,
+        c.course_total_credit,
+        u.user_fname AS instructor_fname,
+        u.user_lname AS instructor_lname
+    FROM "LMS".student_course sc
+    JOIN "LMS".course c ON sc.course_code = c.course_code
+    JOIN "LMS".instructor i ON c.course_creator = i.inst_user_id
+    JOIN "LMS".user u ON i.inst_user_id = u.user_id
+    WHERE sc.stu_user_id = ${studentId};
+    `
     return courses;
 }
 
-// Fetch only courses that are published and not yet enrolled by the student
-export const getAvailableCoursesForStudent = async (studentId) => {
-    const courses = await sql`SELECT *
-    FROM "LMS".course c
-    WHERE c.course_status = 'published'
-      AND NOT EXISTS (
-        SELECT 1
-        FROM "LMS".student_course sc
-        WHERE sc.stu_user_id = ${studentId}
-          AND sc.course_code = c.course_code
-      )`;
-    // const courses = [{course_code: "DUMMY-PUBLISHED", course_title: "Published Courses - to be implemented"}];
-    return courses;
-}
+
 
 // Add a record new enrollment to student_course table
 export const addCourseEnrollment = async (studentId, courseCode) => {
