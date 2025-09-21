@@ -62,7 +62,18 @@ export const getClassroomByCode = async (classroomCode) => {
                                 )
                             ) FILTER (WHERE l.lesson_id IS NOT NULL),
                             '[]'::json
-                            ) AS lessons
+                            ) AS lessons,
+                            COALESCE(
+                            json_agg(
+                                json_build_object(
+                                'stu_user_id', s.stu_user_id,
+                                'stu_user_fname', su.user_fname,
+                                'stu_user_lname', su.user_lname,
+                                'stu_user_email', su.user_email
+                                )
+                            ) FILTER (WHERE s.stu_user_id IS NOT NULL),
+                            '[]'::json
+                            ) AS students
                         FROM "LMS".classroom cr
                         LEFT JOIN "LMS".course c 
                             ON cr.course_code = c.course_code
@@ -80,6 +91,14 @@ export const getClassroomByCode = async (classroomCode) => {
                             ON crcl.crcl_cl_id = cl.cl_id
                         LEFT JOIN "LMS".lesson l 
                             ON cl.cl_lesson_id = l.lesson_id
+                        LEFT JOIN "LMS".classroom_student cs
+                            ON cr.cr_id = cs.cr_id
+                        LEFT JOIN "LMS".student_course stuc
+                            ON cs.stucourse_id = stuc.stucourse_id
+                        LEFT JOIN "LMS".student s
+                            ON stuc.stu_user_id = s.stu_user_id
+                        LEFT JOIN "LMS".user su
+                            ON s.stu_user_id = su.user_id
                         WHERE cr.cr_id = ${classroomCode}
                         GROUP BY cr.cr_id, c.course_code, ic.inst_user_id, uc.user_fname, uc.user_lname, isv.inst_user_id, usv.user_fname, usv.user_lname;
                         `;
