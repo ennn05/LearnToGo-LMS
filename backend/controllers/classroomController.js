@@ -3,7 +3,10 @@ import {
   getClassroomsByInstructor,
   getClassroomByCode,
   deleteClassroom,
-  updateClassroom
+  updateClassroom,
+  createClassroom,
+  addClassroomLesson,
+  addClassroomStudent
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -76,4 +79,77 @@ export const editClassroom = async (req, res) => {
     console.error("Error updating classroom:", error);
     return res.status(500).json({ success: false, message: "Failed to update classroom." });
   }
+};
+
+export const addClassroom = async (req, res) => {
+  const {
+                cr_id,
+                cr_start_date,
+                cr_duration,
+                cr_status,
+                course_code,
+                cr_creator,
+                cr_date_created,
+                cr_date_updated,
+                supervisor_id,
+                lessons,
+                students,
+            } = req.body;
+    try {
+        if (!cr_id || !cr_start_date || !cr_duration || !course_code || !cr_creator || !supervisor_id)
+        {
+            return res.status(400).json({ success: false, message: "All fields are required" });
+        }
+
+        const existClassroom = await getClassroomByCode(cr_id);
+        if (existClassroom) {
+            return res.status(400).json({ success: false, message: "Classroom already exists" });
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+
+        const classroomData = {
+            cr_id,
+            cr_start_date,
+            cr_duration,
+            cr_status: cr_status ?? "draft",
+            course_code,
+            cr_creator,
+            cr_date_created: cr_date_created ?? today,
+            cr_date_updated: cr_date_updated ?? today,
+            supervisor_id,
+        };
+
+        const classroom = await createClassroom(classroomData);
+        if (classroom) {
+            try {
+                lessons.forEach(element => {
+                    addClassroomLesson(cr_id, element);
+                });
+
+            } catch(error)
+            {
+                console.error("Error in adding lesson to classroom:", error);
+                return res.status(500).json({ success: false, message: "Failed to add lesson to classroom." });
+            }
+
+            try {
+                students.forEach(element => {
+                    addClassroomStudent(cr_id, element);
+                });
+
+            } catch(error)
+            {
+                console.error("Error in adding student to classroom:", error);
+                return res.status(500).json({ success: false, message: "Failed to add student to classroom." });
+            }
+
+            return res.status(200).json({ success: true, data: classroom });
+        }
+        return res.status(404).json({ success: false, message: "Classroom not found." });
+    }
+    catch (error) {
+        console.error("Error in creating classroom:", error);
+        return res.status(500).json({ success: false, message: "Failed to create classroom." });
+    }
 };
