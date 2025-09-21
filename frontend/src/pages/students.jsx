@@ -147,11 +147,11 @@ const Students = () => {
           </div>
         </div>
 
-        {/* Navigation Menu */}
+       {/* Navigation Menu */}
         <nav className="nav-menu">
           <button
             className={activePage === "courses" ? "active" : ""}
-            onClick={() => navigate("/courses")}
+            onClick={() => setActivePage("courses")}
           >
             Courses
           </button>
@@ -163,19 +163,19 @@ const Students = () => {
           </button>
           <button
             className={activePage === "classrooms" ? "active" : ""}
-            onClick={() => setActivePage("classrooms")}
+            onClick={() => navigate("/classrooms")}
           >
             Classrooms
           </button>
           <button
             className={activePage === "students" ? "active" : ""}
-            onClick={() => setActivePage("students")}
+            onClick={() => navigate("/students")}
           >
             Students
           </button>
           <button
             className={activePage === "reports" ? "active" : ""}
-            onClick={() => setActivePage("reports")}
+            onClick={() => navigate("/reports")}
           >
             Reports & Statistics
           </button>
