@@ -22,9 +22,9 @@ router.get("/", authenticate, (req, res) => {
             return getClassrooms(req, res);
         default:
             return res.status(403).json({ message: "Unauthorized" });
-    }
-    
+    }    
 });
+
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);
 router.delete("/:id", authenticate, removeClassroom);

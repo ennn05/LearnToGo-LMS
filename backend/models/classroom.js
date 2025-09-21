@@ -199,26 +199,32 @@ export const removeClassroomStudent = async (classroomId, stuCourseId) => {
 // Get classrooms enrolled by a specific student
 export const getClassroomsByStudent = async (studentId) => {
   const classrooms = await sql`
-    SELECT 
-      cr.cr_id,
-      cr.cr_code,
-      cr.cr_status,
-      cr.cr_start_date,
-      cr.cr_duration,
-      c.course_name,
-      usv.user_fname || ' ' || usv.user_lname AS supervisor_name
-    FROM "LMS".classroom cr
-    JOIN "LMS".course c 
-      ON cr.course_code = c.course_code
-    LEFT JOIN "LMS".instructor isv 
-      ON cr.supervisor_id = isv.inst_user_id
-    LEFT JOIN "LMS".user usv 
-      ON isv.inst_user_id = usv.user_id
-    JOIN "LMS".classroom_student cs
-      ON cr.cr_id = cs.cr_id
-    WHERE cs.stu_user_id = ${studentId}
-    ORDER BY cr.cr_start_date DESC;
-  `;
+                        SELECT 
+                        cr.*,
+                        c.*,
+                        usv.user_fname AS supervisor_fname,
+                        usv.user_lname AS supervisor_lname,
+                        uc.user_fname AS creator_fname,
+                        uc.user_lname AS creator_lname,
+                        cs.cs_id,
+                        sc.stucourse_id
+                    FROM "LMS".student_course sc
+                    JOIN "LMS".classroom_student cs 
+                        ON sc.stucourse_id = cs.stucourse_id
+                    JOIN "LMS".classroom cr 
+                        ON cs.cr_id = cr.cr_id
+                    LEFT JOIN "LMS".course c 
+                        ON cr.course_code = c.course_code
+                    LEFT JOIN "LMS".instructor isv 
+                        ON cr.supervisor_id = isv.inst_user_id
+                    LEFT JOIN "LMS".user usv 
+                        ON isv.inst_user_id = usv.user_id
+                    LEFT JOIN "LMS".instructor ic 
+                        ON cr.cr_creator = ic.inst_user_id
+                    LEFT JOIN "LMS".user uc 
+                        ON ic.inst_user_id = uc.user_id
+                    WHERE sc.stu_user_id = ${studentId};`
+
   return classrooms;
 };
 
