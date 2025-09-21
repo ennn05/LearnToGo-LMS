@@ -172,13 +172,17 @@ function CreateClassroom() {
             }
 
             const classroomToSave = {
-                classroom_id: classroomData.classroomId,
-                start_date: classroomData.startDate,
-                duration: classroomData.duration,
-                status: classroomData.status,
-                course: assignedCourse.course_code,
-                lessons: assignedLessons.map(l => l.lesson_id),
-                author: user.user_id,
+                cr_id: classroomData.classroomId,
+                cr_start_date: classroomData.startDate,
+                cr_duration: classroomData.duration,
+                cr_status: classroomData.status,
+                course_code: assignedCourse.course_code,
+                cr_creator: user.user_id,
+                // cr_date_created: new Date().toISOString().split('T')[0],
+                // cr_date_updated: new Date().toISOString().split('T')[0],
+                supervisor_id: classroomData.supervisor,
+                lessons: assignedLessons.map(l => l.cl_id),
+                students: [] // to be implemented
             };
 
             const response = await fetch("http://localhost:5000/api/classrooms", {
