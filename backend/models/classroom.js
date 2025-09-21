@@ -2,7 +2,12 @@ import sql from "../db.js";
 
 //Get all the classrooms in the system
 export const getAllClassrooms = async () => {
-    const classrooms = await sql`SELECT * FROM "LMS".classroom;`;
+    const classrooms = await sql`SELECT * FROM "LMS".classroom cr
+                                LEFT JOIN "LMS".course c ON cr.course_code = c.course_code
+                                LEFT JOIN "LMS".instructor isv ON cr.supervisor_id = isv.inst_user_id
+                                LEFT JOIN "LMS".user usv ON isv.inst_user_id = usv.user_id;
+                                LEFT JOIN "LMS".instructor ic ON cr.cr_creator = ic.inst_user_id
+                                LEFT JOIN "LMS".user uc ON ic.inst_user_id = uc.user_id;`;
     return classrooms;
 }
 
