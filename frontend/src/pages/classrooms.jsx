@@ -9,6 +9,7 @@ function Classrooms() {
   const [classrooms, setClassrooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [availableCourses, setAvailableCourses] = useState([]);
+  const [filter, setFilter] = useState("all"); // all, mine, others
 
   const navigate = useNavigate();
 
@@ -41,6 +42,16 @@ function Classrooms() {
       setLoading(false);
     }
   };
+
+  const filteredClassrooms = classrooms.filter((cl) => {
+    if (!user) return true; // fallback if user not loaded yet
+    if (filter === "mine") {
+      return cl.cr_creator === user.user_id;
+    } else if (filter === "others") {
+      return cl.cr_creator !== user.user_id;
+    }
+    return true; // "all"
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -118,8 +129,21 @@ function Classrooms() {
               <p>No classrooms found. Create your first classroom!</p>
             </div>
           ) : (
+            <div>
+            <div className="filter-dropdown" style={{ marginBottom: "15px", textAlign: "right" }}>
+              <label htmlFor="classroomFilter" style={{ marginRight: "8px" }}>Filter by Creator:</label>
+              <select
+                id="classroomFilter"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="all">All Classrooms</option>
+                <option value="mine">Created by Me</option>
+                <option value="others">Created by Others</option>
+              </select>
+            </div>
             <div className="classrooms-grid">
-              {classrooms.map((classroom) => (
+              {filteredClassrooms.map((classroom) => (
                 <div
                   key={classroom.cr_id}
                   className="classroom-card"
@@ -169,6 +193,7 @@ function Classrooms() {
                   </div>
                 </div>
               ))}
+            </div>
             </div>
           )}
         </div>
