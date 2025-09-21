@@ -9,6 +9,7 @@ import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";
 import LessonDetails from "./pages/LessonDetails";
 import Classrooms from "./pages/classrooms";
+import ClassroomDetails from "./pages/ClassroomDetails";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
@@ -60,6 +61,7 @@ function App() {
           <Route path="/students" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Students /></ProtectedRoute>} />
           <Route path="/lessons/:lessonId" element={<LessonDetails />} />
           <Route path="/classrooms" element={<Classrooms />} />
+          <Route path="/classrooms/:classroomId" element={<ClassroomDetails />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
