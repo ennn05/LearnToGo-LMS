@@ -110,10 +110,14 @@ export const createClassroom = async (classroomData) => {
     return classroom[0];
 };
 
-export const deleteClassroom = async (classroomId) => {
-    const courses = await sql`DELETE FROM "LMS".course WHERE course_code = ${classroomId} RETURNING *;`;
-    return courses[0];
-}
+export const deleteClassroom = async (cr_id) => {
+  const result = await sql`
+    DELETE FROM "LMS".classroom
+    WHERE cr_id = ${cr_id}
+    RETURNING *;
+  `;
+  return result[0]; // will be undefined if no classroom found
+};
 
 // Add one lesson mapping from course_lesson into classroom_course_lesson
 export const addClassroomLesson = async (classroomId, clId) => {

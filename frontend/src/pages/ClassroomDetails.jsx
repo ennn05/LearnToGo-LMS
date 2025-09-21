@@ -10,7 +10,18 @@ function ClassroomDetails() {
   const [students, setStudents] = useState([]); // ✅ state for students
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const navigate = useNavigate();
+
+  const handleDeleteClassroom = async () => {
+    try {
+      const res = await api.delete(`classrooms/${classroom.cr_id}`);
+      console.log("Deleted classroom:", res.data);
+      navigate("/classrooms");
+    } catch (error) {
+      console.error("Error deleting classroom:", error.response?.data || error);
+    }
+  };
 
   useEffect(() => {
     const fetchClassroom = async () => {
@@ -180,12 +191,36 @@ function ClassroomDetails() {
             <button className="btn-edit" onClick={() => console.log("Edit classroom")}>
               Edit
             </button>
-            <button className="btn-delete" onClick={() => console.log("Delete classroom")}>
+            <button className="btn-delete" onClick={() => setDeleteConfirm(true)}>
               Delete
             </button>
           </div>
         </div>
       </div>
+      {deleteConfirm && (
+      <div className="delete-confirmation-overlay">
+        <div className="delete-confirmation-modal">
+          <h3>Are you sure you want to delete this classroom?</h3>
+          <div className="delete-confirmation-actions">
+            <button
+              className="btn-delete"
+              onClick={() => {
+                setDeleteConfirm(false);
+                handleDeleteClassroom();
+              }}
+            >
+              Delete
+            </button>
+            <button
+              className="delete-confirmation-btn-cancel"
+              onClick={() => setDeleteConfirm(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

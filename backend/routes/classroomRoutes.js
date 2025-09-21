@@ -15,7 +15,7 @@ const router = express.Router();
 router.get("/", getClassrooms);
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);
-router.delete("/:id", authenticate, removeClassroom);
+router.delete("/:id", authenticate, authorize("instructor"), removeClassroom);
 router.put("/:id", authenticate, editClassroom);
 router.post("/", authenticate, authorize("instructor"), addClassroom);
 
