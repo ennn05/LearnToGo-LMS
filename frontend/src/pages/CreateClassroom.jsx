@@ -32,6 +32,7 @@ function CreateClassroom() {
     const [availableLessons, setAvailableLessons] = useState([]);
     const [assignedStudents, setAssignedStudents] = useState([]);
     const [availableStudents, setAvailableStudents] = useState([]);
+    const [availableSupervisors, setAvailableSupervisors] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
 
@@ -104,6 +105,22 @@ function CreateClassroom() {
         }
     };
 
+    const fetchAvailableSupervisors = async () => {
+        try {
+            const {data: response} = await api.get("users/instructors");
+            if (response.success) {
+                setAvailableSupervisors(response.data);
+                console.log("Available supervisors:", response.data);
+            } else {
+                console.error("Error fetching supervisors:", response.message);
+                setAvailableSupervisors([]);
+            }
+        } catch (error) {
+            console.error("Error fetching supervisors:", error);
+            setAvailableSupervisors([]);
+        }
+    };
+
     // Mount: load user and courses
     useEffect(() => {
         // const storedUser = localStorage.getItem("user");
@@ -118,6 +135,7 @@ function CreateClassroom() {
         //     });
         // }
         fetchCourses();
+        fetchAvailableSupervisors();
         // fetchLessonsForCourse("C2001");
         // fetchAvailableStudents("C2006");
     }, []);
@@ -313,7 +331,7 @@ function CreateClassroom() {
                     <div className="classroom-form">
                         <div className="form-row">
                             <div className="form-group">
-                                <label>Course Code:</label>
+                                <label>Classroom Code:</label>
                                 <input 
                                     type="text"
                                     name="classroomId"
@@ -376,11 +394,18 @@ function CreateClassroom() {
                                     className="supervisor-select"
                                 >
                                     {/** For now, only current instructor */}
-                                    {user && (
+                                    {/* {user && (
                                         <option value={user.user_id || "instructor"}>
                                             {user.user_fname} {user.user_lname}
                                         </option>
-                                    )}
+                                    )} */}
+                                    {availableSupervisors ? availableSupervisors.map(supervisor => (
+                                        <option value={supervisor.user_id}>
+                                            {supervisor.user_fname} {supervisor.user_lname}
+                                        </option>
+                                    )) : <option value={user.user_id || "instructor"}>
+                                            {user.user_fname} {user.user_lname}
+                                        </option>}
                                 </select>
                             </div>
                         </div>
