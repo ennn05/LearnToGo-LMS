@@ -514,6 +514,36 @@ body {
   transform: none;
 }
 
+/* Students section */
+.students-section {
+  margin-top: 2rem;
+}
+
+.students-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.students-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.students-table th,
+.students-table td {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.students-table th {
+  background: #f8f9fa;
+}
+
+.students-table input[type="checkbox"] {
+  transform: scale(1.2);
+}
+
 /* Save and cancel buttons */
 .save-section {
   display: flex;

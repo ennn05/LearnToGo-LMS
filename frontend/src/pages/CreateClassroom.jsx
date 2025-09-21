@@ -21,11 +21,13 @@ function CreateClassroom() {
         status: "draft"
     })
 
-    // Lessons & Courses
+    // Lessons & Courses & Students
     const [assignedCourse, setAssignedCourse] = useState(null);
     const [availableCourses, setAvailableCourses] = useState([]);
     const [assignedLessons, setAssignedLessons] = useState([]);
     const [availableLessons, setAvailableLessons] = useState([]);
+    const [assignedStudents, setAssignedStudents] = useState([]);
+    const [availableStudents, setAvailableStudents] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
 
@@ -74,24 +76,23 @@ function CreateClassroom() {
         }
     };
 
-    const fetchAvailableStudents = async courseCode => {
+    const fetchStudentsForCourse = async course_code => {
         try {
-
             // note: both of these api will work (depending on whether u want to get all students (group by all courses) or students for a specific course only)
             // const response = await fetch(`http://localhost:5000/api/courses/enrolled-students`);
-            const response = await fetch(`http://localhost:5000/api/courses/enrolled-students/${courseCode}`);
+            const response = await fetch(`http://localhost:5000/api/courses/enrolled-students/${course_code}`);
 
             if (!response.ok) {
                 console.error("API error:", response.status, response.statusText);
-                // setAvailableStudents([]);
+                setAvailableStudents([]);
                 return; 
             }
             const data = await response.json();
             console.log("Enrolled students:", data.data);
-            // setAvailableStudents(data.data);
+            setAvailableStudents(data.data);
         } catch (error) {
             console.error("Error fetching students:", error);
-            // setAvailableStudents([]);
+            setAvailableStudents([]);
         }
     };
 
@@ -118,6 +119,7 @@ function CreateClassroom() {
         setAssignedCourse(course);
         setAssignedLessons([]);
         fetchLessonsForCourse(course.course_code);
+        fetchStudentsForCourse(course.course_code);
     };
 
     // Input change method
@@ -164,6 +166,25 @@ function CreateClassroom() {
     const removeLessonFromClassroom = lesson => {
         setAssignedLessons(prev => prev.filter(l => l.lesson_id === lesson.lesson_id))
     }
+
+    const toggleStudentSelection = student => {
+        const isAlreadyAssigned = assignedStudents.find(
+            s => s.user_id === student.user_id
+        );
+
+        if (isAlreadyAssigned) {
+            // Remove student
+            setAssignedStudents(
+            assignedStudents.filter(s => s.user_id !== student.user_id)
+            );
+        } else {
+            // Add student
+            setAssignedStudents([...assignedStudents, student]);
+        }
+    };
+
+    const isStudentSelected = user_id =>
+        assignedStudents.some((s) => s.user_id === user_id);
 
     // Save current state of classroom
     const handleSaveClassroom = async () => {
@@ -439,6 +460,40 @@ function CreateClassroom() {
                                 )}
                             </div>
                         </div>
+                    </div>
+                    {/** Students Section */}
+                    <div className="students-section">
+                        <h3>Assign Students</h3>
+                        {availableStudents.length === 0 ? (
+                            <p>No students enrolled in this course yet.</p>
+                        ) : (
+                            <table className="students-table">
+                                <thead>
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {availableStudents.map(student => (
+                                        <tr key={student.user_id}>
+                                            <td>
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={isStudentSelected(student.user_id)}
+                                                    onChange={() => toggleStudentSelection(student)}
+                                                />
+                                            </td>
+                                            <td>{student.user_id}</td>
+                                            <td>{student.user_fname} {student.user_lname}</td>
+                                            <td>{student.user_email}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                     {/** Save & Cancel btns */}
                     <div className="save-section">
