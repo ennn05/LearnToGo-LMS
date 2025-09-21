@@ -18,7 +18,7 @@ function CreateClassroom() {
         updatedDate: "",
         author: "",
         supervisor: "",
-        status: "draft"
+        status: "draft",
     })
 
     // Lessons & Courses & Students
@@ -34,19 +34,17 @@ function CreateClassroom() {
     const navigate = useNavigate();
 
     // All courses are fetched
-    // TODO: api changes neded in the future
     const fetchCourses = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/courses/published");
+            const response = await fetch(`http://localhost:5000/api/courses/published`);
             if (!response.ok) {
                 console.error("API error:", response.status, response.statusText);
                 setAvailableCourses([]);
                 return;
             }
             const data = await response.json();
-            setAvailableCourses(
-                data.data.filter(course => course.status === "published")
-            );
+            setAvailableCourses(data.data);
+            console.log("Available courses:", data.data);
         } catch (error) {
             console.error("Error fetching courses:", error);
             setAvailableCourses([]);
@@ -65,11 +63,13 @@ function CreateClassroom() {
                 return;
             }
             const data = await response.json();
-            console.log("All lessons:", data.data);
-            const filteredLessons = data.data.filter(
-                lesson => lesson.cl_course_code === course_code
+            console.log("All Lessons:", data.data);
+            const match = data.data.find(
+                item => item.cl_course_code === course_code
             );
-            setAvailableLessons(filteredLessons);
+            const lessons = match ? match.lessons : [];
+            console.log("Filtered Lessons:", lessons);
+            setAvailableLessons(lessons);
         } catch (error) {
             console.error("Error fetching lessons:", error);
             setAvailableLessons([]);
@@ -89,7 +89,11 @@ function CreateClassroom() {
             }
             const data = await response.json();
             console.log("Enrolled students:", data.data);
-            setAvailableStudents(data.data);
+            const match = data.data.find(
+                item => item.course_code === course_code
+            );
+            const students = match ? match.students : [];
+            setAvailableStudents(students);
         } catch (error) {
             console.error("Error fetching students:", error);
             setAvailableStudents([]);
@@ -143,7 +147,6 @@ function CreateClassroom() {
                 alert("Please fill in all required fields before submitting.")
                 return;
             }
-
             const publishedClassroomData = { ...classroomData, status: "published" };
             setClassroomData(publishedClassroomData);
             console.log("Publishing classroom:", classroomData);
@@ -163,19 +166,18 @@ function CreateClassroom() {
     };
 
     // Remove lesson from classroom
-    const removeLessonFromClassroom = lesson => {
-        setAssignedLessons(prev => prev.filter(l => l.lesson_id === lesson.lesson_id))
+    const removeLessonFromClassroom = lesson_id => {
+        setAssignedLessons(prev => prev.filter(l => l.lesson_id !== lesson_id))
     }
 
     const toggleStudentSelection = student => {
         const isAlreadyAssigned = assignedStudents.find(
-            s => s.user_id === student.user_id
+            s => s.stu_user_id === student.stu_user_id
         );
-
         if (isAlreadyAssigned) {
             // Remove student
             setAssignedStudents(
-            assignedStudents.filter(s => s.user_id !== student.user_id)
+                assignedStudents.filter(s => s.stu_user_id !== student.stu_user_id)
             );
         } else {
             // Add student
@@ -183,8 +185,7 @@ function CreateClassroom() {
         }
     };
 
-    const isStudentSelected = user_id =>
-        assignedStudents.some((s) => s.user_id === user_id);
+    const isStudentSelected = stu_user_id => assignedStudents.includes(stu_user_id);
 
     // Save current state of classroom
     const handleSaveClassroom = async () => {
@@ -205,7 +206,7 @@ function CreateClassroom() {
                 // cr_date_updated: new Date().toISOString().split('T')[0],
                 supervisor_id: classroomData.supervisor, //make sure it's the user id of the supervisor
                 lessons: assignedLessons.map(l => l.cl_id),
-                students: [] // to be implemented - pls use student.stucourse_id
+                students: assignedStudents.map(s => s.stucourse_id)
             };
 
             const response = await fetch("http://localhost:5000/api/classrooms", {
@@ -420,7 +421,7 @@ function CreateClassroom() {
                                             </div>
                                             <div className="lesson-actions">
                                                 <span className="check-icon">✓</span>
-                                                <button className="remove-button" onClick={() => removeLessonFromClassroom(lesson)}>×</button>
+                                                <button className="remove-btn" onClick={() => removeLessonFromClassroom(lesson.lesson_id)}>×</button>
                                             </div>
                                         </div>
                                     ))
@@ -486,7 +487,7 @@ function CreateClassroom() {
                                                     onChange={() => toggleStudentSelection(student)}
                                                 />
                                             </td>
-                                            <td>{student.user_id}</td>
+                                            <td>{student.stu_user_id}</td>
                                             <td>{student.user_fname} {student.user_lname}</td>
                                             <td>{student.user_email}</td>
                                         </tr>
