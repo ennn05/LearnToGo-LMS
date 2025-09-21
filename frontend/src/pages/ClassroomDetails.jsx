@@ -62,6 +62,34 @@ function ClassroomDetails() {
 
   return (
     <div className="flex">
+      {/* Sidebar */}
+      <div className="sidebar">
+        <div className="profile">
+          <div className="avatar"></div>
+          <div className="info">
+            <div className="name">
+              {classroom?.instructor_name || "Instructor"}
+            </div>
+            <div className="role">
+              Instructor
+            </div>
+          </div>
+        </div>
+        <nav className="nav-menu">
+          <button onClick={() => navigate("/courses")}>Courses</button>
+          <button onClick={() => navigate("/lessons")}>Lessons</button>
+          <button onClick={() => navigate("/classrooms")}>Classrooms</button>
+          <button onClick={() => navigate("/students")}>Students</button>
+          <button onClick={() => navigate("/reports")}>Reports & Statistics</button>
+          <button className="logout-btn" onClick={() => {
+            localStorage.removeItem("user");
+            navigate("/");
+          }}>
+            Log Out
+          </button>
+        </nav>
+      </div>
+      
       {/* Main Content */}
       <div className="main-content">
         <div className="topbar">
