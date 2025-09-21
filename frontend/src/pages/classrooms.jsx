@@ -8,8 +8,21 @@ function Classrooms() {
   const [user, setUser] = useState(null);
   const [classrooms, setClassrooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [availableCourses, setAvailableCourses] = useState([]);
 
   const navigate = useNavigate();
+
+  const fetchCourses = async () => {
+    try {
+      const { data: res } = await api.get("courses"); // Fetch all courses
+      if (res.success) {
+        setAvailableCourses(res.data);
+      }
+    } catch (err) {
+      console.error("Error fetching courses:", err);
+      setAvailableCourses([]);
+    }
+  };
 
   const fetchClassrooms = async () => {
     try {
@@ -35,6 +48,7 @@ function Classrooms() {
       setUser(JSON.parse(storedUser));
     }
     fetchClassrooms();
+    fetchCourses();
   }, []);
 
   const handleClassroomClick = (classroomCode) => {
@@ -46,6 +60,16 @@ function Classrooms() {
     localStorage.removeItem("user");
     navigate("/");
   };
+
+  const classroomsWithCourses = classrooms.map(cl => ({
+    ...cl,
+    courseObj: availableCourses.find(course => course.course_code === cl.course_code)
+  }));
+
+  console.log("Classrooms with course objects:", classroomsWithCourses);
+  classroomsWithCourses.forEach(cl => {
+    console.log(`Classroom ${cl.cr_id} course_status:`, cl.courseObj?.course_status);
+  });
 
   return (
     <div className="flex">
@@ -101,15 +125,47 @@ function Classrooms() {
                   className="classroom-card"
                   onClick={() => handleClassroomClick(classroom.cr_id)}
                 >
-                  <div className="classroom-code">
-                    <strong>Classroom ID:</strong> {classroom.cr_id}
+                  {/* Card Header / Top Section */}
+                  <div
+                    className={`classroom-top-section ${
+                      availableCourses.find(course => course.course_code === classroom.course_code)
+                        ?.course_status.toLowerCase() || "default"
+                    }`}
+                  >
+                    <h3>Classroom ID: {classroom.cr_id}</h3>
                   </div>
-                  <div className="classroom-course-title">
-                    <strong>Course:</strong>{" "}
-                    {classroom.course_title || classroom.course_code || "N/A"}   
-                  </div>
-                  <div className="classroom-supervisor">
-                    <strong>Supervisor ID:</strong> {classroom.supervisor_id}
+
+                  {/* Card Body */}
+                  <div className="classroom-body">
+
+                    <div className="classroom-course-title">
+                      <strong>Associated Course:</strong>{" "}
+                      {                        
+                        availableCourses.find(course => course.course_code === classroom.course_code)
+                        ?.course_title || "Not specified"
+                      }
+                    </div>
+
+                    <div className="classroom-supervisor">
+                      <strong>Supervisor ID:</strong> {classroom.supervisor_id}
+                    </div>
+
+                    <div className="classroom-status">
+                      <strong>Status:</strong>{" "}
+                      {
+                        availableCourses.find(course => course.course_code === classroom.course_code)
+                          ?.course_status || "Not specified"
+                      }
+                    </div>
+
+                    <div className="classroom-dates">
+                      <strong>Start Date:</strong>{" "}
+                      {classroom.cr_start_date
+                        ? new Date(classroom.cr_start_date).toLocaleDateString()
+                        : "N/A"}{" "}
+                      <br />
+                      <strong>Duration:</strong> {classroom.cr_duration || "N/A"} week(s)
+                    </div>
                   </div>
                 </div>
               ))}
