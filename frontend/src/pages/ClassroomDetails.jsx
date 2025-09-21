@@ -172,7 +172,7 @@ function ClassroomDetails() {
           <div className="students-section">
             <h3>Students</h3>
             <div className="lessons-container">
-              {students.length === 0 ? (
+              {/* {students.length === 0 ? (
                 <p className="no-lessons">No students enrolled yet.</p>
               ) : (
                 <div className="lessons-grid">
@@ -184,7 +184,30 @@ function ClassroomDetails() {
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
+
+              {classroom.students.length === 0 ? (
+                    <p>No students enrolled in this course yet.</p>
+                ) : (
+                    <table className="students-table">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {classroom.students.map(student => (
+                                <tr key={student.stu_user_id}>
+                                    <td>{student.stu_user_id}</td>
+                                    <td>{student.stu_user_fname} {student.stu_user_lname}</td>
+                                    <td>{student.stu_user_email}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
           </div>
 
