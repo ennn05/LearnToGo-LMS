@@ -18,5 +18,6 @@ router.get("/:classroomCode", getClassroom);
 router.delete("/:id", authenticate, removeClassroom);
 router.put("/:id", authenticate, editClassroom);
 router.post("/", authenticate, authorize("instructor"), addClassroom);
+router.put("/:id/lessons/:lessonId/students", authenticate, authorize("instructor"), editClassroom);
 
 export default router;
