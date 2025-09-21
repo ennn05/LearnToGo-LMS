@@ -101,7 +101,7 @@ export const getPublishedCourses = async () => {
     return courses;
 };
 
-export const getAllStudentsByCourseEnrolled = async () => {
+export const getAllStudentsByCourseEnrolled = async (courseCode=undefined) => {
     const studentsByCourse = await sql`
             SELECT 
             sc.course_code,
@@ -119,6 +119,7 @@ export const getAllStudentsByCourseEnrolled = async () => {
             FROM "LMS".student_course sc
             LEFT JOIN "LMS".student s ON sc.stu_user_id = s.stu_user_id
             LEFT JOIN "LMS".user u ON s.stu_user_id = u.user_id
+            ${courseCode ? sql`WHERE sc.course_code = ${courseCode}` : sql``}
             GROUP BY sc.course_code;
         `;
     return studentsByCourse;
