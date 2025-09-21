@@ -63,6 +63,7 @@ function CreateClassroom() {
                 return;
             }
             const data = await response.json();
+            console.log("All lessons:", data.data);
             const filteredLessons = data.data.filter(
                 lesson => lesson.cl_course_code === course_code
             );
@@ -108,6 +109,7 @@ function CreateClassroom() {
             });
         }
         fetchCourses();
+        // fetchLessonsForCourse("C2001");
         // fetchAvailableStudents("C2006");
     }, []);
 
@@ -180,9 +182,9 @@ function CreateClassroom() {
                 cr_creator: user.user_id,
                 // cr_date_created: new Date().toISOString().split('T')[0],
                 // cr_date_updated: new Date().toISOString().split('T')[0],
-                supervisor_id: classroomData.supervisor,
+                supervisor_id: classroomData.supervisor, //make sure it's the user id of the supervisor
                 lessons: assignedLessons.map(l => l.cl_id),
-                students: [] // to be implemented
+                students: [] // to be implemented - pls use student.stucourse_id
             };
 
             const response = await fetch("http://localhost:5000/api/classrooms", {
