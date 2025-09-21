@@ -73,6 +73,27 @@ function CreateClassroom() {
         }
     };
 
+    const fetchAvailableStudents = async courseCode => {
+        try {
+
+            // note: both of these api will work (depending on whether u want to get all students (group by all courses) or students for a specific course only)
+            // const response = await fetch(`http://localhost:5000/api/courses/enrolled-students`);
+            const response = await fetch(`http://localhost:5000/api/courses/enrolled-students/${courseCode}`);
+
+            if (!response.ok) {
+                console.error("API error:", response.status, response.statusText);
+                // setAvailableStudents([]);
+                return; 
+            }
+            const data = await response.json();
+            console.log("Enrolled students:", data.data);
+            // setAvailableStudents(data.data);
+        } catch (error) {
+            console.error("Error fetching students:", error);
+            // setAvailableStudents([]);
+        }
+    };
+
     // Mount: load user and courses
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -87,6 +108,7 @@ function CreateClassroom() {
             });
         }
         fetchCourses();
+        // fetchAvailableStudents("C2006");
     }, []);
 
     // When a course is selected, fetch its lessons
