@@ -19,6 +19,39 @@ function ClassroomGrade() {
         navigate("/");
     };
 
+    /*
+        API ENDPOINTS TO USE:
+
+        1. For fetching all lessons in this classroom with the student list:
+            
+            api.get("classrooms/:cr_id/lessons/students")
+            
+            - :cr_id = classroom id/classroom code
+            
+            Expected response data will be an array of lesson objects, each with:
+            - crcl_cl_id, lesson_id, lesson_title, lesson_credit
+            - students: array of student objects with:
+                - stucourse_id, stu_user_id, stu_user_fname, stu_user_lname, stu_user_email
+                - attendance, completion, grade
+    
+        2. For updating all students' grades/completions/attendance for a lesson in this classroom:
+            api.put("classrooms/:cr_id/lessons/:crcl_cl_id/students", studentData)
+
+            - :cr_id = classroom id/classroom code
+            - :crcl_cl_id: can be obtained from lesson object in the lessons array fetched from the first endpoint above
+
+            Expect in studentData:
+            - array of student objects with:
+                - stucourse_id (can be obtained from student object in classroom.students array),
+                - attendance, 
+                - grade, 
+                - completion
+                
+            e.g. studentData = [{ stucourse_id, attendance, grade, completion }, ...]
+
+    */
+
+
     useEffect(() => {
         const fetchClassroom = async () => {
             try {
