@@ -108,6 +108,7 @@ export const getAllStudentsByCourseEnrolled = async (courseCode=undefined) => {
             COALESCE(
                 json_agg(
                 json_build_object(
+                    'stucourse_id', sc.stucourse_id,
                     'stu_user_id', s.stu_user_id,
                     'user_fname', u.user_fname,
                     'user_lname', u.user_lname,
