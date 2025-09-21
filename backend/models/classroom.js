@@ -117,7 +117,6 @@ export const updateClassroom = async (classroomData) => {
     console.log(classroomData);
     const classrooms = await sql`UPDATE "LMS".classroom 
                     SET 
-                        cr_id = ${updateData.cr_id},
                         cr_start_date = ${updateData.cr_start_date},
                         cr_duration = ${updateData.cr_duration},
                         cr_date_created = ${updateData.cr_date_created},
@@ -126,7 +125,7 @@ export const updateClassroom = async (classroomData) => {
                         supervisor_id = ${updateData.supervisor_id},
                         course_code = ${updateData.course_code},
                         cr_status = ${updateData.cr_status}
-                    WHERE course_code = ${id} 
+                    WHERE cr_id = ${id} 
                     RETURNING *;`;
     return classrooms[0];
 }
