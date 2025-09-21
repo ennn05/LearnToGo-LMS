@@ -7,7 +7,8 @@ import {
   createClassroom,
   addClassroomLesson,
   addClassroomStudent,
-  editStudentMarksForClassroomLesson
+  editStudentMarksForClassroomLesson,
+  getLessonsWithStudentsByClassroom
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -157,18 +158,33 @@ export const addClassroom = async (req, res) => {
 };
 
 export const updateStudentMarksForClassroomLesson = async (req, res) => {
-  const { id, lessonId } = req.params;
+  const { cr_id, crcl_cl_id } = req.params;
   const { students } = req.body; // Expecting an array of { stucourse_id, attendance, grade, completion }
 
   try { 
     const results = await Promise.all(
       students.map(student => 
-        editStudentMarksForClassroomLesson(id, lessonId, student)
+        editStudentMarksForClassroomLesson(cr_id, crcl_cl_id, student)
       )
     );
     return res.status(200).json({ success: true, data: results });
   } catch (error) {
     console.error("Error updating student marks:", error);
     return res.status(500).json({ success: false, message: "Failed to update student marks." });
+  }
+};
+
+
+export const getClassroomLessonsWithStudents = async (req, res) => {
+  const { cr_id } = req.params;
+
+  console.log("Fetching lessons with students for classroom:", cr_id);
+  try {
+    const lessons = await getLessonsWithStudentsByClassroom(cr_id);
+
+    return res.status(200).json({ success: true, data: lessons });
+  } catch (error) {
+    console.error("Error fetching classroom lessons with students:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch classroom lessons." });
   }
 };
