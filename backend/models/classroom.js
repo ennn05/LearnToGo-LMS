@@ -56,6 +56,7 @@ export const getClassroomByCode = async (classroomCode) => {
                                     SELECT COALESCE(
                                         json_agg(
                                             jsonb_build_object(
+                                                'cl_id', cl.cl_id,
                                                 'lesson_id', l.lesson_id,
                                                 'lesson_title', l.lesson_title,
                                                 'lesson_credit', l.lesson_credit,
@@ -77,6 +78,7 @@ export const getClassroomByCode = async (classroomCode) => {
                                     SELECT COALESCE(
                                         json_agg(
                                             jsonb_build_object(
+                                                'stucourse_id', stuc.stucourse_id,
                                                 'stu_user_id', s.stu_user_id,
                                                 'stu_user_fname', su.user_fname,
                                                 'stu_user_lname', su.user_lname,
