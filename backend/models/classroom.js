@@ -1,5 +1,10 @@
 import sql from "../db.js";
 
+//Get all the classrooms in the system
+export const getAllClassrooms = async () => {
+    const classrooms = await sql`SELECT * FROM "LMS".classroom;`;
+    return classrooms;
+}
 
 //Get classrooms assigned to a specfic instructor
 export const getClassroomsByInstructor = async (instructorId) => {
