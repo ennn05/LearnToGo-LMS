@@ -194,3 +194,26 @@ export const getClassroomsByStudent = async (studentId) => {
   `;
   return classrooms;
 };
+
+// temp draft sql - update in cl_stu_lesson table
+export const editStudentMarksForClassroomLesson = async (cr_id, crcl_cl_id, student) => {
+    const { stucourse_id, attendance, completion, grade } = student;
+
+    const result = await sql`
+        INSERT INTO "LMS".cl_stu_lesson (cs_id, crcl_id, csl_attendance, csl_completion, csl_grade)
+        VALUES (
+        (SELECT cs_id FROM "LMS".classroom_student WHERE cr_id = ${cr_id} AND stucourse_id = ${stucourse_id}),
+        (SELECT crcl_id FROM "LMS".classroom_course_lesson WHERE crcl_cr_id = ${cr_id} AND crcl_cl_id = ${crcl_cl_id}),
+        ${attendance},
+        ${completion},
+        ${grade}
+        )
+        ON CONFLICT (cs_id, crcl_id) DO UPDATE SET
+        csl_attendance = EXCLUDED.csl_attendance,
+        csl_completion = EXCLUDED.csl_completion,
+        csl_grade = EXCLUDED.csl_grade
+        RETURNING *;
+    `;
+
+    return result[0];
+}
