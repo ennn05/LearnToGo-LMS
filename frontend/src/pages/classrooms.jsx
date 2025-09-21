@@ -152,10 +152,7 @@ function Classrooms() {
                 >
                   {/* Card Header / Top Section */}
                   <div
-                    className={`classroom-top-section ${
-                      availableCourses.find(course => course.course_code === classroom.course_code)
-                        ?.course_status.toLowerCase() || "default"
-                    }`}
+                    className={`classroom-top-section ${classroom.cr_status.toLowerCase()}`}
                   >
                     <h3>Classroom ID: {classroom.cr_id}</h3>
                   </div>
