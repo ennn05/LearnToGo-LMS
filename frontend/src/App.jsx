@@ -10,6 +10,7 @@ import useStore from "./store";
 import LessonDetails from "./pages/LessonDetails";
 import Classrooms from "./pages/classrooms";
 import ClassroomDetails from "./pages/ClassroomDetails";
+import CreateClassroom from "./pages/CreateClassroom";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
@@ -60,6 +61,8 @@ function App() {
           <Route path="/courses/create" element={<CreateCourse />} />
           <Route path="/students" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Students /></ProtectedRoute>} />
           <Route path="/lessons/:lessonId" element={<LessonDetails />} />
+          <Route path="/classrooms/create" element={<CreateClassroom />} />  
+          <Route path="/classrooms/:classroomId" element={<ClassroomDetails />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
@@ -68,7 +71,6 @@ function App() {
 
         {/* classroom */}
         <Route path="/classrooms" element={<Classrooms />} />
-        <Route path="/classrooms/:classroomId" element={<ClassroomDetails />} />
       </Routes>
   );
 }

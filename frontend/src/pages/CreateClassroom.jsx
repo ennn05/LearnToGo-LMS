@@ -337,8 +337,11 @@ function CreateClassroom() {
                             <div className="form-group">
                                 <label>Assign Course:</label>
                                 <select 
-                                    value={assignedCourse.course_code || ""}
-                                    onChange={handleCourseSelect}
+                                    value={assignedCourse?.course_code || ""} 
+                                    onChange={(e) => {
+                                        const selected = availableCourses.find(c => c.course_code === e.target.value);
+                                        handleCourseSelect(selected);
+                                    }}
                                     className="course-select"
                                 >
                                     <option value="">-- Select a course --</option>
