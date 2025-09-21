@@ -6,7 +6,8 @@ import {
   updateClassroom,
   createClassroom,
   addClassroomLesson,
-  addClassroomStudent
+  addClassroomStudent,
+  addClassroomStudentLesson
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -123,10 +124,13 @@ export const addClassroom = async (req, res) => {
 
         const classroom = await createClassroom(classroomData);
         if (classroom) {
+          let createdLessons = [];
+          let createdStudents = [];
             try {
-                lessons.forEach(element => {
-                    addClassroomLesson(cr_id, element);
-                });
+                for (const element of lessons) {
+                    const crcl = await addClassroomLesson(cr_id, element);
+                    if(crcl) createdLessons.push(crcl);
+                }
 
             } catch(error)
             {
@@ -135,14 +139,28 @@ export const addClassroom = async (req, res) => {
             }
 
             try {
-                students.forEach(element => {
-                    addClassroomStudent(cr_id, element);
-                });
+                for (const element of students) {
+                    const cs = await addClassroomStudent(cr_id, element);
+                    if(cs) createdStudents.push(cs);
+                }
 
             } catch(error)
             {
                 console.error("Error in adding student to classroom:", error);
                 return res.status(500).json({ success: false, message: "Failed to add student to classroom." });
+            }
+
+
+            try {
+                for (const crcl of createdLessons) {
+                  for (const cs of createdStudents) {
+                    await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
+                  }
+                }
+            }
+            catch (error) {
+              console.error("Error in adding cl_stu_lesson records:", error);
+              return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
             }
 
             return res.status(201).json({ success: true, data: classroom });
