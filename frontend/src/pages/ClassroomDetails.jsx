@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-import "../styles/CourseDetails.css"; // ✅ reuse same styling as courses
+import { mockStudents } from "../data/mockStudents";  // ✅ import mock students
+import "../styles/CourseDetails.css";
 
 function ClassroomDetails() {
   const { classroomId } = useParams();
   const [classroom, setClassroom] = useState(null);
+  const [students, setStudents] = useState([]); // ✅ state for students
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -20,6 +22,9 @@ function ClassroomDetails() {
           return;
         }
         setClassroom(res.data);
+
+        // ✅ Mock students for now
+        setStudents(mockStudents);
       } catch (error) {
         console.error("Error fetching classroom:", error);
         setError("Classroom not found");
@@ -101,24 +106,40 @@ function ClassroomDetails() {
             </div>
           </div>
 
-          {/* Lessons Section */}
-          <div className="lessons-section">
-            <h3>Lessons</h3>
+        {/* Lessons Section */}
+        <div className="lessons-section">
+          <h3>Lessons</h3>
+          <div className="lessons-container">
+            {classroom.lessons?.length === 0 ? (
+              <p className="no-lessons">No lessons assigned yet.</p>
+            ) : (
+              <div className="lessons-grid">
+                {classroom.lessons.map((lesson) => (
+                  <div key={lesson.lesson_id} className="lesson-card">
+                    <h4 className="lesson-title">{lesson.lesson_title}</h4>
+                    <div className="lesson-credits">
+                      {lesson.lesson_credit ?? 0} credits
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+          {/* ✅ Students Section */}
+          <div className="students-section">
+            <h3>Students</h3>
             <div className="lessons-container">
-              {classroom.lessons?.length === 0 ? (
-                <p className="no-lessons">No lessons assigned yet.</p>
+              {students.length === 0 ? (
+                <p className="no-lessons">No students enrolled yet.</p>
               ) : (
                 <div className="lessons-grid">
-                  {classroom.lessons?.map((lesson) => (
-                    <div
-                      key={lesson.lesson_id}
-                      className="lesson-card"
-                      onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}
-                    >
-                      <h4 className="lesson-title">{lesson.lesson_title}</h4>
-                      <div className="lesson-credits">
-                        {lesson.lesson_credit ?? 0} credits
-                      </div>
+                  {students.map((stu) => (
+                    <div key={stu.stu_user_id} className="lesson-card">
+                      <h4 className="lesson-title">{stu.stu_name}</h4>
+                      <div className="lesson-credits">{stu.stu_email}</div>
+                      <div className="lesson-credits">Grade: {stu.stu_grade}</div>
                     </div>
                   ))}
                 </div>
