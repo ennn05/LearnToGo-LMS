@@ -114,11 +114,11 @@ function ClassroomDetails() {
             </div>
             <div className="info-item">
               <label>Start Date:</label>
-              <span>{classroom.cr_start_date || "N/A"}</span>
+              <span>{new Date(classroom.cr_start_date).toLocaleDateString() || "N/A"}</span>
             </div>
             <div className="info-item">
               <label>Duration:</label>
-              <span>{classroom.cr_duration || "N/A"} day(s)</span>
+              <span>{classroom.cr_duration || "N/A"} week(s)</span>
             </div>
             <div className="info-item">
               <label>Created By:</label>
