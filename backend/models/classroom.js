@@ -88,7 +88,8 @@ export const updateClassroom = async (classroomData) => {
                         cr_last_updated = ${updateData.cr_last_updated},
                         cr_creator = ${updateData.cr_creator},
                         supervisor_id = ${updateData.supervisor_id},
-                        course_code = ${updateData.course_code}
+                        course_code = ${updateData.course_code},
+                        cr_status = ${updateData.cr_status}
                     WHERE course_code = ${id} 
                     RETURNING *;`;
     return classrooms[0];
