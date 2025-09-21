@@ -118,3 +118,24 @@ export const removeClassroomLessons = async (classroomId) => {
     `;
     return removed;
 };
+
+export const addClassroomStudent = async (classroomId, stuCourseId) => {
+    const classroomStudent = await sql`
+        INSERT INTO "LMS".classroom_student 
+            (cr_id, stucourse_id)
+        VALUES
+            (${classroomId}, ${stuCourseId})
+        RETURNING *;
+    `;
+    console.log("Added classroom student:", classroomStudent[0]);
+    return classroomStudent[0];
+};
+
+export const removeClassroomStudent = async (classroomId, stuCourseId) => {
+    const classroomStudent = await sql`
+        DELETE FROM "LMS".classroom_student
+        WHERE cr_id = ${classroomId} AND stucourse_id = ${stuCourseId}
+        RETURNING *;
+    `;
+    return classroomStudent[0];
+};

@@ -73,6 +73,27 @@ function CreateClassroom() {
         }
     };
 
+    const fetchAvailableStudents = async courseCode => {
+        try {
+
+            // note: both of these api will work (depending on whether u want to get all students (group by all courses) or students for a specific course only)
+            // const response = await fetch(`http://localhost:5000/api/courses/enrolled-students`);
+            const response = await fetch(`http://localhost:5000/api/courses/enrolled-students/${courseCode}`);
+
+            if (!response.ok) {
+                console.error("API error:", response.status, response.statusText);
+                // setAvailableStudents([]);
+                return; 
+            }
+            const data = await response.json();
+            console.log("Enrolled students:", data.data);
+            // setAvailableStudents(data.data);
+        } catch (error) {
+            console.error("Error fetching students:", error);
+            // setAvailableStudents([]);
+        }
+    };
+
     // Mount: load user and courses
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -87,6 +108,7 @@ function CreateClassroom() {
             });
         }
         fetchCourses();
+        // fetchAvailableStudents("C2006");
     }, []);
 
     // When a course is selected, fetch its lessons
@@ -150,13 +172,17 @@ function CreateClassroom() {
             }
 
             const classroomToSave = {
-                classroom_id: classroomData.classroomId,
-                start_date: classroomData.startDate,
-                duration: classroomData.duration,
-                status: classroomData.status,
-                course: assignedCourse.course_code,
-                lessons: assignedLessons.map(l => l.lesson_id),
-                author: user.user_id,
+                cr_id: classroomData.classroomId,
+                cr_start_date: classroomData.startDate,
+                cr_duration: classroomData.duration,
+                cr_status: classroomData.status,
+                course_code: assignedCourse.course_code,
+                cr_creator: user.user_id,
+                // cr_date_created: new Date().toISOString().split('T')[0],
+                // cr_date_updated: new Date().toISOString().split('T')[0],
+                supervisor_id: classroomData.supervisor,
+                lessons: assignedLessons.map(l => l.cl_id),
+                students: [] // to be implemented
             };
 
             const response = await fetch("http://localhost:5000/api/classrooms", {
