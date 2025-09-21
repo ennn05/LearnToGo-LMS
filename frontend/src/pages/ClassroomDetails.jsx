@@ -11,7 +11,6 @@ function ClassroomDetails() {
   console.log("User from store:", user);
   // Classroom state
   const [classroom, setClassroom] = useState(null);
-  const [students, setStudents] = useState([]); // ✅ state for students
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -25,10 +24,10 @@ function ClassroomDetails() {
           setError("Classroom not found");
           return;
         }
+        console.log("Classroom loaded:", res.data);
         setClassroom(res.data);
 
         // ✅ Mock students for now
-        setStudents(mockStudents);
       } catch (error) {
         console.error("Error fetching classroom:", error);
         setError("Classroom not found");
@@ -118,8 +117,16 @@ function ClassroomDetails() {
               <span>{classroom.cr_id}</span>
             </div>
             <div className="info-item">
+              <label>Date created:</label>
+              <span>{new Date(classroom.cr_date_created).toLocaleDateString() || "N/A"}</span>
+            </div>
+            <div className="info-item">
               <label>Start Date:</label>
               <span>{new Date(classroom.cr_start_date).toLocaleDateString() || "N/A"}</span>
+            </div>
+            <div className="info-item">
+              <label>Last updated:</label>
+              <span>{new Date(classroom.cr_last_updated).toLocaleDateString() || "N/A"}</span>
             </div>
             <div className="info-item">
               <label>Duration:</label>
@@ -129,23 +136,21 @@ function ClassroomDetails() {
               <label>Created By:</label>
               <span>{classroom.creator_fname + ' ' + classroom.creator_lname || "N/A"}</span>
             </div>
-            <div className="info-item">
-              <label>Date created:</label>
-              <span>{new Date(classroom.cr_date_created).toLocaleDateString() || "N/A"}</span>
-            </div>
-            <div className="info-item">
-              <label>Last updated:</label>
-              <span>{new Date(classroom.cr_last_updated).toLocaleDateString() || "N/A"}</span>
-            </div>
-            <div className="info-item">
-              <label>Supervisor:</label>
-              <span>{classroom.supervisor_fname + ' ' + classroom.supervisor_lname || "N/A"}</span>
-            </div>
-            <div className="info-item">
+          </div>
+        <div className="supervisor-course-section">
+          <div className="form-row">
+              <div className="form-group">
+                  <label>Supervisor:</label>
+                  <span>{classroom.supervisor_fname + ' ' + classroom.supervisor_lname || "N/A"}</span>
+              </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
               <label>Course:</label>
               <span>{classroom.course_code + ' - ' + classroom.course_title}</span>
             </div>
           </div>
+        </div>
 
         {/* Lessons Section */}
         <div className="lessons-section">
@@ -156,7 +161,7 @@ function ClassroomDetails() {
             ) : (
               <div className="lessons-grid">
                 {classroom.lessons.map((lesson) => (
-                  <div key={lesson.lesson_id} className="lesson-card">
+                  <div key={lesson.lesson_id} className="lesson-card" onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
                     <h4 className="lesson-title">{lesson.lesson_title}</h4>
                     <div className="lesson-credits">
                       {lesson.lesson_credit ?? 0} credits
@@ -171,7 +176,6 @@ function ClassroomDetails() {
           {/* ✅ Students Section */}
           <div className="students-section">
             <h3>Students</h3>
-            <div className="lessons-container">
               {/* {students.length === 0 ? (
                 <p className="no-lessons">No students enrolled yet.</p>
               ) : (
@@ -208,7 +212,6 @@ function ClassroomDetails() {
                         </tbody>
                     </table>
                 )}
-            </div>
           </div>
 
           {/* Footer */}
