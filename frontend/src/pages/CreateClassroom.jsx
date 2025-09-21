@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateClassroom.css"; // Stylesheet for page
 import api from "../libs/apiCalls";
+import useStore from "../store";
 
 function CreateClassroom() {
     // Sidebar state
     const [activePage, setActivePage] = useState("classrooms")
 
     // User info
-    const [user, setUser] = useState(null);
+    const {user, setCredentials, signOut} = useStore((state) => state);
+    console.log("User from store:", user);
 
     // Default classroom
     const [classroomData, setClassroomData] = useState({
@@ -18,7 +20,7 @@ function CreateClassroom() {
         createdDate: "",
         updatedDate: "",
         author: "",
-        supervisor: "",
+        supervisor: user?.user_id || "instructor",
         status: "draft",
     })
 
@@ -104,17 +106,17 @@ function CreateClassroom() {
 
     // Mount: load user and courses
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            setUser({
-                user_fname: "Test",
-                user_lname: "User",
-                user_email: "test@example.com",
-                user_role: "Instructor",
-            });
-        }
+        // const storedUser = localStorage.getItem("user");
+        // if (storedUser) {
+        //     setUser(JSON.parse(storedUser));
+        // } else {
+        //     setUser({
+        //         user_fname: "Test",
+        //         user_lname: "User",
+        //         user_email: "test@example.com",
+        //         user_role: "Instructor",
+        //     });
+        // }
         fetchCourses();
         // fetchLessonsForCourse("C2001");
         // fetchAvailableStudents("C2006");
@@ -235,6 +237,7 @@ function CreateClassroom() {
     // Logout btn fn
     const handleLogout = () => {
         localStorage.removeItem("user");
+        signOut();
         navigate("/");
     };
 
