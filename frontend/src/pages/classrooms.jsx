@@ -30,6 +30,7 @@ function Classrooms() {
       console.log("Fetching classrooms from API...");
       const { data: res } = await api.get("classrooms");
 
+      console.log("API response for classrooms:", res.data);
       if (!res.success) {
         console.error("Error fetching classrooms:", res.message);
       }
@@ -164,22 +165,16 @@ function Classrooms() {
 
                     <div className="classroom-course-title">
                       <strong>Associated Course:</strong>{" "}
-                      {                        
-                        availableCourses.find(course => course.course_code === classroom.course_code)
-                        ?.course_title || "Not specified"
-                      }
+                      {classroom.course_code + " - " + classroom.course_title}
                     </div>
 
                     <div className="classroom-supervisor">
-                      <strong>Supervisor ID:</strong> {classroom.supervisor_id}
+                      <strong>Supervisor ID:</strong> {classroom.supervisor_fname} {classroom.supervisor_lname} ({classroom.supervisor_id})
                     </div>
 
                     <div className="classroom-status">
                       <strong>Status:</strong>{" "}
-                      {
-                        availableCourses.find(course => course.course_code === classroom.course_code)
-                          ?.course_status || "Not specified"
-                      }
+                      {classroom.cr_status || "Draft"}
                     </div>
 
                     <div className="classroom-dates">
