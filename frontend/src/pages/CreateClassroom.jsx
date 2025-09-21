@@ -483,7 +483,7 @@ function CreateClassroom() {
                                             <td>
                                                 <input 
                                                     type="checkbox"
-                                                    checked={isStudentSelected(student.user_id)}
+                                                    checked={isStudentSelected(student)}
                                                     onChange={() => toggleStudentSelection(student)}
                                                 />
                                             </td>
