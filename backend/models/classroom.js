@@ -7,6 +7,27 @@ export const getClassroomsByInstructor = async (instructorId) => {
     return classrooms;
 }
 
+//Fetch list of classrooms including classroom id, supervisor, associated course, status and start data and duration
+export const getAllClassrooms = async () => {
+  const classrooms = await sql`
+    SELECT 
+      cr.cr_id,
+      cr.cr_status,
+      cr.cr_start_date,
+      cr.cr_duration,
+      c.course_name,
+      usv.user_fname ||' '|| usv.user_lname AS supervisor_name
+    FROM "LMS".classroom cr
+    LEFT JOIN "LMS".course c 
+      ON cr.course_code = c.course_code
+    LEFT JOIN "LMS".instructor isv 
+      ON cr.supervisor_id = isv.inst_user_id
+    LEFT JOIN "LMS".user usv 
+      ON isv.inst_user_id = usv.user_id
+    ORDER BY cr.cr_start_date DESC;
+  `;
+  return classrooms;
+};
 
 
 // Fetch a classroom with its course, creator, supervisor, and all associated lessons in one JSON response
