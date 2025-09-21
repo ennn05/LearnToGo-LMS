@@ -8,9 +8,27 @@ export const getAllClassrooms = async () => {
 
 //Get classrooms assigned to a specfic instructor
 export const getClassroomsByInstructor = async (instructorId) => {
-    const classrooms = await sql`SELECT * FROM "LMS".classroom WHERE cr_creator = ${instructorId};`;
-    return classrooms;
-}
+  const classrooms = await sql`
+    SELECT 
+      cr.cr_id,
+      cr.cr_status,
+      cr.cr_start_date,
+      cr.cr_duration,
+      c.course_name,
+      usv.user_fname ||' '|| usv.user_lname AS supervisor_name
+    FROM "LMS".classroom cr
+    LEFT JOIN "LMS".course c 
+      ON cr.course_code = c.course_code
+    LEFT JOIN "LMS".instructor isv 
+      ON cr.supervisor_id = isv.inst_user_id
+    LEFT JOIN "LMS".user usv 
+      ON isv.inst_user_id = usv.user_id
+    WHERE cr.supervisor_id = ${instructorId}
+    ORDER BY cr.cr_start_date DESC;
+  `;
+  return classrooms;
+};
+
 
 // Fetch a classroom with its course, creator, supervisor, and all associated lessons in one JSON response
 export const getClassroomByCode = async (classroomCode) => {
@@ -70,7 +88,8 @@ export const updateClassroom = async (classroomData) => {
                         cr_last_updated = ${updateData.cr_last_updated},
                         cr_creator = ${updateData.cr_creator},
                         supervisor_id = ${updateData.supervisor_id},
-                        course_code = ${updateData.course_code}
+                        course_code = ${updateData.course_code},
+                        cr_status = ${updateData.cr_status}
                     WHERE course_code = ${id} 
                     RETURNING *;`;
     return classrooms[0];
@@ -138,4 +157,30 @@ export const removeClassroomStudent = async (classroomId, stuCourseId) => {
         RETURNING *;
     `;
     return classroomStudent[0];
+};
+
+// Get classrooms enrolled by a specific student
+export const getClassroomsByStudent = async (studentId) => {
+  const classrooms = await sql`
+    SELECT 
+      cr.cr_id,
+      cr.cr_code,
+      cr.cr_status,
+      cr.cr_start_date,
+      cr.cr_duration,
+      c.course_name,
+      usv.user_fname || ' ' || usv.user_lname AS supervisor_name
+    FROM "LMS".classroom cr
+    JOIN "LMS".course c 
+      ON cr.course_code = c.course_code
+    LEFT JOIN "LMS".instructor isv 
+      ON cr.supervisor_id = isv.inst_user_id
+    LEFT JOIN "LMS".user usv 
+      ON isv.inst_user_id = usv.user_id
+    JOIN "LMS".classroom_student cs
+      ON cr.cr_id = cs.cr_id
+    WHERE cs.stu_user_id = ${studentId}
+    ORDER BY cr.cr_start_date DESC;
+  `;
+  return classrooms;
 };
