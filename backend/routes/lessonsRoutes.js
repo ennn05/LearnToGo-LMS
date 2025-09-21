@@ -49,12 +49,24 @@ import {
   getLessonsByInstructor,
   addLesson,
   editLesson,
-  removeLesson
+  removeLesson,
+  getStudentLessons
 } from "../controllers/lessonControllers.js";
 
 const router = express.Router();
 
-router.get("/", getLessons);
+router.get("/", authenticate, (req, res) => {
+    switch (req?.user?.role) {
+        case "student":
+            return getStudentLessons(req, res);
+        case "instructor":
+        case "admin":
+            return getLessons(req, res);
+        default:
+            return res.status(403).json({ message: "Unauthorized" });
+    }
+});
+
 router.get("/instructor", authenticate, getLessonsByInstructor); 
 router.get("/:id", getLesson);
 router.post("/", addLesson);
