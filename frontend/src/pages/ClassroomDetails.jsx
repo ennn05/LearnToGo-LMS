@@ -15,8 +15,7 @@ function ClassroomDetails() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchClassroom = async () => {
+  const fetchClassroom = async () => {
       try {
         const { data: res } = await api.get(`classrooms/${classroomId}`);
         if (!res.success) {
@@ -36,8 +35,53 @@ function ClassroomDetails() {
       }
     };
 
+  useEffect(() => {
+
     fetchClassroom();
   }, [classroomId]);
+
+  const handlePublishClassroom = async () => {
+    // TODO: Implement publish classroom functionality
+    console.log("Publish classroom clicked");
+
+    const classroomUpdateData = { ...classroom, cr_status: "published" };
+    console.log(classroomUpdateData);
+
+    try {
+      const {data: res} = await api.put(`classrooms/${classroom.cr_id}`, classroomUpdateData);
+
+      if (!res.success) {
+        console.error("Error publishing classroom:", res.message);
+      }
+
+      console.log("Classroom published:", res.data);
+      fetchClassroom();
+    } catch (error) {
+      console.error("Error publishing classroom:", error);
+    }
+  };
+
+  const handleArchiveClassroom = async () => {
+    // TODO: Implement archive classroom functionality
+    console.log("Archive classroom clicked");
+
+    const classroomUpdateData = { ...classroom, cr_status: "archived" };
+    console.log(classroomUpdateData);
+
+    try {
+      const {data: res} = await api.put(`classrooms/${classroom.cr_id}`, classroomUpdateData);
+
+      if (!res.success) {
+        console.error("Error archiving classroom:", res.message);
+      }
+
+      console.log("Classroom archived:", res.data);
+      fetchClassroom();
+    } catch (error) {
+      console.error("Error archiving classroom:", error);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -107,6 +151,23 @@ function ClassroomDetails() {
               <span className={`status-badge ${classroom.cr_status.toLowerCase() || "draft"}`}>
                 {classroom.cr_status || "Draft"}
               </span>
+            </div>
+            
+            <div className="course-actions">
+              {classroom.cr_status !== "published" ? (
+                <button className="btn-publish" onClick={handlePublishClassroom}>
+                  Publish
+                </button>
+              ) : (
+                ""
+              )}
+              {classroom.cr_status !== "archived" ? (
+                <button className="btn-archive" onClick={handleArchiveClassroom}>
+                  Archive
+                </button>
+              ) : (
+                ""
+              )}
             </div>
           </div>
 
