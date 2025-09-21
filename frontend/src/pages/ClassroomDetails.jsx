@@ -3,9 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import { mockStudents } from "../data/mockStudents";  // ✅ import mock students
 import "../styles/CourseDetails.css";
+import useStore from "../store";
 
 function ClassroomDetails() {
   const { classroomId } = useParams();
+  const { user, setCredentials, signOut } = useStore((state) => state);
+  console.log("User from store:", user);
+  // Classroom state
   const [classroom, setClassroom] = useState(null);
   const [students, setStudents] = useState([]); // ✅ state for students
   const [loading, setLoading] = useState(true);
@@ -68,10 +72,10 @@ function ClassroomDetails() {
           <div className="avatar"></div>
           <div className="info">
             <div className="name">
-              {classroom?.instructor_name || "Instructor"}
+                {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
             <div className="role">
-              Instructor
+              {user ? user.user_role : "Loading..."}
             </div>
           </div>
         </div>
@@ -83,6 +87,7 @@ function ClassroomDetails() {
           <button onClick={() => navigate("/reports")}>Reports & Statistics</button>
           <button className="logout-btn" onClick={() => {
             localStorage.removeItem("user");
+            signOut();
             navigate("/");
           }}>
             Log Out
@@ -100,8 +105,8 @@ function ClassroomDetails() {
           {/* Classroom Status */}
           <div className="course-header">
             <div className="course-status">
-              <span className={`status-badge ${classroom.status || "draft"}`}>
-                {classroom.status || "Draft"}
+              <span className={`status-badge ${classroom.cr_status.toLowerCase() || "draft"}`}>
+                {classroom.cr_status || "Draft"}
               </span>
             </div>
           </div>
@@ -122,15 +127,23 @@ function ClassroomDetails() {
             </div>
             <div className="info-item">
               <label>Created By:</label>
-              <span>{classroom.cr_creator || "N/A"}</span>
+              <span>{classroom.creator_fname + ' ' + classroom.creator_lname || "N/A"}</span>
+            </div>
+            <div className="info-item">
+              <label>Date created:</label>
+              <span>{new Date(classroom.cr_date_created).toLocaleDateString() || "N/A"}</span>
+            </div>
+            <div className="info-item">
+              <label>Last updated:</label>
+              <span>{new Date(classroom.cr_last_updated).toLocaleDateString() || "N/A"}</span>
             </div>
             <div className="info-item">
               <label>Supervisor:</label>
-              <span>{classroom.supervisor_id}</span>
+              <span>{classroom.supervisor_fname + ' ' + classroom.supervisor_lname || "N/A"}</span>
             </div>
             <div className="info-item">
               <label>Course:</label>
-              <span>{classroom.course_title || classroom.course_code}</span>
+              <span>{classroom.course_code + ' - ' + classroom.course_title}</span>
             </div>
           </div>
 
