@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateClassroom.css"; // Stylesheet for page
+import api from "../libs/apiCalls";
 
 function CreateClassroom() {
     // Sidebar state
@@ -21,6 +22,7 @@ function CreateClassroom() {
         status: "draft",
     })
 
+    console.log("Classroom Data:", classroomData);
     // Lessons & Courses & Students
     const [assignedCourse, setAssignedCourse] = useState(null);
     const [availableCourses, setAvailableCourses] = useState([]);
@@ -209,15 +211,12 @@ function CreateClassroom() {
                 students: assignedStudents.map(s => s.stucourse_id)
             };
 
-            const response = await fetch("http://localhost:5000/api/classrooms", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(classroomToSave),
-            });
+            console.log("Saving classroom:", classroomToSave);
+            const {data: response} = await api.post("classrooms", classroomToSave);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to save classroom!");
+            console.log(response);
+            if (!response.success) {
+                throw new Error(response.message || "Failed to save classroom!");
             }
 
             alert("Classroom saved successfully!");

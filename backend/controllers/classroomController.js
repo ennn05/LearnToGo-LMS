@@ -82,6 +82,7 @@ export const editClassroom = async (req, res) => {
 };
 
 export const addClassroom = async (req, res) => {
+  console.log("REQUEST BODY:", req.body);
   const {
                 cr_id,
                 cr_start_date,
