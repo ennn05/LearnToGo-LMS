@@ -6,6 +6,7 @@ import "../styles/Lessons.css";
 function StudentLessons() {
 
     // For testing purpose only - replace with ur FE code
+    // use api.get("lessons") to fetch lessons for the logged-in student
     const fetchLessons = async () => {
         try {
             const { data: res } = await api.get("lessons");
