@@ -43,64 +43,71 @@ export const getClassroomsByInstructor = async (instructorId) => {
 // Fetch a classroom with its course, creator, supervisor, and all associated lessons in one JSON response
 export const getClassroomByCode = async (classroomCode) => {
     const classroom = await sql`
-                        SELECT 
-                            cr.*,
-                            c.*,
-                            ic.inst_user_id AS creator_inst_id,
-                            uc.user_fname AS creator_fname,
-                            uc.user_lname AS creator_lname,
-                            isv.inst_user_id AS supervisor_inst_id,
-                            usv.user_fname AS supervisor_fname,
-                            usv.user_lname AS supervisor_lname,
-                            COALESCE(
-                            json_agg(
-                                json_build_object(
-                                'lesson_id', l.lesson_id,
-                                'lesson_title', l.lesson_title,
-                                'lesson_credit', l.lesson_credit,
-                                'lesson_designer', l.lesson_designer
-                                )
-                            ) FILTER (WHERE l.lesson_id IS NOT NULL),
-                            '[]'::json
-                            ) AS lessons,
-                            COALESCE(
-                            json_agg(
-                                json_build_object(
-                                'stu_user_id', s.stu_user_id,
-                                'stu_user_fname', su.user_fname,
-                                'stu_user_lname', su.user_lname,
-                                'stu_user_email', su.user_email
-                                )
-                            ) FILTER (WHERE s.stu_user_id IS NOT NULL),
-                            '[]'::json
-                            ) AS students
-                        FROM "LMS".classroom cr
-                        LEFT JOIN "LMS".course c 
-                            ON cr.course_code = c.course_code
-                        LEFT JOIN "LMS".instructor ic 
-                            ON cr.cr_creator = ic.inst_user_id
-                        LEFT JOIN "LMS".user uc 
-                            ON ic.inst_user_id = uc.user_id
-                        LEFT JOIN "LMS".instructor isv 
-                            ON cr.supervisor_id = isv.inst_user_id
-                        LEFT JOIN "LMS".user usv 
-                            ON isv.inst_user_id = usv.user_id
-                        LEFT JOIN "LMS".classroom_course_lesson crcl
-                            ON cr.cr_id = crcl.crcl_cr_id
-                        LEFT JOIN "LMS".course_lesson cl
-                            ON crcl.crcl_cl_id = cl.cl_id
-                        LEFT JOIN "LMS".lesson l 
-                            ON cl.cl_lesson_id = l.lesson_id
-                        LEFT JOIN "LMS".classroom_student cs
-                            ON cr.cr_id = cs.cr_id
-                        LEFT JOIN "LMS".student_course stuc
-                            ON cs.stucourse_id = stuc.stucourse_id
-                        LEFT JOIN "LMS".student s
-                            ON stuc.stu_user_id = s.stu_user_id
-                        LEFT JOIN "LMS".user su
-                            ON s.stu_user_id = su.user_id
-                        WHERE cr.cr_id = ${classroomCode}
-                        GROUP BY cr.cr_id, c.course_code, ic.inst_user_id, uc.user_fname, uc.user_lname, isv.inst_user_id, usv.user_fname, usv.user_lname;
+                            SELECT 
+                                cr.*,
+                                c.*,
+                                uc.user_fname AS creator_fname,
+                                uc.user_lname AS creator_lname,
+                                usv.user_fname AS supervisor_fname,
+                                usv.user_lname AS supervisor_lname,
+
+                                -- Aggregate lessons separately
+                                (
+                                    SELECT COALESCE(
+                                        json_agg(
+                                            jsonb_build_object(
+                                                'lesson_id', l.lesson_id,
+                                                'lesson_title', l.lesson_title,
+                                                'lesson_credit', l.lesson_credit,
+                                                'lesson_designer', l.lesson_designer
+                                            )                                        
+                                        ) FILTER (WHERE l.lesson_id IS NOT NULL)
+                                        , '[]'::json 
+                                    )
+                                    FROM "LMS".classroom_course_lesson crcl
+                                    LEFT JOIN "LMS".course_lesson cl 
+                                        ON crcl.crcl_cl_id = cl.cl_id
+                                    LEFT JOIN "LMS".lesson l 
+                                        ON cl.cl_lesson_id = l.lesson_id
+                                    WHERE crcl.crcl_cr_id = cr.cr_id
+                                ) AS lessons,
+
+                                -- Aggregate students separately
+                                (
+                                    SELECT COALESCE(
+                                        json_agg(
+                                            jsonb_build_object(
+                                                'stu_user_id', s.stu_user_id,
+                                                'stu_user_fname', su.user_fname,
+                                                'stu_user_lname', su.user_lname,
+                                                'stu_user_email', su.user_email
+                                            )
+                                        ) FILTER (WHERE s.stu_user_id IS NOT NULL)
+                                        , '[]'::json
+                                    )
+                                    FROM "LMS".classroom_student cs
+                                    LEFT JOIN "LMS".student_course stuc 
+                                        ON cs.stucourse_id = stuc.stucourse_id
+                                    LEFT JOIN "LMS".student s 
+                                        ON stuc.stu_user_id = s.stu_user_id
+                                    LEFT JOIN "LMS".user su 
+                                        ON s.stu_user_id = su.user_id
+                                    WHERE cs.cr_id = cr.cr_id
+                                ) AS students
+
+                            FROM "LMS".classroom cr
+                            LEFT JOIN "LMS".course c 
+                                ON cr.course_code = c.course_code
+                            LEFT JOIN "LMS".instructor ic 
+                                ON cr.cr_creator = ic.inst_user_id
+                            LEFT JOIN "LMS".user uc 
+                                ON ic.inst_user_id = uc.user_id
+                            LEFT JOIN "LMS".instructor isv 
+                                ON cr.supervisor_id = isv.inst_user_id
+                            LEFT JOIN "LMS".user usv 
+                                ON isv.inst_user_id = usv.user_id
+
+                            WHERE cr.cr_id = ${classroomCode};
                         `;
     return classroom[0];
 }
