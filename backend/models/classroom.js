@@ -1,16 +1,13 @@
 import sql from "../db.js";
 
-//Get all the classrooms in the system
-export const getAllClassrooms = async () => {
-    const classrooms = await sql`SELECT * FROM "LMS".classroom;`;
-    return classrooms;
-}
 
 //Get classrooms assigned to a specfic instructor
 export const getClassroomsByInstructor = async (instructorId) => {
     const classrooms = await sql`SELECT * FROM "LMS".classroom WHERE cr_creator = ${instructorId};`;
     return classrooms;
 }
+
+
 
 // Fetch a classroom with its course, creator, supervisor, and all associated lessons in one JSON response
 export const getClassroomByCode = async (classroomCode) => {
