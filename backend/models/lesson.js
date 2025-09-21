@@ -70,7 +70,21 @@ export const getLessonByInstructor = async (instructorId) => {
 
 // To be implemented: Get all lessons of a student's courses
 export const getAllLessonsOfStudentCourses = async (studentId) => {
-  const lessons = [];
+  // Mock values placeholder implementation - replace with actual DB query
+  const lessons = [
+    {
+      lesson_id: 1,
+      lesson_title: "Sample Lesson",
+      lesson_desc: "This is a sample lesson.",
+      lesson_obj: "Learn something new.",
+      lesson_effort_per_week: 3,
+      lesson_date_created: "2023-10-01",
+      lesson_date_updated: "2023-10-01",
+      lesson_credit: 5,
+      lesson_designer: 2,
+      lesson_status: "Published"
+    }
+  ];
   return lessons;
 };
 
