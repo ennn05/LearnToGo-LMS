@@ -270,7 +270,7 @@ function CreateClassroom() {
                     <button className={activePage === "lessons" ? "active" : ""} onClick={() => navigate("/lessons")}>
                         Lessons
                     </button>
-                    <button className={activePage === "classrooms" ? "active" : ""} onClick={() => setActivePage("classrooms")}>
+                    <button className={activePage === "classrooms" ? "active" : ""} onClick={() => navigate("/classrooms")}>
                         Classrooms
                     </button>
                     <button className={activePage === "students" ? "active" : ""} onClick={() => navigate("/students")}>
