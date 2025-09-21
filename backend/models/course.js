@@ -10,6 +10,29 @@ export const getCoursesByInstructor = async (instructorId) => {
     return courses;
 }
 
+// Get all lessons accessible to a specific student by enrolled courses
+export const getLessonsByStudent = async (studentId) => {
+  const lessons = await sql`
+    SELECT 
+      l.lesson_id,
+      l.lesson_title,
+      l.lesson_credit,
+      l.lesson_designer,
+      c.course_code,
+      c.course_name
+    FROM "LMS".student_course stuc
+    JOIN "LMS".course c 
+      ON stuc.course_code = c.course_code
+    JOIN "LMS".course_lesson cl 
+      ON c.course_code = cl.course_code
+    JOIN "LMS".lesson l 
+      ON cl.cl_lesson_id = l.lesson_id
+    WHERE stuc.stu_user_id = ${studentId}
+    ORDER BY c.course_name, l.lesson_title;
+  `;
+  return lessons;
+};
+
 export const getCourseByCode = async (courseCode) => {
     const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
                             COALESCE(json_agg(
@@ -93,3 +116,35 @@ export const updateCourseLessons = async (courseCode, lessons) => {
 
     return courseLessons;
 }
+
+export const getPublishedCourses = async () => {
+    const courses = await sql`SELECT * 
+                              FROM "LMS".course 
+                              WHERE course_status = 'published';`;
+    return courses;
+};
+
+export const getAllStudentsByCourseEnrolled = async (courseCode=undefined) => {
+    const studentsByCourse = await sql`
+            SELECT 
+            sc.course_code,
+            COALESCE(
+                json_agg(
+                json_build_object(
+                    'stucourse_id', sc.stucourse_id,
+                    'stu_user_id', s.stu_user_id,
+                    'user_fname', u.user_fname,
+                    'user_lname', u.user_lname,
+                    'user_email', u.user_email
+                )
+                ) FILTER (WHERE s.stu_user_id IS NOT NULL),
+                '[]'::json
+            ) AS students
+            FROM "LMS".student_course sc
+            LEFT JOIN "LMS".student s ON sc.stu_user_id = s.stu_user_id
+            LEFT JOIN "LMS".user u ON s.stu_user_id = u.user_id
+            ${courseCode ? sql`WHERE sc.course_code = ${courseCode}` : sql``}
+            GROUP BY sc.course_code;
+        `;
+    return studentsByCourse;
+};

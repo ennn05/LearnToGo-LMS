@@ -111,3 +111,28 @@ export const deleteLesson = async (lessonId) => {
     const lesson = await sql`DELETE FROM "LMS".lesson WHERE lesson_id = ${lessonId} RETURNING *;`;
     return lesson[0];
 }
+
+export const getPublishedLessons = async () => {
+    const lessons = await sql`
+        SELECT 
+            cl.cl_course_code, 
+            COALESCE(
+              json_agg(
+                json_build_object(
+                  'cl_id', cl.cl_id,
+                  'lesson_id', l.lesson_id,
+                  'lesson_title', l.lesson_title,
+                  'lesson_credit', l.lesson_credit,
+                  'lesson_status', l.lesson_status
+                )
+              ) FILTER (WHERE l.lesson_id IS NOT NULL),
+              '[]'::json
+            ) AS lessons
+        FROM "LMS".course_lesson cl
+        LEFT JOIN "LMS".lesson l 
+            ON cl.cl_lesson_id = l.lesson_id
+        WHERE l.lesson_status = 'published'
+        GROUP BY cl.cl_course_code;
+    `;
+    return lessons;
+};

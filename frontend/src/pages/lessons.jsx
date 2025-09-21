@@ -1,28 +1,30 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
+// import useStore from "../store";
 import "../styles/Lessons.css";
 
 function Lessons() {
-  // Page state
   const [activePage, setActivePage] = useState("lessons");
+  // const user = useStore((state) => state);
   const [user, setUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  /** Fetch lessons from API */
   const fetchLessons = async () => {
     try {
-      const { data: res } = await api.get("lessons/instructor");
+      // const response = await fetch(`http://localhost:5000/api/lessons/instructor/${user.user_id}`);
+      const {data: res} = await api.get("lessons/instructor");
       console.log(res);
-
       if (!res.success) {
         console.error("Server responded with:", res.message);
-        throw new Error("Failed to fetch lessons");
+        throw new Error("Failed to edit lesson");
       }
 
+      // const data = await response.json();
+      console.log(res.data);
       setLessons(res.data);
     } catch (err) {
       console.error("Failed to fetch lessons:", err);
@@ -31,31 +33,44 @@ function Lessons() {
     }
   };
 
-  /** On mount: load user + fetch lessons */
   useEffect(() => {
+    // const fetchLessons = async () => {
+    //   try {
+        
+    //     // const response = await fetch("http://localhost:5000/api/lessons");
+    //     // const data = await response.json();
+    //     // setLessons(data);
+
+    //     const {data: res} = await api.get("/lessons");
+    //     setLessons(res);
+    //   } catch (err) {
+    //     console.error("Failed to fetch lessons:", err);
+    //   }
+    // };
     const storedUser = localStorage.getItem("user");
+    console.log(storedUser);
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+      console.log(user);
     }
     fetchLessons();
   }, []);
 
-  /** Add new lesson */
-  const addLesson = async (lessonData) => {
+    const addLesson = async (lessonData) => {
     try {
       const createLessonData = {
         ...lessonData,
-        lesson_designer: user.user_id, // Attach instructor ID
-      };
-
-      const { data: res } = await api.post("lessons", createLessonData);
+        lesson_designer: user.user_id,
+      }
+      const {data: res} = await api.post("lessons", createLessonData);
+      console.log(res)
       if (!res.success) {
         console.error("Server responded with:", res.message);
         throw new Error("Failed to add lesson");
       }
 
       console.log("Lesson saved:", res.data);
-      await fetchLessons(); // Refresh lessons list
+      await fetchLessons();
       return res.data;
     } catch (error) {
       console.error("Error adding lesson:", error);
@@ -63,7 +78,13 @@ function Lessons() {
     }
   };
 
-  /** Logout clears user + navigates home */
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
@@ -83,7 +104,6 @@ function Lessons() {
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="nav-menu">
           <button
             className={activePage === "courses" ? "active" : ""}
@@ -127,7 +147,7 @@ function Lessons() {
           <h1>My Lessons</h1>
         </div>
 
-        {/* Lessons List */}
+        {/* Lessons Container */}
         <div className="lessons-container">
           {loading ? (
             <div className="loading">Loading lessons...</div>
@@ -138,33 +158,19 @@ function Lessons() {
           ) : (
             <div className="lessons-grid">
               {lessons.map((lesson) => (
-                <div
-                  className="lesson-card"
-                  key={lesson.lesson_id}
-                  onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}
-                >
-                  {/* Title */}
+                <div className="lesson-card" key={lesson.lesson_id} onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
+                  {/* Title on top */}
                   <div className="lesson-header">
                     <h3>{lesson.lesson_title}</h3>
                   </div>
-
-                  {/* Details */}
+                  {/* Details in one row */}
                   <div className="lesson-details">
-                    <p>
-                      <span className="label">ID:</span> {lesson.lesson_id}
-                    </p>
-                    <p>
-                      <span className="label">Status:</span>{" "}
-                      {lesson.lesson_status || "Draft"}
-                    </p>
-                    <p>
-                      <span className="label">Created by:</span>{" "}
-                      {lesson.lesson_designer || "Unknown"}
-                    </p>
-                    <p>
-                      <span className="label">Lesson credit:</span>{" "}
-                      {lesson.lesson_credit || 0} points
-                    </p>
+                    <p><span className="label">ID:</span> {lesson.lesson_id}</p>
+                    <p><span className="label">Status:</span> {lesson.lesson_status || "Draft"}</p>
+                    <p><span className="label">Created by:</span> {lesson.lesson_designer || "Unknown"}</p>
+                    {/* <p><span className="label">Classroom:</span> {lesson.classroom || "Not assigned"}</p>
+                    <p><span className="label">Students:</span> {lesson.students_count || 0}</p> */}
+                    <p><span className="label">Lesson credit:</span> {lesson.lesson_credit || 0} points</p>
                   </div>
                 </div>
               ))}
@@ -172,19 +178,18 @@ function Lessons() {
           )}
         </div>
 
-        {/* Add Lesson Button (FAB) */}
+
+        {/* Add Lesson Button */}
         <button className="fab" onClick={() => setShowModal(true)}>
           +
         </button>
 
-        {/* Add Lesson Modal */}
-        {showModal && (
+         {/* Modal */}
+         {showModal && (
           <div className="modal-overlay" onClick={() => setShowModal(false)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <h3>Add Lesson</h3>
-
-              <form
-                onSubmit={async (e) => {
+              <form onSubmit={async (e) => {
                   e.preventDefault();
 
                   const lessonData = {
@@ -195,13 +200,17 @@ function Lessons() {
                     lesson_credit: e.target.lessonCredit.value,
                   };
 
+                  console.log("Adding lesson")
+                  // TODO: Send lessonData to backend
                   const result = await addLesson(lessonData);
-                  console.log("Lesson submitted:", lessonData, result);
+                  
 
+                  console.log("Lesson submitted:", lessonData);
                   alert("Lesson added!");
+
                   setShowModal(false);
                 }}
-              >
+            > 
                 <div className="form-group">
                   <label>Lesson Title</label>
                   <input type="text" name="title" required />
@@ -230,7 +239,7 @@ function Lessons() {
                 <div className="form-group-inline">
                   <label>Lesson Credit (points)</label>
                   <input
-                    type="number"
+                    type="nunmber"
                     name="lessonCredit"
                     placeholder="e.g. 6"
                     required
