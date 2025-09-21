@@ -221,3 +221,13 @@ export const getClassroomsByStudent = async (studentId) => {
   `;
   return classrooms;
 };
+
+
+export const addClassroomStudentLesson = async (cs_id, crcl_id) => {
+  const result = await sql`
+    INSERT INTO "LMS".cl_stu_lesson (cs_id, crcl_id)
+    VALUES (${cs_id}, ${crcl_id})
+    RETURNING *;
+  `;
+  return result[0];
+};
