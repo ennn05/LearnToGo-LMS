@@ -7,7 +7,8 @@ import {
   createClassroom,
   addClassroomLesson,
   addClassroomStudent,
-  addClassroomStudentLesson
+  addClassroomStudentLesson,
+  getClassroomsByStudent
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -32,6 +33,19 @@ export const getInstructorClassrooms = async (req, res) => {
   } catch (error) {
     console.error("Error fetching classrooms by instructor:", error);
     return res.status(500).json({ success: false, message: "Failed to fetch classrooms by instructor." });
+  }
+};
+
+export const getStudentClassrooms = async (req, res) => {
+  const studentId = req?.user?.id;
+  if (!studentId) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+  try {
+    const classrooms = await getClassroomsByStudent(studentId);
+    return res.status(200).json({ success: true, data: classrooms });
+  } catch (error) {
+    console.error("Error fetching classrooms by student:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch classrooms by student." });
   }
 };
 
