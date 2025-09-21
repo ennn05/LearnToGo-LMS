@@ -6,7 +6,8 @@ import {
   updateClassroom,
   createClassroom,
   addClassroomLesson,
-  addClassroomStudent
+  addClassroomStudent,
+  editStudentMarksForClassroomLesson
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -153,4 +154,21 @@ export const addClassroom = async (req, res) => {
         console.error("Error in creating classroom:", error);
         return res.status(500).json({ success: false, message: "Failed to create classroom." });
     }
+};
+
+export const updateStudentMarksForClassroomLesson = async (req, res) => {
+  const { id, lessonId } = req.params;
+  const { students } = req.body; // Expecting an array of { stucourse_id, attendance, grade, completion }
+
+  try { 
+    const results = await Promise.all(
+      students.map(student => 
+        editStudentMarksForClassroomLesson(id, lessonId, student)
+      )
+    );
+    return res.status(200).json({ success: true, data: results });
+  } catch (error) {
+    console.error("Error updating student marks:", error);
+    return res.status(500).json({ success: false, message: "Failed to update student marks." });
+  }
 };
