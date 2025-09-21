@@ -99,11 +99,11 @@ export const createClassroom = async (classroomData) => {
     const classroom = await sql`
         INSERT INTO "LMS".classroom
             (cr_id, cr_start_date, cr_duration, cr_date_created, cr_last_updated,
-             cr_creator, supervisor_id, course_code)
+             cr_creator, supervisor_id, course_code, cr_status)
         VALUES
             (${classroomData.cr_id}, ${classroomData.cr_start_date}, ${classroomData.cr_duration},
              ${classroomData.cr_date_created}, ${classroomData.cr_date_updated},
-             ${classroomData.cr_creator}, ${classroomData.supervisor_id}, ${classroomData.course_code})
+             ${classroomData.cr_creator}, ${classroomData.supervisor_id}, ${classroomData.course_code}, ${classroomData.cr_status})
         RETURNING *;
     `;
 
