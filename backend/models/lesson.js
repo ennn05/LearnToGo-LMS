@@ -68,6 +68,12 @@ export const getLessonByInstructor = async (instructorId) => {
   return lessons;
 };
 
+// To be implemented: Get all lessons of a student's courses
+export const getAllLessonsOfStudentCourses = async (studentId) => {
+  const lessons = [];
+  return lessons;
+};
+
 // Create lesson
 export const createLesson = async (lessonData) => {
   const lesson = await sql`
