@@ -70,8 +70,8 @@ function StudentLessonDetails() {
                     </div>
                 </div>
                 <nav className="nav-menu">
-                    <button onClick={() => navigate("/lessons")} className="active">Lessons</button>
                     <button onClick={() => navigate("/courses")}>Courses</button>
+                    <button onClick={() => navigate("/lessons")} className="active">Lessons</button>
                     <button onClick={() => navigate("/classrooms")}>Classrooms</button>
                     <button className="logout-btn" onClick={handleLogout}>Log Out</button>
                 </nav>
