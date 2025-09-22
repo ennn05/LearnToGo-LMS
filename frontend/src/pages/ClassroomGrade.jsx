@@ -7,12 +7,11 @@ import useStore from "../store";
 function ClassroomGrade() {
     const navigate = useNavigate();
     const [activePage, setActivePage] = useState("classrooms");
-    const [classroom, setClassroom] = useState(null);
     const [error, setError] = useState(null);
     const [lessons, setLessons] = useState([]);
     const [activeLesson, setActiveLesson] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { classroom_id } = useParams();
+    const { classroomId } = useParams();
     const { user, signOut } = useStore(s => s);
 
     const handleLogout = () => {
@@ -56,23 +55,39 @@ function ClassroomGrade() {
     useEffect(() => {
         const fetchLessonsWithStudents = async () => {
             try {
-                const { data: res } = await api.get(`classrooms/${classroom_id}/lessons/students`);
+                const { data: res } = await api.get(`classrooms/${classroomId}/lessons/students`);
                 if (!res.success) {
                     console.error("Error fetching lessons:", res.message);
                     setError("Lessons not found");
+                    setLessons([]);
+                    setActiveLesson(null);
                     return;
                 }
                 setLessons(res.data);
                 setActiveLesson(res.data[0].crcl_cl_id);
+                console.log("Setting lessons:", res.data);
+                console.log("Setting activeLesson:", res.data[0].crcl_cl_id);
+
             } catch (err) {
                 console.error("Error fetching lessons:", err);
                 setError("Lessons not found");
+                setLessons([]);
+                setActiveLesson(null);
             } finally {
                 setLoading(false);
             }
         };
         fetchLessonsWithStudents();
-    }, [classroom_id]);
+    }, [classroomId]);
+
+    useEffect(() => {
+        console.log("Lessons updated:", lessons);
+    }, [lessons]);
+
+    useEffect(() => {
+        console.log("Active lesson updated:", activeLesson);
+    }, [activeLesson]);
+
 
     if (loading) {
         return (
@@ -86,7 +101,7 @@ function ClassroomGrade() {
         );
     }
 
-    if (error || !classroom) {
+    if (error || lessons.length === 0) {
         return (
             <div className="flex">
                 <div className="main-content">
@@ -168,7 +183,7 @@ function ClassroomGrade() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {lesson.students.map((stu, idx) => (
+                                {lesson.students && lesson.students.length > 0 && lesson.students.map((stu, idx) => (
                                     <tr key={stu.stucourse_id || idx}>
                                         <td>{stu.stu_user_fname} {stu.stu_user_lname}</td>
                                         <td>{stu.stu_user_email}</td>
@@ -226,7 +241,7 @@ function ClassroomGrade() {
                                         grade: stu.grade || "",
                                         completion: stu.completion || "",
                                     }));
-                                    await api.put(`classrooms/${classroom_id}/lessons/${lesson.crcl_cl_id}/students`, studentData);
+                                    await api.put(`classrooms/${classroomId}/lessons/${lesson.crcl_cl_id}/students`, studentData);
                                     alert("Grades updated successfully!");
                                 } catch (err) {
                                     console.error("Error updating student marks:", err);
