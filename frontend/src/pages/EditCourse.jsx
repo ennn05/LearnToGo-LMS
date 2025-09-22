@@ -6,7 +6,13 @@ function EditCourse() {
     const { courseId } = useParams();
     const [activePage, setActivePage] = useState("courses");
     const [user, setUser] = useState(null);
-    const [courseData, setCourseData] = useState(null);
+    const [courseData, setCourseData] = useState({
+            course_code: "",
+            course_title: "",
+            course_status: "draft",
+            course_total_credit: 0,
+            lessons: [],
+            });
     const [assignedLessons, setAssignedLessons] = useState([]);
     const [availableLessons, setAvailableLessons] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -15,14 +21,23 @@ function EditCourse() {
 
     const fetchCourseDetails = async () => {
         try {
+            console.log("Fetching course details");
             const res = await fetch(`http://localhost:5000/api/courses/instructor/${courseId}`);
             if (!res.ok) {
                 console.error("Error fetching courses:", res);
             }
             const data = await res.json();
+
+            const course = data.data;
+
+            setCourseData({
+            ...course,
+            course_total_credit: course.course_total_credit || 0,
+            });
+            setAssignedLessons(course.lessons || []);
             console.log("Course details loaded:", data.data);
             console.log(data.data.lessons);
-            setCourseData(data.data);
+            // setCourseData(data.data);
         } catch (error) {
             console.error("Error fetching course details:", error);
         } finally {
@@ -63,7 +78,7 @@ function EditCourse() {
         }
         fetchCourseDetails();
         fetchLessons();
-    }, []);
+    }, [courseId]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
