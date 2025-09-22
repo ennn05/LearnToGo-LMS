@@ -31,8 +31,8 @@ function EditCourse() {
             const course = data.data;
 
             setCourseData({
-            ...course,
-            course_total_credit: course.course_total_credit || 0,
+                ...course,
+                course_total_credit: course.course_total_credit || 0,
             });
             setAssignedLessons(course.lessons || []);
             console.log("Course details loaded:", data.data);
@@ -145,11 +145,11 @@ function EditCourse() {
                 return;
             }
             const courseToSave = {
-                course_code: courseData.course_code,
-                course_title: courseData.course_title,
-                course_status: courseData.course_status,
+                code: courseData.course_code,
+                title: courseData.course_title,
+                status: courseData.course_status,
                 creator: user.user_id,
-                course_total_credit: courseData.course_total_credit,
+                credit: courseData.course_total_credit,
                 lessons: assignedLessons.map(l => l.lesson_id)
             };
             const response = await fetch("http://localhost:5000/api/courses", {
@@ -255,7 +255,7 @@ function EditCourse() {
                             <div className="form-group">
                                 <label>Date Created:</label>
                                 <span className="readonly-field">
-                                    courseData.dateCreated ? new Date(courseData.dateCreated).toLocaleDateString() : currentDate
+                                    {courseData.dateCreated ? new Date(courseData.dateCreated).toLocaleDateString() : currentDate}
                                 </span>
                             </div>
                         </div>
