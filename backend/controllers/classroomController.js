@@ -50,11 +50,12 @@ export const getClassroom = async (req, res) => {
   }
 };
 
-// ✅ Delete a classroom
 export const removeClassroom = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // this is the cr_id from frontend
+  console.log("Deleting classroom with cr_id:", id);
   try {
     const deleted = await deleteClassroom(id);
+    console.log("Deleted result:", deleted);
     if (!deleted) {
       return res.status(404).json({ success: false, message: "Classroom does not exist." });
     }
