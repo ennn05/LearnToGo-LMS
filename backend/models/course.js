@@ -91,8 +91,6 @@ export const createCourse = async (courseData) => {
     (course_code, course_title, course_total_credit, course_date_created, course_date_updated, course_creator, course_status)
     VALUES
     (${courseData.code}, ${courseData.title}, ${courseData.total_credit}, ${courseData.date_created}, ${courseData.date_updated}, ${courseData.creator}, ${courseData.status}) RETURNING *;`;
-
-    // code to insert course_lesson records into db later here
     
     return course[0];
 }
