@@ -290,13 +290,16 @@ function EditCourse() {
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Course Code:</label>
-                                <input
+                                <span className="readonly-field">
+                                    {courseData.course_code }
+                                </span>
+                                {/* <input
                                     type="text"
                                     name="course_code"
                                     value={courseData.course_code || ""}
                                     onChange={handleInputChange}
                                     placeholder="e.g., C2001"
-                                />
+                                /> */}
                             </div>
                             <div className="form-group">
                                 <label>Date Created:</label>
