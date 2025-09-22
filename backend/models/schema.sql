@@ -129,3 +129,16 @@ CREATE TABLE LMS.classroom_student(
 
     constraint classroom_student_pkey primary key (cs_id)
 )
+
+--STUDENT_COURSE
+create table "LMS".student_course(
+  course_code CHAR(10) UNIQUE NOT NULL,
+  stu_user_id INTEGER UNIQUE NOT NULL,
+  stucourse_progress NUMERIC (5,2),
+  stucourse_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+
+  constraint student_course_pkey PRIMARY KEY (stucourse_id),
+  constraint stu_course_nk UNIQUE (course_code, stu_user_id),
+  constraint stu_stucourse_fk FOREIGN KEY (stu_user_id) references "LMS".student(stu_user_id),
+  constraint course_stucourse_fk FOREIGN KEY (course_code) references "LMS".course(course_code)
+)
