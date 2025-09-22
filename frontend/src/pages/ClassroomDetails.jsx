@@ -47,10 +47,9 @@ function ClassroomDetails() {
       }
     };
 
-  useEffect(() => {
-
     fetchClassroom();
   }, [classroomId]);
+
 
   const handlePublishClassroom = async () => {
     // TODO: Implement publish classroom functionality
