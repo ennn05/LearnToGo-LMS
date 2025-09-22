@@ -65,8 +65,9 @@ function StudentClassrooms() {
                 <h1>Student List of Classrooms</h1>
                 <div className="tabs">
                     <button
-                        className={activeTab === "my" ? "active" : ""}
+                        className={activeTab === "my" ? "tab-active-green" : ""}
                         onClick={() => setActiveTab("my")}
+                        style={activeTab === "my" ? { backgroundColor: '#27ae60', color: 'white', fontWeight: 'bold' } : {}}
                     >
                         My Classrooms
                     </button>
