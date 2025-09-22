@@ -13,7 +13,6 @@ import Classrooms from "./pages/classrooms";
 import ClassroomDetails from "./pages/ClassroomDetails";
 import CreateClassroom from "./pages/CreateClassroom";
 import ClassroomGrade from "./pages/ClassroomGrade";
-import EditCourse from "./pages/EditCourse";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
