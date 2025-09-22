@@ -65,8 +65,8 @@ function ClassroomGrade() {
                 }
                 console.log("Setting lessons:", res.data);
                 setLessons(res.data);
-                console.log("Setting activeLesson:", res.data[0].crcl_cl_id);
-                setActiveLesson(res.data[0].crcl_cl_id);
+                console.log("Setting activeLesson:", res.data?.length > 0? res.data[0].crcl_cl_id : null);
+                setActiveLesson(res.data?.length > 0? res.data[0].crcl_cl_id : null);
 
             } catch (err) {
                 console.error("Error fetching lessons:", err);
@@ -105,9 +105,9 @@ function ClassroomGrade() {
         return (
             <div className="flex">
                 <div className="main-content">
-                    <div className="error">
-                        <h2>Error</h2>
-                        <p>{error || "Classroom not found"}</p>
+                    <div className="empty">
+                        <h2>Empty</h2>
+                        <p>{error || "No lessons in classroom yet"}</p>
                         <button onClick={() => navigate("/classrooms")}>Back to Classrooms</button>
                     </div>
                 </div>

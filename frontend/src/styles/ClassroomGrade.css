@@ -89,6 +89,7 @@
     flex: 1;
     background-color: #ecf0f1;
     padding: 0;
+    padding: 0 10px;
     overflow-y: auto;
 }
 
@@ -161,4 +162,31 @@
 
 .save-btn:hover {
     background: #218838;
+}
+
+
+.loading, .empty {
+  text-align: center;
+  padding: 40px;
+  color: #7f8c8d;
+  font-size: 18px;
+}
+
+.empty h2 {  
+  color: #95a5a6;
+  margin-bottom: 10px;
+}
+
+.empty button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.empty button:hover {
+  background-color: #2980b9;
 }
