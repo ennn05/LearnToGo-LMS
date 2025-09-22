@@ -57,6 +57,7 @@ export const updateCourse = async (courseData) => {
     console.log(courseData);
     const courses = await sql`UPDATE "LMS".course 
                     SET 
+                        course_code = ${updateData.course_code},
                         course_title = ${updateData.course_title},
                         course_total_credit = ${updateData.course_total_credit},
                         course_date_updated = ${updateData.course_date_updated},

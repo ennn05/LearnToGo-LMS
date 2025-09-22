@@ -117,12 +117,12 @@ export const editCourse = async (req, res) => {
 
     try {
         // If lessons are included, recalc course_total_credit
-        if (updateData.lessons && Array.isArray(updateData.lessons)) {
-            updateData.course_total_credit = updateData.lessons.reduce(
-                (sum, lesson) => sum + (lesson.lesson_credit || 0),
-                0
-            );
-        }
+        // if (updateData.lessons && Array.isArray(updateData.lessons)) {
+        //     updateData.course_total_credit = updateData.lessons.reduce(
+        //         (sum, lesson) => sum + (lesson.lesson_credit || 0),
+        //         0
+        //     );
+        // }
 
         // Update course metadata (title, status, etc.)
         const updatedCourse = await updateCourse({ id, updateData });

@@ -164,10 +164,12 @@ function EditCourse() {
             }
 
             const courseToUpdate = {
+                course_code: courseData.course_code,
                 course_title: courseData.course_title,
                 course_status: courseData.course_status,   
                 course_total_credit: assignedLessons.reduce((sum, l) => sum + l.lesson_credit, 0), 
-                course_date_updated: currentDate
+                course_date_updated: currentDate,
+                lessons: assignedLessons
             };
 
             // Update course metadata
@@ -183,16 +185,16 @@ function EditCourse() {
             }
 
             // Update lesson assignments
-            const res = await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ lessons: assignedLessons.map(l => l.lesson_id) }) 
-            });
+            // const res = await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify({ lessons: assignedLessons.map(l => l.lesson_id) }) 
+            // });
 
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.message || "Failed to update lessons");
-            }
+            // if (!res.ok) {
+            //     const errorData = await res.json();
+            //     throw new Error(errorData.message || "Failed to update lessons");
+            // }
 
             alert("Course saved successfully!");
             navigate("/courses");
