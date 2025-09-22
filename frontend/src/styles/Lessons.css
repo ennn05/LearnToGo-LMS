@@ -248,8 +248,9 @@
 }
 
 .lessons-grid {
-  grid-template-columns: 1fr; 
-  gap: 20px;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)) !important;
+  gap: 20px !important;
 }
 
 .lesson-card {
@@ -261,6 +262,7 @@
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s;
   text-align: left;
+  
 }
 
 .lesson-card:hover {
@@ -287,7 +289,7 @@
 
 .lesson-details p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: #555;
 }
 
