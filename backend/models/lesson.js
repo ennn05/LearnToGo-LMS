@@ -84,7 +84,7 @@ export const getLessonsByStudent = async (studentId) => {
       l.lesson_status
     FROM "LMS".student_course stuc
     JOIN "LMS".course_lesson cl 
-      ON stuc.course_code = cl.course_code
+      ON stuc.course_code = cl.cl_course_code
     JOIN "LMS".lesson l 
       ON cl.cl_lesson_id = l.lesson_id
     WHERE stuc.stu_user_id = ${studentId}
