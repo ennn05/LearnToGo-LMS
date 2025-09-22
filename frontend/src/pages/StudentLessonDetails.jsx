@@ -87,10 +87,10 @@ function StudentLessonDetails() {
                     <div className="lesson-header">
                         <div className="lesson-meta">
                             <h2>{lesson.lesson_title || "Untitled Lesson"}</h2>
-                            {/* <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p> */}
+                            <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p>
                             <p><strong>By:</strong> {lesson.user_fname && lesson.user_lname ? `${lesson.user_fname} ${lesson.user_lname}` : "Unknown"}</p>
-                            {/* <p><strong>Created:</strong> {lesson.lesson_date_created ? new Date(lesson.lesson_date_created).toLocaleDateString() : "NULL"}</p>
-                            <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p> */}
+                            <p><strong>Created:</strong> {lesson.lesson_date_created ? new Date(lesson.lesson_date_created).toLocaleDateString() : "NULL"}</p>
+                            <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p>
                         </div>
                     </div>
                     {/* Details Section */}
@@ -110,6 +110,18 @@ function StudentLessonDetails() {
                         <div className="info-item">
                             <label>Lesson Credit:</label>
                             <p>{lesson.lesson_credit ?? 0} credit points</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Pre-requisites:</label>
+                            {lesson.lesson_prereq && lesson.lesson_prereq.trim().length > 0 ? (
+                                <ul>
+                                    {lesson.lesson_prereq.trim().split("\n").map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="no-items">No pre-requisites.</p>
+                            )}
                         </div>
                     </div>
                     {/* Reading List */}
