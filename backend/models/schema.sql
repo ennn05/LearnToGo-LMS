@@ -110,3 +110,12 @@ CREATE TABLE LMS.classroom_course_lesson (
 
     CONSTRAINT cr_cl_nk UNIQUE (crcl_cr_id, crcl_cl_id)
 );
+
+--CLASSROOM_STUDENT
+CREATE TABLE LMS.classroom_student(
+    cs_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cr_id VARCHAR(10) NOT NULL,
+    stucourse_id INTEGER UNIQUE NOT NULL,
+
+
+)
