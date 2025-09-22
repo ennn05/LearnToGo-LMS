@@ -1,39 +1,31 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-import { mockCourseAPI } from "../data/mockCourses"; // Mock API for testing if needed
+import { mockCourseAPI } from "../data/mockCourses";
 import "../styles/Courses.css";
 
 function Courses() {
-  // Track active sidebar page
   const [activePage, setActivePage] = useState("courses");
-
-  // Current logged-in user
+  // const user = useStore((state) => state);
   const [user, setUser] = useState(null);
-
-  // Instructor's courses list
   const [courses, setCourses] = useState([]);
-
-  // Loading state for courses
   const [loading, setLoading] = useState(true);
-
   const navigate = useNavigate();
 
-  /**
-   * Fetch courses from API (mock or backend)
-   */
+  // Fetch courses from mock API
   const fetchCourses = async () => {
     try {
-      console.log("Fetching courses from API...");
-
-      // Example with mock:
+      console.log("Fetching courses from mock API...");
       // const data = await mockCourseAPI.getAllCourses();
+      const {data: res} = await api.get("courses/instructor");
+      // const response = await fetch("http://localhost:5000/api/courses/instructor");
 
       const { data: res } = await api.get("courses"); // Fetch all courses instead of Instructor's courses only
 
       if (!res.success) {
         console.error("Error fetching courses:", res.message);
       }
+      // const data = await response.json();
 
       console.log("Courses loaded:", res.data);
       setCourses(res.data);
@@ -44,33 +36,20 @@ function Courses() {
     }
   };
 
-  /**
-   * On mount:
-   * - Load user info from localStorage
-   * - Fetch courses
-   */
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    console.log("Stored user:", storedUser);
-
+    console.log(storedUser);
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-      console.log("User set:", user);
-    }
-
+      console.log("User: ", user);
+    } 
     fetchCourses();
   }, []);
 
-  /**
-   * Navigate to a specific course details page
-   */
   const handleCourseClick = (courseId) => {
     navigate(`/courses/${courseId}`);
   };
 
-  /**
-   * Handle logout: clear localStorage & redirect
-   */
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
@@ -80,16 +59,13 @@ function Courses() {
     <div className="flex">
       {/* Sidebar */}
       <div className="sidebar">
-        {/* Profile section */}
         <div className="profile">
           <div className="avatar"></div>
           <div className="info">
             <div className="name">
               {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
             </div>
-            <div className="role">
-              {user ? user.user_role : "Loading..."}
-            </div>
+            <div className="role">{user ? user.user_role : "Loading..."}</div>
           </div>
         </div>
 
@@ -133,7 +109,6 @@ function Courses() {
 
       {/* Main Content */}
       <div className="main-content">
-        {/* Topbar */}
         <div className="topbar">
           <h1>All Courses</h1>
         </div>
@@ -156,9 +131,7 @@ function Courses() {
                 >
                   <div className="course-code">{course.course_code}</div>
                   <div className="course-title">{course.course_title}</div>
-                  <div className="course-credits">
-                    {course.course_total_credit} credits
-                  </div>
+                  <div className="course-credits">{course.course_total_credit} credits</div>
                 </div>
               ))}
             </div>
