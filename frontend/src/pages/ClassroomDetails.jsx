@@ -26,8 +26,7 @@ function ClassroomDetails() {
     }
   };
 
-  useEffect(() => {
-    const fetchClassroom = async () => {
+  const fetchClassroom = async () => {
       try {
         const { data: res } = await api.get(`classrooms/${classroomId}`);
         if (!res.success) {
@@ -46,6 +45,9 @@ function ClassroomDetails() {
         setLoading(false);
       }
     };
+
+  useEffect(() => {
+    
 
     fetchClassroom();
   }, [classroomId]);
