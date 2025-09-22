@@ -106,7 +106,8 @@ function EditCourse() {
             const publishedCourseData = {
                 ...courseData,
                 course_status: "published",
-                course_total_credit: assignedLessons.reduce((sum, l) => sum + l.lesson_credit, 0)
+                course_total_credit: assignedLessons.reduce((sum, l) => sum + Number(l.lesson_credit || 0), 0), 
+                lessons: assignedLessons
             };
 
             // Save updates before marking as published
@@ -121,12 +122,12 @@ function EditCourse() {
                 throw new Error(errorData.message || "Failed to publish course");
             }
 
-            // Update lessons
-            await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ lessons: assignedLessons.map(l => l.lesson_id) })
-            });
+            // // Update lessons
+            // await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
+            //     method: "PUT",
+            //     headers: { "Content-Type": "application/json" },
+            //     body: JSON.stringify({ lessons: assignedLessons.map(l => l.lesson_id) })
+            // });
 
             alert("Course published successfully!");
             navigate("/courses");
@@ -167,7 +168,7 @@ function EditCourse() {
                 course_code: courseData.course_code,
                 course_title: courseData.course_title,
                 course_status: courseData.course_status,   
-                course_total_credit: assignedLessons.reduce((sum, l) => sum + l.lesson_credit, 0), 
+                course_total_credit: assignedLessons.reduce((sum, l) => sum + Number(l.lesson_credit || 0), 0), 
                 course_date_updated: currentDate,
                 lessons: assignedLessons
             };
