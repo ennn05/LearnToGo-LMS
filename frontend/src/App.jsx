@@ -8,6 +8,7 @@ import Students from "./pages/students";
 import { setAuthToken } from "./libs/apiCalls";
 import useStore from "./store";
 import LessonDetails from "./pages/LessonDetails";
+import EditLesson from "./pages/EditLesson";
 import Classrooms from "./pages/classrooms";
 import ClassroomDetails from "./pages/ClassroomDetails";d
 import CreateClassroom from "./pages/CreateClassroom";
@@ -63,6 +64,7 @@ function App() {
           <Route path="/courses/create" element={<CreateCourse />} />
           <Route path="/students" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Students /></ProtectedRoute>} />
           <Route path="/lessons/:lessonId" element={<LessonDetails />} />
+          <Route path="/lessons/:lessonId/edit" element={<EditLesson />} />
           <Route path="/lessons/create" element={<CreateLesson />} />
           <Route path="/classrooms/create" element={<CreateClassroom />} />  
           <Route path="/classrooms/:classroomId" element={<ClassroomDetails />} />

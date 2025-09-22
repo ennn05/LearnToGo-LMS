@@ -521,3 +521,87 @@
 .lesson-actions .btn-archive:hover {
   background-color: #7f8c8d;
 }
+
+/* Prerequisite list items */
+.list-section .scroll-list .list-item {
+  display: flex;
+  justify-content: space-between; /* space between title and button */
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+/* Remove button styling */
+.list-section .scroll-list .list-item button {
+  background-color: #ff4d4f; /* red for remove */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.list-section .scroll-list .list-item button:hover {
+  background-color: #d9363e;
+}
+
+/* Add button at bottom */
+.list-section .btn-add {
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #1890ff;
+  background-color: #1890ff;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.list-section .btn-add:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* Prerequisite modal list items */
+.modal .lesson-list .list-item {
+  display: flex;
+  justify-content: space-between; /* title left, button right */
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+/* Add button inside modal */
+.modal .lesson-list .list-item button {
+  background-color: #52c41a; /* green for add */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.modal .lesson-list .list-item button:hover {
+  background-color: #389e0d;
+}
