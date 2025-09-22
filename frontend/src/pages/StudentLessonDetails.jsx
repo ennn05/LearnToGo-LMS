@@ -80,7 +80,6 @@ function StudentLessonDetails() {
             {/* Main Content */}
             <div className="main-content">
                 <div className="topbar">
-                    <button onClick={handleBack} className="back-btn">&lt; Back</button>
                     <h1>Lessons</h1>
                 </div>
                 <div className="lesson-details-container">
