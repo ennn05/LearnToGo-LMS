@@ -268,12 +268,21 @@ function EditCourse() {
                             </span>
                         </div>
                         <div className="course-actions">
-                            <button className="btn-publish" onClick={handlePublishCourse}>
-                                Publish
-                            </button>
-                            <button className="btn-archive" onClick={() => handleStatusChange("archived")}>
-                                Archive
-                            </button>
+                            {courseData.course_status.toLowerCase() !== "published" ?
+                                (
+                                <button className="btn-publish" onClick={()=>handleStatusChange("published")}>
+                                    Publish
+                                </button>
+                                ) : ('')}
+                            {courseData.course_status.toLowerCase() !== "archived" ? (
+                                <button
+                                    className="btn-archive"
+                                    onClick={() => handleStatusChange("archived")}
+                                >
+                                    Archive
+                                </button>
+                                ) : ('')}
+
                         </div>
                     </div>
                     {/** Course Form */}
