@@ -85,7 +85,7 @@ function EditCourse() {
         setCourseData(prev => ({
             ...prev,
             [name]: value,
-            totalCredits: assignedLessons.reduce((sum, lesson) => lesson.lesson_credit + sum, 0)
+            course_total_credit: assignedLessons.reduce((sum, lesson) => lesson.lesson_credit + sum, 0)
         }));
     };
 
@@ -255,7 +255,11 @@ function EditCourse() {
                             <div className="form-group">
                                 <label>Date Created:</label>
                                 <span className="readonly-field">
+<<<<<<< HEAD
                                     {courseData.dateCreated ? new Date(courseData.dateCreated).toLocaleDateString() : currentDate}
+=======
+                                    {courseData.course_date_created ? new Date(courseData.course_date_created).toLocaleDateString() : currentDate}
+>>>>>>> 20b1706470b2cb2524b1dca76f25559ed48f8176
                                 </span>
                             </div>
                         </div>
@@ -278,12 +282,12 @@ function EditCourse() {
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Total Credits:</label>
-                                <span className="readonly-field">{courseData.totalCredits || 0}</span>
+                                <span className="readonly-field">{courseData.course_total_credit || 0}</span>
                             </div>
                             <div className="form-group">
                                 <label>Created By:</label>
                                 <span className="readonly-field">
-                                    {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
+                                    {courseData ? `${courseData.user_fname} ${courseData.user_lname}` : "Loading..."}
                                 </span>
                             </div>
                         </div>
