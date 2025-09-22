@@ -26,7 +26,7 @@ function ClassroomDetails() {
     }
   };
 
-  useEffect(() => {
+  
     const fetchClassroom = async () => {
       try {
         const { data: res } = await api.get(`classrooms/${classroomId}`);
@@ -46,7 +46,7 @@ function ClassroomDetails() {
         setLoading(false);
       }
     };
-
+    
   useEffect(() => {
 
     fetchClassroom();
@@ -324,6 +324,5 @@ function ClassroomDetails() {
     )}
     </div>
   );
-});
 }
 export default ClassroomDetails;
