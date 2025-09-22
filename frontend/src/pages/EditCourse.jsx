@@ -68,6 +68,7 @@ function EditCourse() {
                 user_role: "Instructor",
             });
         }
+        fetchCourseDetails();
         fetchLessons();
     }, []);
 
@@ -177,3 +178,5 @@ function EditCourse() {
         </div>
     )
 }
+
+export default EditCourse;
