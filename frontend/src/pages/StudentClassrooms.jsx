@@ -86,7 +86,12 @@ function StudentClassrooms() {
                         <div className="no-classrooms">No classrooms found.</div>
                     ) : (
                         classrooms.map((cr) => (
-                            <div className="classroom-card" key={cr.cr_id}>
+                            <div
+                                className="classroom-card"
+                                key={cr.cr_id}
+                                onClick={() => navigate(`/classrooms/${cr.cr_id}`)}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <div className="classroom-header">
                                     <strong>Classroom:</strong> {cr.cr_id}
                                 </div>
