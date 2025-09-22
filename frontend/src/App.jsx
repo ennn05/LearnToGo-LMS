@@ -3,6 +3,7 @@ import Login from "./pages/login";
 import Lessons from "./pages/lessons";
 import Courses from "./pages/Courses";
 import CourseDetails from "./pages/CourseDetails";
+import EditCourse from "./pages/EditCourse";
 import CreateCourse from "./pages/CreateCourse";
 import Students from "./pages/students";
 import { setAuthToken } from "./libs/apiCalls";
