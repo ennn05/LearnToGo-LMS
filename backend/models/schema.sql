@@ -117,5 +117,15 @@ CREATE TABLE LMS.classroom_student(
     cr_id VARCHAR(10) NOT NULL,
     stucourse_id INTEGER UNIQUE NOT NULL,
 
+    constraint cr_cs_fkey foreign key (cr_id) 
+        references LMS.classroom (cr_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
 
+    constraint stucourse_cs_fkey foreign key (stucourse_id) 
+        references LMS.student_course (stucourse_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    constraint cs_nkey unique (cr_id, stucourse_id),
+
+    constraint classroom_student_pkey primary key (cs_id)
 )
