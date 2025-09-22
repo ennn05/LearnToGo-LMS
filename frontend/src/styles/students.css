@@ -284,3 +284,29 @@ body {
 @keyframes fadeOut {
   to { opacity: 0; transform: translateY(-10px); }
 }
+
+/* Search Bar */
+.search-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  margin: 15px 0;           /* Space above and below */
+  width: 100%;              /* Full width of the main content */
+  background-color: #f5f5f5;
+}
+
+.search-container input {
+  width: 400px;             /* Make it longer */
+  max-width: 90%;           /* Responsive on smaller screens */
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #d7e8fe;
+}
+
+.search-container input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+}
