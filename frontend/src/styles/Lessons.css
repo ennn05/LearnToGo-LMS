@@ -232,9 +232,9 @@
   padding: 25px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin: 0 auto 20px auto;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  /* flex: 1; */
+  /* display: flex; */
+  /* flex-direction: column; */
   width: 95%;
   min-height: 200px;
   height: auto;
@@ -248,10 +248,8 @@
 }
 
 .lessons-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr; 
   gap: 20px;
-  margin-bottom: 20px;
 }
 
 .lesson-card {
@@ -260,8 +258,6 @@
   background-color: white;
   border-radius: 0.5rem;
   padding: 1rem;
-  width: 100%;
-  max-width: none;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s;
   text-align: left;
@@ -279,9 +275,9 @@
 
 .lesson-header h3 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 600;
-  color: #222;
+  color: black;
 }
 .lesson-details {
   display: flex;
@@ -299,4 +295,24 @@
   font-weight: bold;
   color: #333;
   margin-right: 0.3rem;
+}
+
+/* Status-based colors */
+.lesson-top-section.draft {
+  background-color: #9ca3af; /* gray */
+}
+
+.lesson-top-section.published {
+  background-color: #27ae60; /* green */
+}
+
+.lesson-top-section.archived {
+  background-color: #f39c12; /* red */
+}
+
+.lesson-top-section h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: black;
 }
