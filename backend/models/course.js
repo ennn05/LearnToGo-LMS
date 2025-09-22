@@ -10,29 +10,6 @@ export const getCoursesByInstructor = async (instructorId) => {
     return courses;
 }
 
-// Get all lessons accessible to a specific student by enrolled courses
-export const getLessonsByStudent = async (studentId) => {
-  const lessons = await sql`
-    SELECT 
-      l.lesson_id,
-      l.lesson_title,
-      l.lesson_credit,
-      l.lesson_designer,
-      c.course_code,
-      c.course_name
-    FROM "LMS".student_course stuc
-    JOIN "LMS".course c 
-      ON stuc.course_code = c.course_code
-    JOIN "LMS".course_lesson cl 
-      ON c.course_code = cl.course_code
-    JOIN "LMS".lesson l 
-      ON cl.cl_lesson_id = l.lesson_id
-    WHERE stuc.stu_user_id = ${studentId}
-    ORDER BY c.course_name, l.lesson_title;
-  `;
-  return lessons;
-};
-
 export const getCourseByCode = async (courseCode) => {
     const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
                             COALESCE(json_agg(
