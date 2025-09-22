@@ -223,8 +223,8 @@ function ClassroomGrade() {
                                     const studentData = lesson.students.map(stu => ({
                                         stucourse_id: stu.stucourse_id,
                                         attendance: stu.attendance || false,
-                                        completion: stu.completion || "",
                                         grade: stu.grade || "",
+                                        completion: stu.completion || "",
                                     }));
                                     await api.put(`classrooms/${classroom_id}/lessons/${lesson.crcl_cl_id}/students`, studentData);
                                     alert("Grades updated successfully!");
