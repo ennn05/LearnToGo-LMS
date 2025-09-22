@@ -87,7 +87,8 @@ function CourseDetails() {
 
       const data = await res.json();
       console.log("Course published:", data.data);
-      setCourse(data.data);
+      fetchCourseDetails()
+      // setCourse(data.data);
     } catch (error) {
       console.error("Error publishing course:", error);
     }
@@ -115,7 +116,8 @@ function CourseDetails() {
 
       const data = await res.json();
       console.log("Course archived:", data.data);
-      setCourse(data.data);
+      // setCourse(data.data);
+      fetchCourseDetails();
     } catch (error) {
       console.error("Error archiving course:", error);
     }
