@@ -1,24 +1,40 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
+import "../styles/Courses.css";
 
 function StudentClassrooms() {
-    // for testing purpose only - replace with ur FE code
+    const [activeTab, setActiveTab] = useState("my");
+    const [user, setUser] = useState(null);
+    const [classrooms, setClassrooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-    // use api.get("classrooms") to fetch the list of student's classrooms
+    // Fetch classrooms the student is enrolled in
     const fetchClassrooms = async () => {
-        const {data: res} = await api.get("classrooms");
-        console.log(res.data);
-    }
+        try {
+            const { data: res } = await api.get("classrooms");
+            if (!res.success) {
+                setClassrooms([]);
+            } else {
+                setClassrooms(res.data);
+            }
+        } catch (error) {
+            setClassrooms([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
         fetchClassrooms();
     }, []);
 
-    return (
-        <div>
-            <h1>Student Classrooms</h1>
-        </div>
-    );
-}
-
-export default StudentClassrooms;
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        navigate("/");
+    };
