@@ -100,4 +100,13 @@ CREATE TABLE LMS.classroom_course_lesson (
     crcl_cr_id VARCHAR(10) NOT NULL,
     crcl_cl_id INTEGER NOT NULL,
 
+    CONSTRAINT crcl_cl_course_fk FOREIGN KEY (crcl_cl_id) 
+        REFERENCES LMS.course_lesson (cl_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT crcl_cr_fk FOREIGN KEY (crcl_cr_id) 
+        REFERENCES LMS.classroom (cr_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT cr_cl_nk UNIQUE (crcl_cr_id, crcl_cl_id)
 );
