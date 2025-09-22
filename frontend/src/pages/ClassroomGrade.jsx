@@ -9,6 +9,8 @@ function ClassroomGrade() {
     const [activePage, setActivePage] = useState("classrooms");
     const [classroom, setClassroom] = useState(null);
     const [error, setError] = useState(null);
+    const [lessons, setLessons] = useState([]);
+    const [activeLesson, setActiveLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const { classroom_id } = useParams();
     const { user, signOut } = useStore(s => s);
@@ -51,25 +53,25 @@ function ClassroomGrade() {
 
     */
 
-
     useEffect(() => {
-        const fetchClassroom = async () => {
+        const fetchLessonsWithStudents = async () => {
             try {
-                const { data: res } = await api.get(`classrooms/${classroom_id}`);
+                const { data: res } = await api.get(`classrooms/${classroom_id}/lessons/students`);
                 if (!res.success) {
-                    console.error("Error fetching classroom:", res.message);
-                    setError("Classroom not found");
+                    console.error("Error fetching lessons:", res.message);
+                    setError("Lessons not found");
                     return;
                 }
-                setClassroom(res.data);
-            } catch (error) {
-                console.error("Error fetching classroom:", error);
-                setError("Classroom not found");
+                setLessons(res.data);
+                setActiveLesson(res.data[0].crcl_cl_id);
+            } catch (err) {
+                console.error("Error fetching lessons:", err);
+                setError("Lessons not found");
             } finally {
                 setLoading(false);
             }
         };
-        fetchClassroom();
+        fetchLessonsWithStudents();
     }, [classroom_id]);
 
     if (loading) {
@@ -140,6 +142,102 @@ function ClassroomGrade() {
                 <div className="topbar">
                     <h1>Classroom Grades</h1>
                 </div>
+                {/** Lesson Tabs */}
+                <div className="lesson-tabs">
+                    {lessons.map((lesson) => (
+                        <button
+                            key={lesson.crcl_cl_id}
+                            className={activeLesson === lesson.crcl_cl_id ? "active" : ""}
+                            onClick={() => setActiveLesson(lesson.crcl_cl_id)}
+                        >
+                            {lesson.lesson_title}
+                        </button>
+                    ))}
+                </div>
+                {lessons.filter(l => l.crcl_cl_id === activeLesson).map(lesson =>
+                    <div key={lesson.crcl_cl_id} className="lesson-container">
+                        <h2>{lesson.lesson_title} - Students</h2>
+                        <table className="students-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Attendance</th>
+                                    <th>Completion</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lesson.students.map((stu, idx) => (
+                                    <tr key={stu.stucourse_id || idx}>
+                                        <td>{stu.stu_user_fname} {stu.stu_user_lname}</td>
+                                        <td>{stu.stu_user_email}</td>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={stu.attendance || false}
+                                                onChange={e => {
+                                                    const updated = [...lessons];
+                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
+                                                    updated[lessonIdx].students[idx].attendance = e.target.checked;
+                                                    setLessons(updated);
+                                                }}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value={stu.completion || ""}
+                                                placeholder="e.g. 80%"
+                                                onChange={e => {
+                                                    const updated = [...lessons];
+                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
+                                                    updated[lessonIdx].students[idx].completion = e.target.value;
+                                                    setLessons(updated);
+                                                }}
+                                            />
+                                        </td>
+                                        <td>
+                                            <select
+                                                value={stu.grade || ""}
+                                                onChange={e => {
+                                                    const updated = [...lessons];
+                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
+                                                    updated[lessonIdx].students[idx].grade = e.target.value;
+                                                    setLessons(updated);
+                                                }}
+                                            >
+                                                <option value="">Unmarked</option>
+                                                <option value="pass">Pass</option>
+                                                <option value="fail">Fail</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <button
+                            className="save-btn"
+                            onClick={async () => {
+                                try {
+                                    const studentData = lesson.students.map(stu => ({
+                                        stucourse_id: stu.stucourse_id,
+                                        attendance: stu.attendance || false,
+                                        completion: stu.completion || "",
+                                        grade: stu.grade || "",
+                                    }));
+                                    await api.put(`classrooms/${classroom_id}/lessons/${lesson.crcl_cl_id}/students`, studentData);
+                                    alert("Grades updated successfully!");
+                                } catch (err) {
+                                    console.error("Error updating student marks:", err);
+                                    alert("Failed to update student marks. Please try again.");
+                                }
+                            }}
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     )
