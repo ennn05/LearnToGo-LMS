@@ -68,23 +68,28 @@ export const getLessonByInstructor = async (instructorId) => {
   return lessons;
 };
 
-// To be implemented: Get all lessons of a student's courses
-export const getAllLessonsOfStudentCourses = async (studentId) => {
-  // Mock values placeholder implementation - replace with actual DB query
-  const lessons = [
-    {
-      lesson_id: 1,
-      lesson_title: "Sample Lesson",
-      lesson_desc: "This is a sample lesson.",
-      lesson_obj: "Learn something new.",
-      lesson_effort_per_week: 3,
-      lesson_date_created: "2023-10-01",
-      lesson_date_updated: "2023-10-01",
-      lesson_credit: 5,
-      lesson_designer: 2,
-      lesson_status: "Published"
-    }
-  ];
+// Get all lessons from all courses a student is enrolled in (lessons only, no course info)
+export const getLessonsByStudent = async (studentId) => {
+  const lessons = await sql`
+    SELECT 
+      l.lesson_id,
+      l.lesson_title,
+      l.lesson_desc,
+      l.lesson_obj,
+      l.lesson_effort_per_week,
+      l.lesson_date_created,
+      l.lesson_date_updated,
+      l.lesson_credit,
+      l.lesson_designer,
+      l.lesson_status
+    FROM "LMS".student_course stuc
+    JOIN "LMS".course_lesson cl 
+      ON stuc.course_code = cl.course_code
+    JOIN "LMS".lesson l 
+      ON cl.cl_lesson_id = l.lesson_id
+    WHERE stuc.stu_user_id = ${studentId}
+    ORDER BY l.lesson_id;
+  `;
   return lessons;
 };
 
