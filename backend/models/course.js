@@ -10,6 +10,56 @@ export const getCoursesByInstructor = async (instructorId) => {
     return courses;
 }
 
+//Fetch only courses that the student is enrolled in
+export const getEnrolledCoursesByStudent = async (studentId) => {
+    const courses = await sql `
+    SELECT 
+        c.course_code,
+        c.course_title,
+        c.course_status,
+        c.course_total_credit,
+        u.user_fname AS instructor_fname,
+        u.user_lname AS instructor_lname
+    FROM "LMS".student_course sc
+    JOIN "LMS".course c ON sc.course_code = c.course_code
+    JOIN "LMS".instructor i ON c.course_creator = i.inst_user_id
+    JOIN "LMS".user u ON i.inst_user_id = u.user_id
+    WHERE sc.stu_user_id = ${studentId};
+    `
+    return courses;
+}
+
+// Fetch only courses that are published and not yet enrolled by the student
+export const getAvailableCoursesForStudent = async (studentId) => {
+    const courses = await sql `SELECT 
+            c.course_code,
+            c.course_title,
+            c.course_status,
+            c.course_total_credit,
+            u.user_fname AS instructor_fname,
+            u.user_lname AS instructor_lname
+        FROM "LMS".course c
+        JOIN "LMS".instructor i ON c.course_creator = i.inst_user_id
+        JOIN "LMS".user u ON i.inst_user_id = u.user_id
+        WHERE c.course_status = 'published'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM "LMS".student_course sc
+            WHERE sc.stu_user_id = ${studentId}
+            AND sc.course_code = c.course_code
+  );`
+    return courses;
+}
+
+// Add a record new enrollment to student_course table
+export const addCourseEnrollment = async (studentId, courseCode) => {
+    const course = await sql`INSERT INTO "LMS".student_course (stu_user_id, course_code)
+    VALUES (${studentId}, ${courseCode}) RETURNING *;`;
+
+    // const course = [{student_id: studentId, course_code: courseCode}]; // temporary placeholder
+    return course[0];
+}   
+
 export const getCourseByCode = async (courseCode) => {
     const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
                             COALESCE(json_agg(
@@ -41,8 +91,6 @@ export const createCourse = async (courseData) => {
     (course_code, course_title, course_total_credit, course_date_created, course_date_updated, course_creator, course_status)
     VALUES
     (${courseData.code}, ${courseData.title}, ${courseData.total_credit}, ${courseData.date_created}, ${courseData.date_updated}, ${courseData.creator}, ${courseData.status}) RETURNING *;`;
-
-    // code to insert course_lesson records into db later here
     
     return course[0];
 }

@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getPublishedCourses, getAllStudentsByCourseEnrolled} from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent, addCourseEnrollment, getPublishedCourses, getAllStudentsByCourseEnrolled } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -25,6 +25,83 @@ export const getInstructorCourses = async (req, res) => {
     catch (error) {
         console.error("Error fetching courses by instructor:", error);
         return res.status(500).json({ success: false, message: "Failed to fetch courses by instructor." });
+    }
+};
+
+
+export const getStudentCourses = async (req, res) => {
+    /*
+        Pre-conditions: User must be authenticated and have role "student"
+                        i.e. req has user object with id and role "student"
+        
+        Return:
+            Return a response containing all courses that the student is enrolled in:
+            With res status 200 and JSON body { success: true, data: [{enrolled_course1}, {enrolled_course2}, ...] }
+
+            Or 
+
+            (If there is an error)
+            Return a response:
+            With res status 500 and JSON body { success: false, message: "Failed to fetch enrolled courses for student." }
+    */
+    const studentId = req?.user?.id;
+    console.log(studentId);
+    if (!studentId) return res.status(401).json({success: false, error: "Unauthorized" });
+
+    try {
+        const courses = await getEnrolledCoursesByStudent(studentId);
+        
+        return res.status(200).json({ success: true, data: courses || [] });
+    }
+    catch (error) {
+        console.error("Error fetching courses by student:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch enrolled courses for student." });
+    }
+};
+
+export const getAvailableCoursesForEnrollment = async (req, res) => {
+    /*
+        Pre-conditions: User must be authenticated and have role "student"
+        
+        Return:
+            Return all published courses that the student is not enrolled in yet.
+            With res status 200 and JSON body { success: true, data: [...] }
+
+            Or 
+
+            (If there is an error)
+            With res status 500 and JSON body { success: false, message: "Failed to fetch available courses for student." }
+    */
+    const studentId = req?.user?.id;
+    if (!studentId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    try {
+        const courses = await getAvailableCoursesForStudent(studentId);
+        return res.status(200).json({ success: true, data: courses });
+    }
+    catch (error) {
+        console.error("Error fetching available courses for student:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch available courses for student." });
+    }
+};
+
+export const enrollCourse = async (req, res) => {
+    try {
+        const { courseCode } = req.params;
+        const studentId = req?.user?.id;
+        if (!studentId) return res.status(401).json({ success: false, error: "Unauthorized" });
+        if (!courseCode) return res.status(400).json({ success: false, message: "Course code is required." });
+
+        const enrollment = await addCourseEnrollment(studentId, courseCode);
+        console.log(enrollment);
+        if (enrollment) {
+            return res.status(201).json({ success: true, data: enrollment, message: "Enrolled successfully." });
+        }
+        return res.status(409).json({ success: false, message: "Failed to enroll in course." });
+    }
+    catch (error) {
+        console.error("Error enrolling course:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
 
