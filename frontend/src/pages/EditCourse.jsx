@@ -144,18 +144,21 @@ function EditCourse() {
                 alert("Please fill in all required fields (Course Code, Title, and Credits) before saving.");
                 return;
             }
-            const courseToSave = {
-                code: courseData.course_code,
-                title: courseData.course_title,
+            const courseToUpdate = {
+                course_title: courseData.course_title,
                 status: courseData.course_status,
-                creator: user.user_id,
-                credit: courseData.course_total_credit,
-                lessons: assignedLessons.map(l => l.lesson_id)
+                lessons: assignedLessons.map(l => l.lesson_id),
+                course_date_updated: currentDate
             };
-            const response = await fetch("http://localhost:5000/api/courses", {
-                method: "POST",
+            const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+                method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(courseToSave)
+                body: JSON.stringify(courseToUpdate)
+            });
+            const res = await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(assignedLessons.map(l => l.lesson_id))
             });
             if (!response.ok) {
                 const errorData = await response.json();
