@@ -323,6 +323,5 @@ function ClassroomDetails() {
     )}
     </div>
   );
-});
 }
 export default ClassroomDetails;
