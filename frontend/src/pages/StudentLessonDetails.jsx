@@ -87,10 +87,10 @@ function StudentLessonDetails() {
                     <div className="lesson-header">
                         <div className="lesson-meta">
                             <h2>{lesson.lesson_title || "Untitled Lesson"}</h2>
-                            <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p>
+                            {/* <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p> */}
                             <p><strong>By:</strong> {lesson.user_fname && lesson.user_lname ? `${lesson.user_fname} ${lesson.user_lname}` : "Unknown"}</p>
-                            <p><strong>Created:</strong> {lesson.lesson_date_created ? new Date(lesson.lesson_date_created).toLocaleDateString() : "NULL"}</p>
-                            <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p>
+                            {/* <p><strong>Created:</strong> {lesson.lesson_date_created ? new Date(lesson.lesson_date_created).toLocaleDateString() : "NULL"}</p>
+                            <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p> */}
                         </div>
                     </div>
                     {/* Details Section */}
