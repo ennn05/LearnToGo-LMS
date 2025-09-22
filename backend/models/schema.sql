@@ -68,3 +68,17 @@ CREATE TABLE LMS.course_lesson (
         REFERENCES LMS.lesson (lesson_id),
     CONSTRAINT course_lesson_n_key UNIQUE (cl_course_code, cl_lesson_id)
 );
+
+--CLASSROOM TABLE
+CREATE TABLE LMS.classroom (
+    cr_id VARCHAR(10) PRIMARY KEY,
+    cr_start_date DATE NOT NULL,
+    cr_duration INTEGER NOT NULL,
+    cr_date_created DATE NOT NULL,
+    cr_last_updated DATE NOT NULL,
+    cr_creator INTEGER NOT NULL,
+    supervisor_id INTEGER NOT NULL,
+    course_code CHAR(10) NOT NULL,
+    cr_status lesson_status NOT NULL,
+
+);
