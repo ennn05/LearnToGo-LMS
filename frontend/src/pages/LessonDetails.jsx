@@ -13,7 +13,12 @@ function LessonDetails() {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
   const [DeleteConfirm, setDeleteConfirm] = useState(false);
+
+  // NEW STATES
   const [preReqModal, setShowPreReqModal] = useState(false);
+  const [lessonPrereqs, setLessonPrereqs] = useState([]); 
+  const [allLessons, setAllLessons] = useState([]);
+
   const [readingModal, setShowReadingModal] = useState(false);
   const [assignmentModal, setShowAssignmentModal] = useState(false);
 
@@ -21,20 +26,37 @@ function LessonDetails() {
   const fetchLessonDetails = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`);
-      if (!res.ok)
-      {
+      if (!res.ok) {
         console.error("Error fetching courses:", res);
       }
       const data = await res.json();
-      console.log("Lesson details:", data.data);
-      // console.log("Lesson date", data.data.lesson_date_created);
-      // console.log(data.data.lesson_prereq.split("\n"));
       setLesson(data.data);
+
+      // If prereqs already exist (comma or newline separated text), parse into array
+      if (data.data.lesson_prereq) {
+        const parsed = data.data.lesson_prereq
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .map((title, idx) => ({ lesson_id: idx, lesson_title: title }));
+        setLessonPrereqs(parsed);
+      }
     } catch (err) {
       console.error("Error fetching lesson:", err);
       setError("Lesson not found");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch all lessons to pick prereqs from
+  const fetchAllLessons = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/lessons");
+      const data = await res.json();
+      setAllLessons(data.data || []);
+    } catch (err) {
+      console.error("Error fetching all lessons:", err);
     }
   };
 
@@ -44,7 +66,23 @@ function LessonDetails() {
       setUser(JSON.parse(storedUser));
     }
     fetchLessonDetails();
+    fetchAllLessons();
   }, [lessonId]);
+
+  // Add prerequisite (local only)
+  const handleAddPrereq = (lessonObj) => {
+    if (!lessonPrereqs.some((p) => p.lesson_id === lessonObj.lesson_id)) {
+      setLessonPrereqs([...lessonPrereqs, lessonObj]);
+    }
+  };
+
+  // Remove prerequisite
+  const handleRemovePrereq = (id) => {
+    setLessonPrereqs(lessonPrereqs.filter((p) => p.lesson_id !== id));
+  };
+
+  // --- keep your other handlers (publish, archive, delete, editLesson, etc.)
+
 
   // Navigate back to the lessons page
   const handleBackToLessons = () => navigate("/lessons");
@@ -263,17 +301,20 @@ function LessonDetails() {
           <div className="list-section">
             <h3>Pre-Requisites</h3>
             <div className="scroll-list">
-              {lesson.lesson_prereq?.length > 0 ? (
-                lesson.lesson_prereq.trim().split("\n").map((item, idx) => (
-                  <div key={idx} className="list-item">
-                    {item}
+              {lessonPrereqs.length > 0 ? (
+                lessonPrereqs.map((p) => (
+                  <div key={p.lesson_id} className="list-item">
+                    {p.lesson_title}
+                    <button onClick={() => handleRemovePrereq(p.lesson_id)}>x</button>
                   </div>
                 ))
               ) : (
                 <p className="no-items">No pre-requisites yet.</p>
               )}
             </div>
-            <button className="btn-add" onClick={() => setShowPreReqModal(true)}>+ Add Pre-Requisites</button>
+            <button className="btn-add" onClick={() => setShowPreReqModal(true)}>
+              + Add Pre-Requisites
+            </button>
           </div>
 
           {/* Reading List */}
@@ -328,38 +369,62 @@ function LessonDetails() {
         </div>
       </div>
 
-      {/* Pre-Requisites Modal */}
-      {preReqModal && (
-        <div className="modal-overlay" onClick={() => setShowPreReqModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Add a Pre-requisite</h3>
-            <form onSubmit={async (e) => {
-                e.preventDefault();
+    {/* Pre-Requisites Modal */}
+    {preReqModal && (
+      <div className="modal-overlay" onClick={() => setShowPreReqModal(false)}>
+        <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <h3>Select Prerequisites</h3>
 
-                const preReqData = {
-                  lesson_prereq: e.target.prereqItem.value.trim(),
-                };
+          {/* List published lessons */}
+          <div className="lesson-list">
+            {allLessons
+              .filter(
+                (l) =>
+                  l.lesson_status === "published" &&
+                  l.lesson_id !== lesson.lesson_id
+              )
+              .map((l) => (
+                <div key={l.lesson_id} className="list-item">
+                  <span>{l.lesson_title}</span>
+                  <button onClick={() => handleAddPrereq(l)}>+</button>
+                </div>
+              ))}
+          </div>
 
-                console.log("Adding pre-requisite");
-                // TODO: Send readingData to backend
-                const result = await editLesson(preReqData);
-                console.log("Pre-requisite added:", preReqData);
-                alert("Pre-requisite added!");
+          {/* Show currently selected prereqs */}
+          <div className="selected-prereqs">
+            <h4>Selected:</h4>
+            {lessonPrereqs.length > 0 ? (
+              lessonPrereqs.map((p) => (
+                <div key={p.lesson_id} className="selected-item">
+                  {p.lesson_title}
+                </div>
+              ))
+            ) : (
+              <p>No prerequisites selected yet.</p>
+            )}
+          </div>
+
+          <div className="modal-actions">
+            <button
+              onClick={() => {
+                // Save into local lesson object (string for now)
+                setLesson({
+                  ...lesson,
+                  lesson_prereq: lessonPrereqs.map((p) => p.lesson_title).join("\n"),
+                });
                 setShowPreReqModal(false);
-            }}>
-              <div className="form-group">
-                <label>Add a pre-requisite: </label>
-                {/* <input type="text" name="prereqItem" required /> */}
-                <textarea name="prereqItem" rows="6" defaultValue={lesson.lesson_prereq}/>
-              </div>
-              <div className="modal-actions">
-                <button type="submit">Add to Pre-requisites</button>
-                <button className="cancel" onClick={() => setShowPreReqModal(false)}>Cancel</button>
-              </div>
-            </form>
+              }}
+            >
+              Save
+            </button>
+            <button className="cancel" onClick={() => setShowPreReqModal(false)}>
+              Cancel
+            </button>
           </div>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Reading List Modal */}
       {readingModal && (
