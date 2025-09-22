@@ -146,8 +146,6 @@ function Lessons() {
         <div className="topbar">
           <h1>My Lessons</h1>
         </div>
-
-        {/* Lessons Container */}
         <div className="lessons-container">
           {loading ? (
             <div className="loading">Loading lessons...</div>
@@ -158,26 +156,40 @@ function Lessons() {
           ) : (
             <div className="lessons-grid">
               {lessons.map((lesson) => (
-                <div className="lesson-card" key={lesson.lesson_id} onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
-                  {/* Title on top */}
-                  <div className="lesson-header">
+                <div
+                  className="lesson-card"
+                  key={lesson.lesson_id}
+                  onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}
+                >
+                  <div
+                    className={`lesson-top-section ${
+                      lesson.lesson_status?.toLowerCase() || "draft"
+                    }`}
+                  >
                     <h3>{lesson.lesson_title}</h3>
                   </div>
-                  {/* Details in one row */}
-                  <div className="lesson-details">
-                    <p><span className="label">ID:</span> {lesson.lesson_id}</p>
-                    <p><span className="label">Status:</span> {lesson.lesson_status || "Draft"}</p>
-                    <p><span className="label">Created by:</span> {lesson.lesson_designer || "Unknown"}</p>
-                    {/* <p><span className="label">Classroom:</span> {lesson.classroom || "Not assigned"}</p>
-                    <p><span className="label">Students:</span> {lesson.students_count || 0}</p> */}
-                    <p><span className="label">Lesson credit:</span> {lesson.lesson_credit || 0} points</p>
+
+                  <div className="lesson-body">
+                    <div className="lesson-detail">
+                      <strong>ID:</strong> {lesson.lesson_id}
+                    </div>
+                    <div className="lesson-detail">
+                      <strong>Status:</strong> {lesson.lesson_status || "Draft"}
+                    </div>
+                    <div className="lesson-detail">
+                      <strong>Created by:</strong>{" "}
+                      {lesson.lesson_designer || "Unknown"}
+                    </div>
+                    <div className="lesson-detail">
+                      <strong>Lesson Credit:</strong>{" "}
+                      {lesson.lesson_credit || 0} points
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-
 
         {/* Add Lesson Button */}
         <button className="fab" onClick={() => setShowModal(true)}>
@@ -239,7 +251,7 @@ function Lessons() {
                 <div className="form-group-inline">
                   <label>Lesson Credit (points)</label>
                   <input
-                    type="nunmber"
+                    type="number"
                     name="lessonCredit"
                     placeholder="e.g. 6"
                     required
