@@ -93,3 +93,11 @@ CREATE TABLE LMS.classroom (
         REFERENCES LMS.instructor (inst_user_id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+--CLASSROOM_COURSE 
+CREATE TABLE LMS.classroom_course_lesson (
+    crcl_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    crcl_cr_id VARCHAR(10) NOT NULL,
+    crcl_cl_id INTEGER NOT NULL,
+
+);
