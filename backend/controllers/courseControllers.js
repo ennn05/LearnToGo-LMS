@@ -149,6 +149,47 @@ export const editCourse = async (req, res) => {
     }
 };
 
+export const updateCourseLessonAssignments = async (req, res) => {
+    const { courseCode } = req.params;
+    const { lessons } = req.body; // expecting an array of lessons [{ lesson_id, lesson_credit, ... }]
+
+    if (!Array.isArray(lessons)) {
+        return res.status(400).json({ success: false, message: "Lessons must be provided as an array" });
+    }
+
+    try {
+        // update course_lesson records
+        const updatedLessons = await updateCourseLessons(courseCode, lessons);
+
+        // recalc total credit
+        const totalCredit = lessons.reduce(
+            (sum, lesson) => sum + (lesson.lesson_credit || 0),
+            0
+        );
+
+        // update the course table with the new total credit + date updated
+        const updatedCourse = await updateCourse({
+            id: courseCode,
+            updateData: {
+                course_total_credit: totalCredit,
+                course_date_updated: new Date().toISOString().split("T")[0]
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                ...updatedCourse,
+                lessons: updatedLessons
+            }
+        });
+    } catch (error) {
+        console.error("Error updating course lessons:", error);
+        return res.status(500).json({ success: false, message: "Failed to update course lessons" });
+    }
+};
+
+
 
 export const getPublished = async (req, res) => {
     try {
