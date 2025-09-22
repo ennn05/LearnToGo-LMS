@@ -69,7 +69,7 @@ function CourseDetails() {
     // TODO: Implement publish course functionality
     console.log("Publish course clicked");
 
-    const courseUpdateData = { ...course, course_status: "published" };
+    const courseUpdateData = { ...course, course_status: "published", course_date_updated: new Date().toLocaleDateString() };
     console.log(courseUpdateData);
 
     try {
@@ -98,7 +98,7 @@ function CourseDetails() {
     // TODO: Implement archive course functionality
     console.log("Archive course clicked");
 
-    const courseUpdateData = { ...course, course_status: "archived" };
+    const courseUpdateData = { ...course, course_status: "archived", course_date_updated: new Date().toLocaleDateString() };
     console.log(courseUpdateData);
 
     try {
