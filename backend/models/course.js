@@ -84,15 +84,16 @@ export const removeCourseLessons = async (courseCode) => {
 }
 
 export const updateCourseLessons = async (courseCode, lessons) => {
-    const courseLessons = [];
-    console.log("Removed course lesson: ", removeCourseLessons(courseCode));
+    await removeCourseLessons(courseCode);
 
-    lessons.forEach(element => {
-        courseLessons.push(addCourseLesson(courseCode, element.lesson_id));
-    });
+    const courseLessons = [];
+    for (const element of lessons) {
+        const addedLesson = await addCourseLesson(courseCode, element.lesson_id);
+        courseLessons.push(addedLesson);
+    }
 
     return courseLessons;
-}
+};
 
 export const getPublishedCourses = async () => {
     const courses = await sql`SELECT * 
