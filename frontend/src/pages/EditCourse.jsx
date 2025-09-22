@@ -98,27 +98,45 @@ function EditCourse() {
 
     const handlePublishCourse = async () => {
         try {
-            if (!courseData.course_code || !courseData.course_title || !courseData.totalCredits) {
+            if (!courseData.course_code || !courseData.course_title || courseData.course_total_credit <= 0) {
                 alert("Please fill in all required fields (Course Code, Title, and Credits) before publishing.");
                 return;
             }
-            const publishedCourseData = { ...courseData, course_status: "published" };
-            setCourseData(publishedCourseData);
-            const courseToSave = {
-                course_code: publishedCourseData.course_code,
-                course_title: publishedCourseData.course_title,
-                course_total_credit: parseInt(publishedCourseData.course_total_credit),
+
+            const publishedCourseData = {
+                ...courseData,
                 course_status: "published",
-                lessons: assignedLessons.map(l => l.lesson_id)
+                course_total_credit: assignedLessons.reduce((sum, l) => sum + l.lesson_credit, 0)
             };
-            console.log("Publishing course:", courseToSave);
+
+            // Save updates before marking as published
+            const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(publishedCourseData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to publish course");
+            }
+
+            // Update lessons
+            await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ lessons: assignedLessons.map(l => l.lesson_id) })
+            });
+
             alert("Course published successfully!");
             navigate("/courses");
+
         } catch (error) {
             console.error("Error publishing course:", error);
             alert("Failed to publish course. Please try again.");
         }
     };
+
 
     const addLessonToCourse = (lesson) => {
         if (!assignedLessons.find(l => l.lesson_id === lesson.lesson_id)) {
@@ -141,31 +159,44 @@ function EditCourse() {
     const handleSaveCourse = async () => {
         try {
             if (!courseData.course_code || !courseData.course_title) {
-                alert("Please fill in all required fields (Course Code, Title, and Credits) before saving.");
+                alert("Please fill in all required fields (Course Code and Title) before saving.");
                 return;
             }
+
             const courseToUpdate = {
                 course_title: courseData.course_title,
-                status: courseData.course_status,
-                lessons: assignedLessons.map(l => l.lesson_id),
+                course_status: courseData.course_status,   
+                course_total_credit: assignedLessons.reduce((sum, l) => sum + l.lesson_credit, 0), 
                 course_date_updated: currentDate
             };
+
+            // Update course metadata
             const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(courseToUpdate)
             });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to save course details");
+            }
+
+            // Update lesson assignments
             const res = await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(assignedLessons.map(l => l.lesson_id))
+                body: JSON.stringify({ lessons: assignedLessons.map(l => l.lesson_id) }) 
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to save course");
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || "Failed to update lessons");
             }
+
             alert("Course saved successfully!");
             navigate("/courses");
+
         } catch (error) {
             console.error("Error saving course:", error);
             alert("Failed to save course. Please try again.");
