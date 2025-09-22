@@ -62,6 +62,7 @@ function CourseDetails() {
   const handleEditCourse = () => {
     // TODO: Implement edit course functionality
     console.log("Edit course clicked");
+    navigate(`/courses/${courseId}/edit`);
   };
 
   const handlePublishCourse = async () => {
