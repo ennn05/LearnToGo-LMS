@@ -81,4 +81,15 @@ CREATE TABLE LMS.classroom (
     course_code CHAR(10) NOT NULL,
     cr_status lesson_status NOT NULL,
 
+    CONSTRAINT fk_classroom_course FOREIGN KEY (course_code) 
+        REFERENCES LMS.course (course_code)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT fk_classroom_creator FOREIGN KEY (cr_creator) 
+        REFERENCES LMS.instructor (inst_user_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT fk_classroom_supervisor FOREIGN KEY (supervisor_id) 
+        REFERENCES LMS.instructor (inst_user_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
