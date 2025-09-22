@@ -10,6 +10,7 @@ function Lessons() {
   const [showModal, setShowModal] = useState(false);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all'); // e.g., all, created by me, created by others
   const navigate = useNavigate();
 
   /** Fetch lessons from API */
@@ -24,6 +25,7 @@ function Lessons() {
       }
 
       setLessons(res.data);
+      setFilter("all");
     } catch (err) {
       console.error("Failed to fetch lessons:", err);
     } finally {
@@ -39,6 +41,17 @@ function Lessons() {
     }
     fetchLessons();
   }, []);
+
+  const filteredLessons = lessons.filter((lesson) => {
+      if (filter === "mine") {
+        return lesson.lesson_designer === user?.user_id; 
+      } else if (filter === "others") {
+        return lesson.lesson_designer !== user?.user_id; 
+      }
+      return true; // "all"
+    });
+
+    console.log(filteredLessons);
 
   /** Add new lesson */
   const addLesson = async (lessonData) => {
@@ -129,15 +142,27 @@ function Lessons() {
 
         {/* Lessons List */}
         <div className="lessons-container">
+          <div className="filter-dropdown">
+            <label htmlFor="lessonFilter">Filter by Creator: </label>
+            <select
+              id="lessonFilter"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="all">All Lessons</option>
+              <option value="mine">Created by Me</option>
+              <option value="others">Created by Others</option>
+            </select>
+          </div>
           {loading ? (
             <div className="loading">Loading lessons...</div>
-          ) : lessons.length === 0 ? (
+          ) : filteredLessons.length === 0 ? (
             <div className="no-lessons">
               <p>No lessons found. Create your first lesson!</p>
             </div>
           ) : (
             <div className="lessons-grid">
-              {lessons.map((lesson) => (
+              {filteredLessons.map((lesson) => (
                 <div
                   className="lesson-card"
                   key={lesson.lesson_id}
