@@ -20,8 +20,9 @@ function Courses() {
       const {data: res} = await api.get("courses/instructor");
       // const response = await fetch("http://localhost:5000/api/courses/instructor");
 
-      if (!res.success)
-      {
+      const { data: res } = await api.get("courses"); // Fetch all courses instead of Instructor's courses only
+
+      if (!res.success) {
         console.error("Error fetching courses:", res.message);
       }
       // const data = await response.json();
@@ -109,7 +110,7 @@ function Courses() {
       {/* Main Content */}
       <div className="main-content">
         <div className="topbar">
-          <h1>My Courses</h1>
+          <h1>All Courses</h1>
         </div>
 
         {/* Courses Grid */}
