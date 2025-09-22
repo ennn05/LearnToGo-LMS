@@ -255,11 +255,7 @@ function EditCourse() {
                             <div className="form-group">
                                 <label>Date Created:</label>
                                 <span className="readonly-field">
-<<<<<<< HEAD
-                                    {courseData.dateCreated ? new Date(courseData.dateCreated).toLocaleDateString() : currentDate}
-=======
                                     {courseData.course_date_created ? new Date(courseData.course_date_created).toLocaleDateString() : currentDate}
->>>>>>> 20b1706470b2cb2524b1dca76f25559ed48f8176
                                 </span>
                             </div>
                         </div>
