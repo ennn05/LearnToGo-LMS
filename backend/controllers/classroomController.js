@@ -159,8 +159,8 @@ export const addClassroom = async (req, res) => {
 
 export const updateStudentMarksForClassroomLesson = async (req, res) => {
   const { cr_id, crcl_cl_id } = req.params;
-  const { students } = req.body; // Expecting an array of { stucourse_id, attendance, grade, completion }
-
+  const students = req.body; // Expecting an array of { stucourse_id, attendance, grade, completion }
+  console.log(students);
   try { 
     const results = await Promise.all(
       students.map(student => 

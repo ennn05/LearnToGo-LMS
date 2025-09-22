@@ -63,10 +63,10 @@ function ClassroomGrade() {
                     setActiveLesson(null);
                     return;
                 }
-                setLessons(res.data);
-                setActiveLesson(res.data[0].crcl_cl_id);
                 console.log("Setting lessons:", res.data);
+                setLessons(res.data);
                 console.log("Setting activeLesson:", res.data[0].crcl_cl_id);
+                setActiveLesson(res.data[0].crcl_cl_id);
 
             } catch (err) {
                 console.error("Error fetching lessons:", err);
@@ -201,31 +201,28 @@ function ClassroomGrade() {
                                         </td>
                                         <td>
                                             <input
-                                                type="text"
-                                                value={stu.completion || ""}
-                                                placeholder="e.g. 80%"
+                                                type="checkbox"
+                                                checked={stu.completion || false}
                                                 onChange={e => {
                                                     const updated = [...lessons];
                                                     const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                    updated[lessonIdx].students[idx].completion = e.target.value;
+                                                    updated[lessonIdx].students[idx].completion = e.target.checked;
                                                     setLessons(updated);
                                                 }}
                                             />
                                         </td>
                                         <td>
-                                            <select
+                                            <input
+                                                type="number"
                                                 value={stu.grade || ""}
+                                                placeholder="e.g. 80%"
                                                 onChange={e => {
                                                     const updated = [...lessons];
                                                     const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
                                                     updated[lessonIdx].students[idx].grade = e.target.value;
                                                     setLessons(updated);
                                                 }}
-                                            >
-                                                <option value="">Unmarked</option>
-                                                <option value="pass">Pass</option>
-                                                <option value="fail">Fail</option>
-                                            </select>
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -238,8 +235,8 @@ function ClassroomGrade() {
                                     const studentData = lesson.students.map(stu => ({
                                         stucourse_id: stu.stucourse_id,
                                         attendance: stu.attendance || false,
-                                        grade: stu.grade || "",
-                                        completion: stu.completion || "",
+                                        grade: stu.grade || 0,
+                                        completion: stu.completion || false,
                                     }));
                                     await api.put(`classrooms/${classroomId}/lessons/${lesson.crcl_cl_id}/students`, studentData);
                                     alert("Grades updated successfully!");
