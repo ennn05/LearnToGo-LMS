@@ -6,7 +6,9 @@ import {
   getClassroom,
   removeClassroom,
   editClassroom,
-  addClassroom
+  addClassroom,
+  updateStudentMarksForClassroomLesson,
+  getClassroomLessonsWithStudents
 } from "../controllers/classroomController.js";
 
 const router = express.Router();
@@ -18,5 +20,7 @@ router.get("/:classroomCode", getClassroom);
 router.delete("/:id", authenticate, authorize("instructor"), removeClassroom);
 router.put("/:id", authenticate, editClassroom);
 router.post("/", authenticate, authorize("instructor"), addClassroom);
+router.put("/:cr_id/lessons/:crcl_cl_id/students", authenticate, authorize("instructor"), updateStudentMarksForClassroomLesson);
+router.get("/:cr_id/lessons/students", authenticate, authorize("instructor"), getClassroomLessonsWithStudents);
 
 export default router;
