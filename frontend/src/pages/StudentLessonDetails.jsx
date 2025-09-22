@@ -1,12 +1,148 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-import "../styles/Lessons.css";
+import "../styles/LessonDetails.css";
 
 function StudentLessonDetails() {
-    // use api.get("lessons/:lessonId") to fetch lesson details
-    
-    return <div>Student Lessons Details Page</div>;
+    const { lessonId } = useParams();
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [lesson, setLesson] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch lesson details
+    const fetchLessonDetails = async () => {
+        try {
+            const { data: res } = await api.get(`lessons/${lessonId}`);
+            if (!res.success) {
+                setError(res.message || "Lesson not found");
+                setLesson(null);
+            } else {
+                setLesson(res.data);
+            }
+        } catch (err) {
+            setError("Lesson not found");
+            setLesson(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+        fetchLessonDetails();
+    }, [lessonId]);
+
+    const handleBack = () => navigate("/lessons");
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        navigate("/");
+    };
+
+    if (loading) {
+        return <div className="loading">Loading lesson...</div>;
+    }
+    if (error || !lesson) {
+        return (
+            <div className="error">
+                <h2>Error</h2>
+                <p>{error || "Lesson not found"}</p>
+                <button onClick={handleBack}>Back to Lessons</button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex">
+            {/* Sidebar */}
+            <div className="sidebar">
+                <div className="profile">
+                    <div className="avatar"></div>
+                    <div className="info">
+                        <div className="name">
+                            {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}
+                        </div>
+                        <div className="role">{user?.user_role || "Student"}</div>
+                    </div>
+                </div>
+                <nav className="nav-menu">
+                    <button onClick={() => navigate("/lessons")} className="active">Lessons</button>
+                    <button onClick={() => navigate("/courses")}>Courses</button>
+                    <button onClick={() => navigate("/classrooms")}>Classrooms</button>
+                    <button className="logout-btn" onClick={handleLogout}>Log Out</button>
+                </nav>
+            </div>
+
+            {/* Main Content */}
+            <div className="main-content">
+                <div className="topbar">
+                    <button onClick={handleBack} className="back-btn">&lt; Back</button>
+                    <h1>Lessons</h1>
+                </div>
+                <div className="lesson-details-container">
+                    {/* Header Section */}
+                    <div className="lesson-header">
+                        <div className="lesson-meta">
+                            <h2>{lesson.lesson_title || "Untitled Lesson"}</h2>
+                            <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p>
+                            <p><strong>By:</strong> {lesson.user_fname && lesson.user_lname ? `${lesson.user_fname} ${lesson.user_lname}` : "Unknown"}</p>
+                            <p><strong>Created:</strong> {lesson.lesson_date_created ? new Date(lesson.lesson_date_created).toLocaleDateString() : "NULL"}</p>
+                            <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p>
+                        </div>
+                    </div>
+                    {/* Details Section */}
+                    <div className="lesson-content">
+                        <div className="info-item">
+                            <label>Description:</label>
+                            <p>{lesson.lesson_desc}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Objective:</label>
+                            <p>{lesson.lesson_obj}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Estimated Time:</label>
+                            <p>{lesson.lesson_effort_per_week ?? 0} hours per week</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Lesson Credit:</label>
+                            <p>{lesson.lesson_credit ?? 0} credit points</p>
+                        </div>
+                    </div>
+                    {/* Reading List */}
+                    <div className="list-section">
+                        <h3>Reading List</h3>
+                        <div className="scroll-list">
+                            {lesson.lesson_reading_list?.length > 0 ? (
+                                lesson.lesson_reading_list.trim().split("\n").map((item, idx) => (
+                                    <div key={idx} className="list-item">{item}</div>
+                                ))
+                            ) : (
+                                <p className="no-items">No reading materials yet.</p>
+                            )}
+                        </div>
+                    </div>
+                    {/* Assignments */}
+                    <div className="list-section">
+                        <h3>Assignments</h3>
+                        <div className="scroll-list">
+                            {lesson.lesson_assignment?.length > 0 ? (
+                                lesson.lesson_assignment.trim().split("\n").map((item, idx) => (
+                                    <div key={idx} className="list-item">{item}</div>
+                                ))
+                            ) : (
+                                <p className="no-items">No assignments yet.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default StudentLessonDetails;
