@@ -46,11 +46,8 @@ function ClassroomDetails() {
         setLoading(false);
       }
     };
-<<<<<<< HEAD
     
   useEffect(() => {
-=======
->>>>>>> 463a0586a266d7981d4be9bd0644c30227aa8d35
 
     fetchClassroom();
   }, [classroomId]);
