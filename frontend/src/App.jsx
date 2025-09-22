@@ -62,7 +62,7 @@ function App() {
           <Route path="/students" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Students /></ProtectedRoute>} />
           <Route path="/lessons/:lessonId" element={<LessonDetails />} />
           <Route path="/classrooms/create" element={<CreateClassroom />} />  
-          <Route path="/classrooms/:classroomId" element={<ClassroomDetails />} />
+          <Route path="/classrooms/:classroomCode" element={<ClassroomDetails />} />
           <Route path="/classrooms" element={<Classrooms />} />
         </Route>
         <Route path="/login" element={<Login />} />
