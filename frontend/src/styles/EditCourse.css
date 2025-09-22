@@ -127,8 +127,8 @@ body {
   font-weight: 600;
 }
 
-/* Create course container */
-.create-course-container {
+/* Edit course container */
+.edit-course-container {
   background-color: white;
   border-radius: 8px;
   padding: 30px;
