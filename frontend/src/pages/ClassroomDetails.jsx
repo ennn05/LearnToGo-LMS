@@ -293,6 +293,9 @@ function ClassroomDetails() {
             <button className="btn-edit" onClick={() => console.log("Edit classroom")}>
               Edit
             </button>
+            <button className="btn-edit" onClick={() => navigate(`/classrooms/${classroomId}/grades`)}>
+              Grade Students
+            </button>
             <button className="btn-delete" onClick={() => setDeleteConfirm(true)}>
               Delete
             </button>
