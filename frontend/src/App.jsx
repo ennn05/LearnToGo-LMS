@@ -10,7 +10,7 @@ import useStore from "./store";
 import LessonDetails from "./pages/LessonDetails";
 import EditLesson from "./pages/EditLesson";
 import Classrooms from "./pages/classrooms";
-import ClassroomDetails from "./pages/ClassroomDetails";d
+import ClassroomDetails from "./pages/ClassroomDetails";
 import CreateClassroom from "./pages/CreateClassroom";
 import ClassroomGrade from "./pages/ClassroomGrade";
 import CreateLesson from "./pages/CreateLessons";
