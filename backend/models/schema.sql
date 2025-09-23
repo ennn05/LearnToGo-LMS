@@ -68,3 +68,77 @@ CREATE TABLE LMS.course_lesson (
         REFERENCES LMS.lesson (lesson_id),
     CONSTRAINT course_lesson_n_key UNIQUE (cl_course_code, cl_lesson_id)
 );
+
+--CLASSROOM TABLE
+CREATE TABLE LMS.classroom (
+    cr_id VARCHAR(10) PRIMARY KEY,
+    cr_start_date DATE NOT NULL,
+    cr_duration INTEGER NOT NULL,
+    cr_date_created DATE NOT NULL,
+    cr_last_updated DATE NOT NULL,
+    cr_creator INTEGER NOT NULL,
+    supervisor_id INTEGER NOT NULL,
+    course_code CHAR(10) NOT NULL,
+    cr_status lesson_status NOT NULL,
+
+    CONSTRAINT fk_classroom_course FOREIGN KEY (course_code) 
+        REFERENCES LMS.course (course_code)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT fk_classroom_creator FOREIGN KEY (cr_creator) 
+        REFERENCES LMS.instructor (inst_user_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT fk_classroom_supervisor FOREIGN KEY (supervisor_id) 
+        REFERENCES LMS.instructor (inst_user_id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+--CLASSROOM_COURSE 
+CREATE TABLE LMS.classroom_course_lesson (
+    crcl_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    crcl_cr_id VARCHAR(10) NOT NULL,
+    crcl_cl_id INTEGER NOT NULL,
+
+    CONSTRAINT crcl_cl_course_fk FOREIGN KEY (crcl_cl_id) 
+        REFERENCES LMS.course_lesson (cl_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT crcl_cr_fk FOREIGN KEY (crcl_cr_id) 
+        REFERENCES LMS.classroom (cr_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    CONSTRAINT cr_cl_nk UNIQUE (crcl_cr_id, crcl_cl_id)
+);
+
+--CLASSROOM_STUDENT
+CREATE TABLE LMS.classroom_student(
+    cs_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cr_id VARCHAR(10) NOT NULL,
+    stucourse_id INTEGER UNIQUE NOT NULL,
+
+    constraint cr_cs_fkey foreign key (cr_id) 
+        references LMS.classroom (cr_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    constraint stucourse_cs_fkey foreign key (stucourse_id) 
+        references LMS.student_course (stucourse_id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+
+    constraint cs_nkey unique (cr_id, stucourse_id),
+
+    constraint classroom_student_pkey primary key (cs_id)
+)
+
+--STUDENT_COURSE
+create table "LMS".student_course(
+  course_code CHAR(10) UNIQUE NOT NULL,
+  stu_user_id INTEGER UNIQUE NOT NULL,
+  stucourse_progress NUMERIC (5,2),
+  stucourse_id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+
+  constraint student_course_pkey PRIMARY KEY (stucourse_id),
+  constraint stu_course_nk UNIQUE (course_code, stu_user_id),
+  constraint stu_stucourse_fk FOREIGN KEY (stu_user_id) references "LMS".student(stu_user_id),
+  constraint course_stucourse_fk FOREIGN KEY (course_code) references "LMS".course(course_code)
+)
