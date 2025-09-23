@@ -89,6 +89,7 @@ function CreateLesson() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      console.log(response);
 
       if (!response.ok) {
         const err = await response.json();
@@ -334,8 +335,7 @@ function CreateLesson() {
                 };
 
                 console.log("Adding reading")
-                // TODO: Send readingData to backend
-                const result = await editLesson(readingData);
+                setLessonData((prev) => ({ ...prev, ...readingData }));
                 console.log("Reading added:", readingData);
                 alert("Reading added!");
                 setShowReadingModal(false);
@@ -367,8 +367,7 @@ function CreateLesson() {
                 };
 
                 console.log("Adding assignment")
-                // TODO: Send readingData to backend
-                const result = await editLesson(assignmentData);
+                setLessonData((prev) => ({ ...prev, ...assignmentData }));
                 console.log("Assignment added:", assignmentData);
                 alert("Assignment added!");
                 setShowAssignmentModal(false);
