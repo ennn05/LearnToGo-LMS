@@ -151,7 +151,7 @@ const Students = () => {
         <nav className="nav-menu">
           <button
             className={activePage === "courses" ? "active" : ""}
-            onClick={() => setActivePage("courses")}
+            onClick={() => navigate("/courses")} 
           >
             Courses
           </button>
