@@ -64,9 +64,9 @@ function StudentCourses() {
           </div>
         </div>
         <nav className="nav-menu">
-          <button className="active">Courses</button>
-          <button>Lessons</button>
-          <button>Classrooms</button>
+          <button className="active" onClick={() => navigate("/courses")}>Courses</button>
+          <button onClick={() => navigate("/lessons")}>Lessons</button>
+          <button onClick={() => navigate("/classrooms")}>Classrooms</button>
           <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </nav>
       </div>

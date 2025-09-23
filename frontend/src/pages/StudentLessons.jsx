@@ -52,7 +52,7 @@ function StudentLessons() {
                 {/* Navigation */}
                 <nav className="nav-menu">
                     <button onClick={() => navigate("/courses")}>Courses</button>
-                    <button className="active">Lessons</button>
+                    <button className="active" onClick={() => navigate("/lessons")}>Lessons</button>
                     <button onClick={() => navigate("/classrooms")}>Classrooms</button>
                     <button className="logout-btn" onClick={() => { localStorage.removeItem("user"); navigate("/"); }}>
                         Log Out
