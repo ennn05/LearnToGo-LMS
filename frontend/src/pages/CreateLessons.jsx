@@ -69,6 +69,10 @@ function CreateLesson() {
   // Remove prerequisite
   const handleRemovePrereq = (id) => {
     setLessonPrereqs(lessonPrereqs.filter((p) => p.lesson_id !== id));
+    setLessonData((prev) => ({
+      ...prev,
+      lesson_prereq: prev.lesson_prereq.filter((p) => p.lesson_id !== id),
+    }));
   };
 
   // Save lesson (draft or publish)
@@ -304,11 +308,6 @@ function CreateLesson() {
           <div className="modal-actions">
             <button
               onClick={() => {
-                // Save into local lesson object (string for now)
-                setLessonData({
-                  ...lessonData,
-                  lesson_prereq: lessonPrereqs.map((p) => p.lesson_title).join("\n"),
-                });
                 setShowPreReqModal(false);
               }}
             >
