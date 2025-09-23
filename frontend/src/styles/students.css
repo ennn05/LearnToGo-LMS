@@ -61,6 +61,29 @@ body {
   font-size: 14px;
 }
 
+/* StudentCourses Tab Buttons */
+.student-tabbar {
+  display: flex;
+  width: 100%;
+}
+
+.student-tab-btn {
+  width: 50%;
+  height: 56px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  background: #fff;
+  color: #37495c;
+  transition: background 0.3s, color 0.3s;
+}
+.student-tab-btn.active {
+  background: #27ae60;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(39,174,96,0.12);
+}
+
 /* Navigation Menu */
 .nav-menu {
   display: flex;
@@ -81,7 +104,7 @@ body {
 }
 
 .nav-menu button:hover {
-  background-color: #34495e;
+  background-color: #3a4f64;
 }
 
 .nav-menu button.active {
@@ -283,4 +306,30 @@ body {
 
 @keyframes fadeOut {
   to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* Search Bar */
+.search-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  margin: 15px 0;           /* Space above and below */
+  width: 100%;              /* Full width of the main content */
+  background-color: #f5f5f5;
+}
+
+.search-container input {
+  width: 400px;             /* Make it longer */
+  max-width: 90%;           /* Responsive on smaller screens */
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+  background-color: #d7e8fe;
+}
+
+.search-container input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
 }

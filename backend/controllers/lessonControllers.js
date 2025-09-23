@@ -1,4 +1,4 @@
-import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson, createLesson} from "../models/lesson.js";
+import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson, createLesson, getLessonsByStudent, getPublishedLessons } from "../models/lesson.js";
 export const getLessons = async (req, res) => {
     try {
         const lessons = await getAllLessons();
@@ -24,6 +24,21 @@ export const getLesson = async (req, res) => {
         console.error("Error fetching lesson:", error);
         return res.status(500).json({ success: false, message: "Failed to fetch lesson." });
     }
+};
+
+export const getStudentLessons = async (req, res) => {
+  console.log("REQ USR",req.user);
+  const { id } = req.user;
+  try {
+    const lessons = await getLessonsByStudent(id);
+    console.log(lessons);
+
+    return res.status(200).json({ success: true, data: lessons });
+  }
+  catch (error) {
+    console.error("Error fetching lessons of students:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch lessons of students." });
+  }
 };
 
 export const getLessonsByInstructor = async (req, res) => {
@@ -101,6 +116,16 @@ export const removeLesson = async (req, res) => {
   }
 };
 
+// Get published lessons
+export const getPublished = async (req, res) => {
+  try {
+    const lessons = await getPublishedLessons();
+    return res.status(200).json({ success: true, data: lessons });
+  } catch (error) {
+    console.error("Error fetching published lessons:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch published lessons." });
+  }
+};
 // import {
 //   getAllLessons,
 //   getLessonById,

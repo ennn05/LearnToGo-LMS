@@ -20,6 +20,7 @@ const Students = () => {
   const [message, setMessage] = useState(null);
 
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   /**
    * Fetch all students from the backend API
@@ -45,6 +46,14 @@ const Students = () => {
       setLoading(false);
     }
   };
+
+  const filteredStudents = students.filter((s) => {
+  const fullName = `${s.user_fname} ${s.user_lname}`.toLowerCase();
+  const email = s.user_email.toLowerCase();
+  const term = searchTerm.toLowerCase();
+
+    return fullName.includes(term) || email.includes(term);
+  });
 
   /**
    * On mount:
@@ -138,11 +147,11 @@ const Students = () => {
           </div>
         </div>
 
-        {/* Navigation Menu */}
+       {/* Navigation Menu */}
         <nav className="nav-menu">
           <button
             className={activePage === "courses" ? "active" : ""}
-            onClick={() => navigate("/courses")}
+            onClick={() => navigate("/courses")} 
           >
             Courses
           </button>
@@ -154,19 +163,19 @@ const Students = () => {
           </button>
           <button
             className={activePage === "classrooms" ? "active" : ""}
-            onClick={() => setActivePage("classrooms")}
+            onClick={() => navigate("/classrooms")}
           >
             Classrooms
           </button>
           <button
             className={activePage === "students" ? "active" : ""}
-            onClick={() => setActivePage("students")}
+            onClick={() => navigate("/students")}
           >
             Students
           </button>
           <button
             className={activePage === "reports" ? "active" : ""}
-            onClick={() => setActivePage("reports")}
+            onClick={() => navigate("/reports")}
           >
             Reports & Statistics
           </button>
@@ -188,6 +197,15 @@ const Students = () => {
           <h1>Students</h1>
         </div>
 
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         {/* Students Table */}
         <div className="students-container">
           {loading ? (
@@ -206,7 +224,7 @@ const Students = () => {
                 </tr>
               </thead>
               <tbody>
-                {students.map((s) => (
+                {filteredStudents.map((s) => (
                   <tr key={s.user_id}>
                     <td>{`${s.user_fname} ${s.user_lname}`}</td>
                     <td>{s.user_email}</td>
