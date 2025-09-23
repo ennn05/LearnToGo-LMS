@@ -68,6 +68,31 @@ export const getLessonByInstructor = async (instructorId) => {
   return lessons;
 };
 
+// Get all lessons from all courses a student is enrolled in (lessons only, no course info)
+export const getLessonsByStudent = async (studentId) => {
+  const lessons = await sql`
+    SELECT 
+      l.lesson_id,
+      l.lesson_title,
+      l.lesson_desc,
+      l.lesson_obj,
+      l.lesson_effort_per_week,
+      l.lesson_date_created,
+      l.lesson_date_updated,
+      l.lesson_credit,
+      l.lesson_designer,
+      l.lesson_status
+    FROM "LMS".student_course stuc
+    JOIN "LMS".course_lesson cl 
+      ON stuc.course_code = cl.cl_course_code
+    JOIN "LMS".lesson l 
+      ON cl.cl_lesson_id = l.lesson_id
+    WHERE stuc.stu_user_id = ${studentId}
+    ORDER BY l.lesson_id;
+  `;
+  return lessons;
+};
+
 // Create lesson
 export const createLesson = async (lessonData) => {
   const lesson = await sql`

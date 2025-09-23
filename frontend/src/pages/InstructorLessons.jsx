@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-// import useStore from "../store";
 import "../styles/Lessons.css";
 
-function Lessons() {
+function InstructorLessons() {
   const [activePage, setActivePage] = useState("lessons");
   // const user = useStore((state) => state);
   const [user, setUser] = useState(null);
@@ -302,4 +301,4 @@ function Lessons() {
   );
 }
 
-export default Lessons;
+export default InstructorLessons;
