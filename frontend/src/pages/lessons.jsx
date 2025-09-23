@@ -217,7 +217,7 @@ function Lessons() {
         </div>
 
         {/* Add Lesson Button */}
-        <button className="fab" onClick={() => setShowModal(true)}>
+        <button className="fab" onClick={() => navigate("/lessons/create")}>
           +
         </button>
 

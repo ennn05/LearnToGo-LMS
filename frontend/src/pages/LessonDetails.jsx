@@ -10,17 +10,11 @@ function LessonDetails() {
   const [user, setUser] = useState(null);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
-  const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
   // NEW STATES
-  const [preReqModal, setShowPreReqModal] = useState(false);
   const [lessonPrereqs, setLessonPrereqs] = useState([]); 
   const [allLessons, setAllLessons] = useState([]);
-
-  const [readingModal, setShowReadingModal] = useState(false);
-  const [assignmentModal, setShowAssignmentModal] = useState(false);
 
   // Fetch lesson details
   const fetchLessonDetails = async () => {
@@ -69,18 +63,6 @@ function LessonDetails() {
     fetchAllLessons();
   }, [lessonId]);
 
-  // Add prerequisite (local only)
-  const handleAddPrereq = (lessonObj) => {
-    if (!lessonPrereqs.some((p) => p.lesson_id === lessonObj.lesson_id)) {
-      setLessonPrereqs([...lessonPrereqs, lessonObj]);
-    }
-  };
-
-  // Remove prerequisite
-  const handleRemovePrereq = (id) => {
-    setLessonPrereqs(lessonPrereqs.filter((p) => p.lesson_id !== id));
-  };
-
   // --- keep your other handlers (publish, archive, delete, editLesson, etc.)
 
 
@@ -91,27 +73,6 @@ function LessonDetails() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     navigate("/");
-  };
-
-  // Edit the lesson using the API and update the local state
-  const editLesson = async (lessonData) => {
-    try {
-      const updateLessonData = {...lesson, ...lessonData};
-      console.log(updateLessonData);
-      const {data: res} = await api.put(`lessons/${lessonId}`, updateLessonData);
-      console.log(res);
-      if (!res.success) {
-        console.error("Server responded with:", res.message);
-        throw new Error("Failed to edit lesson");
-      }
-
-      console.log("Lesson updated:", res.data);
-      await fetchLessonDetails();
-      return res.data;
-    } catch (error) {
-      console.error("Error editing lesson:", error);
-      alert("Failed to edit lesson. Please try again.");
-    }
   };
 
 
@@ -153,24 +114,6 @@ function LessonDetails() {
       setLesson(data.data);
     } catch (err) {
       console.error("Error archiving lesson:", err);
-    }
-  };
-
-
-  // Delete the lesson from the API and navigate to the lessons page
-  const handleDeleteLesson = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        alert("Failed to delete lesson.");
-        return;
-      }
-      navigate("/lessons");
-    } catch (error) {
-      alert("Error deleting lesson.");
-      console.error(error);
     }
   };
 
@@ -305,16 +248,12 @@ function LessonDetails() {
                 lessonPrereqs.map((p) => (
                   <div key={p.lesson_id} className="list-item">
                     {p.lesson_title}
-                    <button onClick={() => handleRemovePrereq(p.lesson_id)}>x</button>
                   </div>
                 ))
               ) : (
                 <p className="no-items">No pre-requisites yet.</p>
               )}
             </div>
-            <button className="btn-add" onClick={() => setShowPreReqModal(true)}>
-              + Add Pre-Requisites
-            </button>
           </div>
 
           {/* Reading List */}
@@ -334,7 +273,6 @@ function LessonDetails() {
                 <p className="no-items">No reading materials yet.</p>
               )}
             </div>
-            <button className="btn-add" onClick={() => setShowReadingModal(true)}>+ Add Reading</button>
           </div>
 
           {/* Assignments */}
@@ -351,251 +289,18 @@ function LessonDetails() {
                 <p className="no-items">No assignments yet.</p>
               )}
             </div>
-            <button className="btn-add" onClick={() => setShowAssignmentModal(true)}>+ Add Assignment</button>
           </div>
 
           {/* Footer */}
           <div className="course-footer">
-            <button className="btn-edit" onClick={() => setShowModal(true)}>
+            <button className="btn-edit" onClick={() => navigate(`/lessons/${lessonId}/edit`)}>
               Edit
             </button>
-            <button
-              className="btn-delete"
-              onClick={() => setDeleteConfirm(true)}
-            >
-              Delete
-            </button>
           </div>
         </div>
       </div>
-
-    {/* Pre-Requisites Modal */}
-    {preReqModal && (
-      <div className="modal-overlay" onClick={() => setShowPreReqModal(false)}>
-        <div className="modal" onClick={(e) => e.stopPropagation()}>
-          <h3>Select Prerequisites</h3>
-
-          {/* List published lessons */}
-          <div className="lesson-list">
-            {allLessons
-              .filter(
-                (l) =>
-                  l.lesson_status === "published" &&
-                  l.lesson_id !== lesson.lesson_id
-              )
-              .map((l) => (
-                <div key={l.lesson_id} className="list-item">
-                  <span>{l.lesson_title}</span>
-                  <button onClick={() => handleAddPrereq(l)}>+</button>
-                </div>
-              ))}
-          </div>
-
-          {/* Show currently selected prereqs */}
-          <div className="selected-prereqs">
-            <h4>Selected:</h4>
-            {lessonPrereqs.length > 0 ? (
-              lessonPrereqs.map((p) => (
-                <div key={p.lesson_id} className="selected-item">
-                  {p.lesson_title}
-                </div>
-              ))
-            ) : (
-              <p>No prerequisites selected yet.</p>
-            )}
-          </div>
-
-          <div className="modal-actions">
-            <button
-              onClick={() => {
-                // Save into local lesson object (string for now)
-                setLesson({
-                  ...lesson,
-                  lesson_prereq: lessonPrereqs.map((p) => p.lesson_title).join("\n"),
-                });
-                setShowPreReqModal(false);
-              }}
-            >
-              Save
-            </button>
-            <button className="cancel" onClick={() => setShowPreReqModal(false)}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
-
-      {/* Reading List Modal */}
-      {readingModal && (
-        <div className="modal-overlay" onClick={() => setShowReadingModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Add Reading</h3>
-            <form onSubmit={async (e) => {
-                e.preventDefault();
-
-                const readingData = {
-                  lesson_reading_list: e.target.readingItem.value.trim(),
-                };
-
-                console.log("Adding reading")
-                // TODO: Send readingData to backend
-                const result = await editLesson(readingData);
-                console.log("Reading added:", readingData);
-                alert("Reading added!");
-                setShowReadingModal(false);
-            }}>
-              <div className="form-group">
-                <label>Add a reading item: </label>
-                {/* <input type="text" name="readingItem" defaultValue={lesson.lesson_reading_list} /> */}
-                <textarea name="readingItem" rows="6" defaultValue={lesson.lesson_reading_list}/>
-              </div>
-              <div className="modal-actions">
-                <button type="submit">Add Reading</button>
-                <button className="cancel" onClick={() => setShowReadingModal(false)}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Assignment Modal */}
-      {assignmentModal && (
-        <div className="modal-overlay" onClick={() => setShowAssignmentModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Add Assignment</h3>
-            <form onSubmit={async (e) => {
-                e.preventDefault();
-
-                const assignmentData = {
-                  lesson_assignment: e.target.asgItem.value.trim(),
-                };
-
-                console.log("Adding assignment")
-                // TODO: Send readingData to backend
-                const result = await editLesson(assignmentData);
-                console.log("Assignment added:", assignmentData);
-                alert("Assignment added!");
-                setShowAssignmentModal(false);
-            }}>
-              <div className="form-group">
-                <label>Add an assignment: </label>
-                {/* <input type="text" name="item" required /> */}
-                <textarea name="asgItem" rows="6" defaultValue={lesson.lesson_assignment}/>
-              </div>
-              <div className="modal-actions">
-                <button type="submit">Add Assignment</button>
-                <button className="cancel" onClick={() => setShowAssignmentModal(false)}>Cancel</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-       
-      {/* Edit Modal */}
-       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Edit Lesson</h3>
-            <form onSubmit={async (e) => {
-                e.preventDefault();
-
-                const lessonData = {
-                  lesson_title: e.target.title.value,
-                  lesson_desc: e.target.description.value,
-                  lesson_obj: e.target.objective.value,
-                  lesson_effort_per_week: e.target.estimatedTime.value,
-                  lesson_credit: e.target.lessonCredit.value,
-                };
-
-                console.log("Editing lesson")
-                const result = await editLesson(lessonData);
-                
-                console.log("Lesson edited:", lessonData);
-                alert("Lesson change appended!");
-
-                setShowModal(false);
-              }}
-          > 
-              <div className="form-group">
-                <label>Lesson Title</label>
-                <input type="text" name="title" required defaultValue={lesson.lesson_title}/>
-              </div>
-
-              <div className="form-group">
-                <label>Description</label>
-                <textarea name="description" rows="2" required defaultValue={lesson.lesson_desc}/>
-              </div>
-
-              <div className="form-group">
-                <label>Objective</label>
-                <textarea name="objective" rows="2" required defaultValue={lesson.lesson_obj}/>
-              </div>
-
-              <div className="form-group-inline">
-                <label>Estimated Time (hours per week)</label>
-                <input
-                  type="number"
-                  name="estimatedTime"
-                  placeholder="e.g. 30"
-                  required
-                  defaultValue={lesson.lesson_effort_per_week ? lesson.lesson_effort_per_week : 0}
-                />
-              </div>
-
-              <div className="form-group-inline">
-                <label>Lesson Credit (points)</label>
-                <input
-                  type="number"
-                  name="lessonCredit"
-                  placeholder="e.g. 6"
-                  required
-                  defaultValue={lesson.lesson_credit ? lesson.lesson_credit : 0}
-                />
-              </div>
-
-              <div className="modal-actions">
-                <button type="submit">Save</button>
-                <button
-                  type="button"
-                  className="cancel"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      {/* Delete Lesson Confirmation */}
-      {DeleteConfirm && (
-        <div className="delete-confirmation-overlay">
-          <div className="delete-confirmation-modal">
-            <h3>Are you sure you want to delete this lesson?</h3>
-            <div className="delete-confirmation-actions">
-              <button
-                onClick={() => {
-                  setDeleteConfirm(false);
-                  handleDeleteLesson();
-                }}
-                className="btn-delete"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setDeleteConfirm(false)}
-                className="delete-confirmation-btn-cancel"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 export default LessonDetails;
-
