@@ -14,6 +14,6 @@ function CourseDetails() {
         default:
             return <div>Unauthorized</div>;
     }
-}
+  };
 
 export default CourseDetails;

@@ -105,6 +105,7 @@ export const updateCourse = async (courseData) => {
     console.log(courseData);
     const courses = await sql`UPDATE "LMS".course 
                     SET 
+                        course_code = ${updateData.course_code},
                         course_title = ${updateData.course_title},
                         course_total_credit = ${updateData.course_total_credit},
                         course_date_updated = ${updateData.course_date_updated},
@@ -132,15 +133,16 @@ export const removeCourseLessons = async (courseCode) => {
 }
 
 export const updateCourseLessons = async (courseCode, lessons) => {
-    const courseLessons = [];
-    console.log("Removed course lesson: ", removeCourseLessons(courseCode));
+    await removeCourseLessons(courseCode);
 
-    lessons.forEach(element => {
-        courseLessons.push(addCourseLesson(courseCode, element.lesson_id));
-    });
+    const courseLessons = [];
+    for (const element of lessons) {
+        const addedLesson = await addCourseLesson(courseCode, element.lesson_id);
+        courseLessons.push(addedLesson);
+    }
 
     return courseLessons;
-}
+};
 
 export const getPublishedCourses = async () => {
     const courses = await sql`SELECT * 

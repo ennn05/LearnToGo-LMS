@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate, authorize } from '../middleware/authMiddleware.js';
-import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getPublished, getEnrolledStudentsByCourse, getStudentCourses, getAvailableCoursesForEnrollment, enrollCourse } from "../controllers/courseControllers.js"
+import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getPublished, getEnrolledStudentsByCourse, getStudentCourses, getAvailableCoursesForEnrollment, enrollCourse, updateCourseLessonAssignments } from "../controllers/courseControllers.js"
 
 const router = express.Router();
 
@@ -28,5 +28,6 @@ router.delete("/:id", removeCourse);
 router.put("/:id", editCourse);
 router.get("/enrolled-students/:courseCode", getEnrolledStudentsByCourse);
 router.get("/enrolled-students", getEnrolledStudentsByCourse);
+router.put("/:courseCode/lessons", updateCourseLessonAssignments);
 
 export default router;
