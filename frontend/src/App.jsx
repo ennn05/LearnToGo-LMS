@@ -69,8 +69,9 @@ function App() {
           <Route path="/lessons/:lessonId/edit" element={<EditLesson />} />
           <Route path="/lessons/create" element={<CreateLesson />} />
           <Route path="/classrooms/create" element={<CreateClassroom />} />  
-          <Route path="/classrooms/:classroomId" element={<ClassroomDetails />} />
-          <Route path="/classrooms/:classroomId/grades" element={<ClassroomGrade />} />
+          <Route path="/classrooms/:classroomCode" element={<ClassroomDetails />} />
+          <Route path="/classrooms/:classroomCode/grades" element={<ClassroomGrade />} />
+          <Route path="/classrooms" element={<Classrooms />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />

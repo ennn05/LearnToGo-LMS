@@ -11,7 +11,7 @@ function ClassroomGrade() {
     const [lessons, setLessons] = useState([]);
     const [activeLesson, setActiveLesson] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { classroomId } = useParams();
+    const { classroomCode } = useParams();
     const { user, signOut } = useStore(s => s);
 
     const handleLogout = () => {
@@ -55,7 +55,7 @@ function ClassroomGrade() {
     useEffect(() => {
         const fetchLessonsWithStudents = async () => {
             try {
-                const { data: res } = await api.get(`classrooms/${classroomId}/lessons/students`);
+                const { data: res } = await api.get(`classrooms/${classroomCode}/lessons/students`);
                 if (!res.success) {
                     console.error("Error fetching lessons:", res.message);
                     setError("Lessons not found");
@@ -78,7 +78,7 @@ function ClassroomGrade() {
             }
         };
         fetchLessonsWithStudents();
-    }, [classroomId]);
+    }, [classroomCode]);
 
     useEffect(() => {
         console.log("Lessons updated:", lessons);
@@ -238,7 +238,7 @@ function ClassroomGrade() {
                                         grade: stu.grade || 0,
                                         completion: stu.completion || false,
                                     }));
-                                    await api.put(`classrooms/${classroomId}/lessons/${lesson.crcl_cl_id}/students`, studentData);
+                                    await api.put(`classrooms/${classroomCode}/lessons/${lesson.crcl_cl_id}/students`, studentData);
                                     alert("Grades updated successfully!");
                                 } catch (err) {
                                     console.error("Error updating student marks:", err);

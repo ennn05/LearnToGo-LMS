@@ -8,13 +8,25 @@ import {
   editClassroom,
   addClassroom,
   updateStudentMarksForClassroomLesson,
-  getClassroomLessonsWithStudents
+  getClassroomLessonsWithStudents,
+  getStudentClassrooms
 } from "../controllers/classroomController.js";
 
 const router = express.Router();
 
 
-router.get("/", getClassrooms);
+router.get("/", authenticate, (req, res) => {
+  switch (req?.user?.role) {
+        case "student":
+            return getStudentClassrooms(req, res);
+        case "instructor":
+        case "admin":
+            return getClassrooms(req, res);
+        default:
+            return res.status(403).json({ message: "Unauthorized" });
+    }    
+});
+
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);
 router.delete("/:id", authenticate, authorize("instructor"), removeClassroom);
