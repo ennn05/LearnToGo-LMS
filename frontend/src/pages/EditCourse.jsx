@@ -207,7 +207,7 @@ function EditCourse() {
     };
 
     const handleCancel = () => {
-        navigate("/courses");
+        navigate(`/courses/${courseId}`);
     };
 
     const handleLogout = () => {
