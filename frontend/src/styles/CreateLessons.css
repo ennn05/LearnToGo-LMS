@@ -36,6 +36,7 @@
 .lesson-form textarea {
   min-height: 100px;
   resize: vertical;
+  color: black;
 }
 
 /* Sections */
