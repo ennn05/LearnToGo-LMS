@@ -180,19 +180,31 @@ function InstructorCourses() {
             </div>
           ) : (
             <div className="courses-grid">
-              {filteredCourses.map((course) => (
-                <div
-                  key={course.course_code}
-                  className="course-card"
-                  onClick={() => handleCourseClick(course.course_code)}
-                >
-                  <div className="course-code">{course.course_code}</div>
-                  <div className="course-title">{course.course_title}</div>
-                  <div className="course-credits">
-                    {course.course_total_credit} credits
+              {filteredCourses.map((course) => {
+                // Fallback to "default" if no status is set
+                const statusClass = course.course_status?.toLowerCase() || "default";
+
+                return (
+                  <div
+                    key={course.course_code}
+                    className="course-card"
+                    onClick={() => handleCourseClick(course.course_code)}
+                  >
+                    {/* Colored top section */}
+                    <div className={`course-top-section ${statusClass}`}>
+                      {course.course_code}
+                    </div>
+
+                    {/* Card body */}
+                    <div className="course-body">
+                      <div className="course-title">{course.course_title}</div>
+                      <div className="course-credits">
+                        {course.course_total_credit} credits
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
