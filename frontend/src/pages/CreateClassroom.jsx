@@ -61,15 +61,14 @@ function CreateClassroom() {
     // Fetches specific lessons assigned based on course_code
     const fetchLessonsForCourse = async course_code => {
         try {
-            const response = await fetch(`http://localhost:5000/api/lessons/published`);
-            if (!response.ok) {
-                console.error("API error:", response.status, response.statusText);
+            const {data: res} = await api.get("lessons/published");
+            if (!res.success) {
+                console.error("API error:", res.message);
                 setAvailableLessons([]);
                 return;
             }
-            const data = await response.json();
-            console.log("All Lessons:", data.data);
-            const match = data.data.find(
+            console.log("All Lessons:", res.data);
+            const match = res.data.find(
                 item => item.cl_course_code === course_code
             );
             const lessons = match ? match.lessons : [];
