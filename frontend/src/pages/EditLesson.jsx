@@ -69,6 +69,27 @@ function EditLesson() {
     fetchAllLessons();
   }, [lessonId]);
 
+    // Edit the lesson using the API and update the local state
+  const editLesson = async (lessonData) => {
+    try {
+      const updateLessonData = {...lesson, ...lessonData};
+      console.log(updateLessonData);
+      const {data: res} = await api.put(`lessons/${lessonId}`, updateLessonData);
+      console.log(res);
+      if (!res.success) {
+        console.error("Server responded with:", res.message);
+        throw new Error("Failed to edit lesson");
+      }
+
+      console.log("Lesson updated:", res.data);
+      await fetchLessonDetails();
+      return res.data;
+    } catch (error) {
+      console.error("Error editing lesson:", error);
+      alert("Failed to edit lesson. Please try again.");
+    }
+  };
+
   // Add prerequisite (local only)
   const handleAddPrereq = (lessonObj) => {
     if (!lessonPrereqs.some((p) => p.lesson_id === lessonObj.lesson_id)) {
@@ -92,27 +113,6 @@ function EditLesson() {
     localStorage.removeItem("user");
     signOut();
     navigate("/");
-  };
-
-  // Edit the lesson using the API and update the local state
-  const editLesson = async (lessonData) => {
-    try {
-      const updateLessonData = {...lesson, ...lessonData};
-      console.log(updateLessonData);
-      const {data: res} = await api.put(`lessons/${lessonId}`, updateLessonData);
-      console.log(res);
-      if (!res.success) {
-        console.error("Server responded with:", res.message);
-        throw new Error("Failed to edit lesson");
-      }
-
-      console.log("Lesson updated:", res.data);
-      await fetchLessonDetails();
-      return res.data;
-    } catch (error) {
-      console.error("Error editing lesson:", error);
-      alert("Failed to edit lesson. Please try again.");
-    }
   };
 
 
@@ -361,7 +361,10 @@ function EditLesson() {
           <div className="course-footer">
             <button
               className="btn-edit"
-              onClick={() => navigate(`/lessons/${lessonId}`)}
+              onClick={() => {
+                editLesson(lesson);
+                navigate(`/lessons/${lessonId}`);
+              }}
             >
               Save
             </button>
