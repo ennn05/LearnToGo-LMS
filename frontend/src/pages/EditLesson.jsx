@@ -99,10 +99,11 @@ function EditLesson() {
 
   // Remove prerequisite
   const handleRemovePrereq = (id) => {
-    setLessonPrereqs(lessonPrereqs.filter((p) => p.lesson_id !== id));
+    const newPreReq = lessonPrereqs.filter((p) => p.lesson_id !== id)
+    setLessonPrereqs(newPreReq);
     setLesson({
       ...lesson,
-      lesson_prereq: lessonPrereqs.map((p) => p.lesson_title).join("\n"),
+      lesson_prereq: newPreReq.map((p) => p.lesson_title).join("\n"),
     });
   };
 
