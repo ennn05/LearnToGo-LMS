@@ -2,13 +2,14 @@
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/students.css";
+import useStore from "../store";
 
 const Students = () => {
   // Track active sidebar page
   const [activePage, setActivePage] = useState("students");
 
   // Current logged-in user
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
 
   // List of students loaded from API
   const [students, setStudents] = useState([]);
@@ -61,12 +62,12 @@ const Students = () => {
    * - Fetch students list
    */
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    console.log("Stored user:", storedUser);
+    // const storedUser = localStorage.getItem("user");
+    // console.log("Stored user:", storedUser);
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // if (storedUser) {
+    //   setUser(JSON.parse(storedUser));
+    // }
 
     fetchStudents();
   }, []);
@@ -76,6 +77,7 @@ const Students = () => {
    */
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
