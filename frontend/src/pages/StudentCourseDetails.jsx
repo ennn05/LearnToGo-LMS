@@ -51,7 +51,6 @@ function StudentCourseDetails() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
     signOut();
     navigate("/");
   };
