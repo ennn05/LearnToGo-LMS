@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate , useLocation } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css";
 import useStore from "../store";
@@ -9,6 +9,8 @@ function StudentCourseDetails() {
   console.log("User from store:", user);
   const { courseId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromMyCourses = location.state?.fromMyCourses || false;
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -137,16 +139,25 @@ function StudentCourseDetails() {
         <div className="course-details-container">
             {success && <span style={{ display: "block", color: "#27ae60", textAlign: "center", padding: "0 12px" }}>Enrolled successfully!</span>}
           {/* Enroll Button */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
+              {!fromMyCourses && (
+                enrolled ? (
+                  <button style={{ width: "fit-content" }} className="btn-edit" disabled>
+                    Enrolled
+                  </button>
+                ) : (
+                  <button
+                    style={{ width: "fit-content" }}
+                    className="btn-edit"
+                    onClick={handleEnroll}
+                    disabled={enrolling}
+                  >
+                    {enrolling ? "Enrolling..." : "Enroll"}
+                  </button>
+                )
+              )}
+            </div>
 
-            {enrolled ? (
-              <button style={{width: "fit-content"}} className="btn-edit" disabled>Enrolled</button>
-            ) : (
-              <button style={{width: "fit-content"}} className="btn-edit" onClick={handleEnroll} disabled={enrolling}>
-                {enrolling ? "Enrolling..." : "Enroll"}
-              </button>
-            )}
-          </div>
           {/* Course Information */}
           <div className="course-info">
             <div className="info-item">

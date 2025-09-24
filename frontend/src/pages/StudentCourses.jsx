@@ -40,8 +40,8 @@ function StudentCourses() {
     ]).finally(() => setLoading(false));
   }, []);
 
-  const handleCourseClick = (courseCode) => {
-    navigate(`/courses/${courseCode}`);
+  const handleCourseClick = (courseCode, fromMyCourses = false) => {
+    navigate(`/courses/${courseCode}`, { state: { fromMyCourses } });
   };
 
   const handleLogout = () => {
@@ -100,7 +100,7 @@ function StudentCourses() {
                   <div
                     key={course.course_code}
                     className="course-card"
-                    onClick={() => handleCourseClick(course.course_code)}
+                    onClick={() => handleCourseClick(course.course_code, true)}
                   >
                     <div className="course-code">{course.course_code}</div>
                     <div className="course-title">{course.course_title}</div>
@@ -120,7 +120,7 @@ function StudentCourses() {
                   <div
                     key={course.course_code}
                     className="course-card"
-                    onClick={() => handleCourseClick(course.course_code)}
+                    onClick={() => handleCourseClick(course.course_code, false)}
                   >
                     <div className="course-code">{course.course_code}</div>
                     <div className="course-title">{course.course_title}</div>
