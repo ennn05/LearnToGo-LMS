@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/LessonDetails.css";
+import useStore from "../store";
 
 function StudentLessonDetails() {
     const { lessonId } = useParams();
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const { user, signOut } = useStore((state) => state);
     const [lesson, setLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -30,17 +31,13 @@ function StudentLessonDetails() {
     };
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
         fetchLessonDetails();
     }, [lessonId]);
 
     const handleBack = () => navigate("/lessons");
     const handleLogout = () => {
-        localStorage.removeItem("user");
-        navigate("/");
+        signOut();
+        navigate("/login");
     };
 
     if (loading) {
