@@ -14,7 +14,8 @@ function StudentClassrooms() {
     try {
       const { data: res } = await api.get("classrooms");
       if (res.success) {
-        setClassrooms(res.data);
+        const publishedClassrooms = res.data.filter((cr) => cr.cr_status?.toLowerCase() === "published");
+        setClassrooms(publishedClassrooms);
       } else {
         setClassrooms([]);
       }
