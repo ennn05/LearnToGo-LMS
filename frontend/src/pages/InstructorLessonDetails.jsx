@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
+import useStore from "../store";
 import "../styles/LessonDetails.css";
 
 function InstructorLessonDetails() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,19 +20,18 @@ function InstructorLessonDetails() {
   // Fetch lesson details
   const fetchLessonDetails = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`);
-      if (!res.ok) {
-        console.error("Error fetching courses:", res);
+      const {data: res} = await api.get(`lessons/${lessonId}`);
+      if (!res.success) {
+        console.error("Error fetching courses:", res.message);
       }
-      const data = await res.json();
-      setLesson(data.data);
+      
+      setLesson(res.data);
 
       // If prereqs already exist (comma or newline separated text), parse into array
-      if (data.data.lesson_prereq) {
-        const parsed = data.data.lesson_prereq
+      if (res.data.lesson_prereq) {
+        const parsed = res.data.lesson_prereq
           .split("\n")
           .map((s) => s.trim())
-          .filter(Boolean)
           .map((title, idx) => ({ lesson_id: idx, lesson_title: title }));
         setLessonPrereqs(parsed);
       }
@@ -46,19 +46,19 @@ function InstructorLessonDetails() {
   // Fetch all lessons to pick prereqs from
   const fetchAllLessons = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/lessons");
-      const data = await res.json();
-      setAllLessons(data.data || []);
+      const {data: res} = await api.get("lessons");
+      
+      setAllLessons(res.data || []);
     } catch (err) {
       console.error("Error fetching all lessons:", err);
     }
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    // const storedUser = localStorage.getItem("user");
+    // if (storedUser) {
+    //   setUser(JSON.parse(storedUser));
+    // }
     fetchLessonDetails();
     fetchAllLessons();
   }, [lessonId]);
@@ -72,6 +72,7 @@ function InstructorLessonDetails() {
   // Log the user out and navigate to the login page
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
@@ -82,39 +83,29 @@ function InstructorLessonDetails() {
     const updatedLesson = { ...lesson, lesson_status: 'published'};
     console.log(updatedLesson);
 
-    const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedLesson),
-    });
+    const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
-    if (!res.ok)
+    if (!res.success)
     {
-      console.error("Error fetching lessons:", res);
+      console.error("Error fetching lessons:", res.message);
     }
-    const data = await res.json();
-
-    console.log("Lesson published:", data.data);
-    setLesson(data.data);
+    console.log("Lesson published:", res.data);
+    fetchLessonDetails();
   };
 
   // Update the lesson status to 'archived'
   const handleArchiveLesson = async () => {
     try {
       const updatedLesson = { ...lesson, lesson_status: "archived" };
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedLesson),
-      });
+      const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
-      if (!res.ok) throw new Error("Failed to archive lesson");
+      if (!res.success) throw new Error("Failed to archive lesson");
 
-      const data = await res.json();
-      setLesson(data.data);
+      fetchLessonDetails();
     } catch (err) {
       console.error("Error archiving lesson:", err);
     }
+    
   };
 
 
