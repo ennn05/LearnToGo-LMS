@@ -100,6 +100,10 @@ function EditLesson() {
   // Remove prerequisite
   const handleRemovePrereq = (id) => {
     setLessonPrereqs(lessonPrereqs.filter((p) => p.lesson_id !== id));
+    setLesson({
+      ...lesson,
+      lesson_prereq: lessonPrereqs.map((p) => p.lesson_title).join("\n"),
+    });
   };
 
   // --- keep your other handlers (publish, archive, delete, editLesson, etc.)
