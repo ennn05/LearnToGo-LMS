@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import "../styles/LessonDetails.css"; // Use same stylesheet as LessonDetails
+import useStore from "../store";
 
 function EditLesson() {
   const { lessonId } = useParams();
