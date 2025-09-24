@@ -235,7 +235,7 @@
   font-size: 20px;
 }
 
-.lessons-container {
+.course-lessons-container {
   background-color: #f8f9fa;
   border: 2px dashed #bdc3c7;
   border-radius: 8px;
@@ -317,14 +317,14 @@
   background-color: #2980b9;
 }
 
-.lessons-grid {
+.course-lessons-grid {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
 }
 
-.lessons-grid .lesson-card {
+.course-lessons-grid .course-lesson-card {
   margin-top: 10px;
   margin-bottom: 10px;
   cursor: pointer;
@@ -332,13 +332,13 @@
   justify-content: space-between;
 }
 
-.lesson-card .lesson-title {
+.course-lesson-card .course-lesson-title {
   font-weight: bold;
   color: #2c3e50;
 }
 
 
-.lesson-credits {
+.course-lesson-credits {
   color: #7f8c8d;
   font-size: 14px;
   font-style: italic;

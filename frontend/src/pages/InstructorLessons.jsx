@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-import "../styles/Lessons.css";
+// import "../styles/Lessons.css";
 
 function InstructorLessons() {
   const [activePage, setActivePage] = useState("lessons");
@@ -190,7 +190,7 @@ function InstructorLessons() {
                       lesson.lesson_status?.toLowerCase() || "draft"
                     }`}
                   >
-                    <h3>{lesson.lesson_title}</h3>
+                    <div className="lesson-title">{lesson.lesson_title}</div>
                   </div>
 
                   <div className="lesson-body">
