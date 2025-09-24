@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-// import "../styles/Lessons.css";
+import "../styles/Lessons.css";
+import useStore from "../store";
 
 function InstructorLessons() {
   const [activePage, setActivePage] = useState("lessons");
-  // const user = useStore((state) => state);
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
   const [showModal, setShowModal] = useState(false);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,6 @@ function InstructorLessons() {
         throw new Error("Failed to edit lesson");
       }
 
-      // const data = await response.json();
       console.log(res.data);
       setLessons(res.data);
       setFilter("all");
@@ -34,25 +33,12 @@ function InstructorLessons() {
   };
 
   useEffect(() => {
-    // const fetchLessons = async () => {
-    //   try {
-        
-    //     // const response = await fetch("http://localhost:5000/api/lessons");
-    //     // const data = await response.json();
-    //     // setLessons(data);
-
-    //     const {data: res} = await api.get("/lessons");
-    //     setLessons(res);
-    //   } catch (err) {
-    //     console.error("Failed to fetch lessons:", err);
-    //   }
-    // };
-    const storedUser = localStorage.getItem("user");
-    console.log(storedUser);
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      console.log(user);
-    }
+    // const storedUser = localStorage.getItem("user");
+    // console.log(storedUser);
+    // if (storedUser) {
+    //   setUser(JSON.parse(storedUser));
+    //   console.log(user);
+    // }
     fetchLessons();
   }, []);
 
@@ -90,15 +76,9 @@ function InstructorLessons() {
     }
   };
 
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-  // }, []);
-
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
@@ -175,7 +155,7 @@ function InstructorLessons() {
             <div className="loading">Loading lessons...</div>
           ) : filteredLessons.length === 0 ? (
             <div className="no-lessons">
-              <p>No lessons found. Create your first lesson!</p>
+              <p>No lessons found.</p>
             </div>
           ) : (
             <div className="lessons-grid">
@@ -202,7 +182,7 @@ function InstructorLessons() {
                     </div>
                     <div className="lesson-detail">
                       <strong>Created by:</strong>{" "}
-                      {lesson.lesson_designer || "Unknown"}
+                      {lesson.user_fname + ' ' + lesson.user_lname + ' (InstID' + (lesson.lesson_designer || "Unknown") + ')'}
                     </div>
                     <div className="lesson-detail">
                       <strong>Lesson Credit:</strong>{" "}
@@ -221,7 +201,7 @@ function InstructorLessons() {
         </button>
 
          {/* Modal */}
-         {showModal && (
+         {/* {showModal && (
           <div className="modal-overlay" onClick={() => setShowModal(false)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <h3>Add Lesson</h3>
@@ -295,7 +275,7 @@ function InstructorLessons() {
               </form>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

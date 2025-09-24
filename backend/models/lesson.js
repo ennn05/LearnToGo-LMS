@@ -44,7 +44,10 @@ import sql from "../db.js";
 
 // Get all lessons
 export const getAllLessons = async () => {
-  const lessons = await sql`SELECT * FROM "LMS".lesson ORDER BY lesson_id ASC;`;
+  const lessons = await sql`SELECT * FROM "LMS".lesson l
+                            LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+                            LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
+                            ORDER BY lesson_id ASC;`;
   return lessons;
 };
 

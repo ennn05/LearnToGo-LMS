@@ -339,7 +339,7 @@ body {
 
 /* Status-based colors */
 .lesson-top-section.draft {
-  background-color: #9ca3af; /* gray */
+  background-color: #f39c12; /* red */
 }
 
 .lesson-top-section.published {
@@ -347,7 +347,7 @@ body {
 }
 
 .lesson-top-section.archived {
-  background-color: #f39c12; /* red */
+  background-color: #9ca3af; /* gray */
 }
 
 .lesson-top-section {
