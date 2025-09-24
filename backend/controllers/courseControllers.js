@@ -122,7 +122,7 @@ export const getCourse = async (req, res) => {
 };
 
 export const addCourse = async (req, res) => {
-    const { code, title, creator, lessons, status  } = req.body;
+    const { code, title, creator, lessons, status, credit  } = req.body;
     try {
         if (!code || !title)
         {
@@ -137,12 +137,12 @@ export const addCourse = async (req, res) => {
 
         const today = new Date().toISOString().split('T')[0];
 
-        const total_credit = lessons.reduce((sum, lesson) => sum + (lesson.credit || 0), 0);
+        // const total_credit = lessons.reduce((sum, lesson) => sum + (lesson.lesson_credit || 0), 0);
 
         const courseData = {
             code,
             title,
-            total_credit,
+            total_credit: credit,
             date_created: today,
             date_updated: today,
             creator,

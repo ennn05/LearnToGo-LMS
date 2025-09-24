@@ -44,7 +44,10 @@ import sql from "../db.js";
 
 // Get all lessons
 export const getAllLessons = async () => {
-  const lessons = await sql`SELECT * FROM "LMS".lesson ORDER BY lesson_id ASC;`;
+  const lessons = await sql`SELECT * FROM "LMS".lesson l
+                            LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+                            LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
+                            ORDER BY lesson_id ASC;`;
   return lessons;
 };
 
@@ -97,9 +100,9 @@ export const getLessonsByStudent = async (studentId) => {
 export const createLesson = async (lessonData) => {
   const lesson = await sql`
     INSERT INTO "LMS".lesson 
-      (lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_date_created, lesson_date_updated, lesson_credit, lesson_designer, lesson_status)
+      (lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_date_created, lesson_date_updated, lesson_credit, lesson_designer, lesson_status, lesson_prereq, lesson_reading_list, lesson_assignment)
     VALUES 
-      (${lessonData.lesson_title}, ${lessonData.lesson_desc}, ${lessonData.lesson_obj}, ${lessonData.lesson_effort_per_week}, ${lessonData.lesson_date_created}, ${lessonData.lesson_date_updated}, ${lessonData.lesson_credit}, ${lessonData.lesson_designer}, ${lessonData.lesson_status})
+      (${lessonData.lesson_title}, ${lessonData.lesson_desc}, ${lessonData.lesson_obj}, ${lessonData.lesson_effort_per_week}, ${lessonData.lesson_date_created}, ${lessonData.lesson_date_updated}, ${lessonData.lesson_credit}, ${lessonData.lesson_designer}, ${lessonData.lesson_status}, ${lessonData.lesson_prereq}, ${lessonData.lesson_reading_list}, ${lessonData.lesson_assignment})
     RETURNING *;
   `;
   return lesson[0];

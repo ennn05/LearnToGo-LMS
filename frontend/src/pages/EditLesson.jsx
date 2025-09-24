@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import "../styles/LessonDetails.css"; // Use same stylesheet as LessonDetails
+import useStore from "../store";
 
 function EditLesson() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
-
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -52,48 +52,24 @@ function EditLesson() {
   // Fetch all lessons to pick prereqs from
   const fetchAllLessons = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/lessons");
-      const data = await res.json();
-      setAllLessons(data.data || []);
+      const {data: res} = await api.get("lessons");
+      if (!res.success) {
+        console.error("API error:", res.message);
+        setAllLessons([]);
+        return;
+      }
+      setAllLessons(res.data || []);
     } catch (err) {
       console.error("Error fetching all lessons:", err);
     }
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
     fetchLessonDetails();
     fetchAllLessons();
   }, [lessonId]);
 
-  // Add prerequisite (local only)
-  const handleAddPrereq = (lessonObj) => {
-    if (!lessonPrereqs.some((p) => p.lesson_id === lessonObj.lesson_id)) {
-      setLessonPrereqs([...lessonPrereqs, lessonObj]);
-    }
-  };
-
-  // Remove prerequisite
-  const handleRemovePrereq = (id) => {
-    setLessonPrereqs(lessonPrereqs.filter((p) => p.lesson_id !== id));
-  };
-
-  // --- keep your other handlers (publish, archive, delete, editLesson, etc.)
-
-
-  // Navigate back to the lessons page
-  const handleBackToLessons = () => navigate("/lessons");
-
-  // Log the user out and navigate to the login page
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
-  };
-
-  // Edit the lesson using the API and update the local state
+    // Edit the lesson using the API and update the local state
   const editLesson = async (lessonData) => {
     try {
       const updateLessonData = {...lesson, ...lessonData};
@@ -112,6 +88,36 @@ function EditLesson() {
       console.error("Error editing lesson:", error);
       alert("Failed to edit lesson. Please try again.");
     }
+  };
+
+  // Add prerequisite (local only)
+  const handleAddPrereq = (lessonObj) => {
+    if (!lessonPrereqs.some((p) => p.lesson_id === lessonObj.lesson_id)) {
+      setLessonPrereqs([...lessonPrereqs, lessonObj]);
+    }
+  };
+
+  // Remove prerequisite
+  const handleRemovePrereq = (id) => {
+    const newPreReq = lessonPrereqs.filter((p) => p.lesson_id !== id)
+    setLessonPrereqs(newPreReq);
+    setLesson({
+      ...lesson,
+      lesson_prereq: newPreReq.map((p) => p.lesson_title).join("\n"),
+    });
+  };
+
+  // --- keep your other handlers (publish, archive, delete, editLesson, etc.)
+
+
+  // Navigate back to the lessons page
+  const handleBackToLessons = () => navigate("/lessons");
+
+  // Log the user out and navigate to the login page
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    signOut();
+    navigate("/");
   };
 
 
@@ -360,7 +366,10 @@ function EditLesson() {
           <div className="course-footer">
             <button
               className="btn-edit"
-              onClick={() => navigate(`/lessons/${lessonId}`)}
+              onClick={() => {
+                editLesson(lesson);
+                navigate(`/lessons/${lessonId}`);
+              }}
             >
               Save
             </button>

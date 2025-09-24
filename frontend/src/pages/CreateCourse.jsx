@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateCourse.css"; // Stylesheet for page
+import useStore from "../store";
+import api from "../libs/apiCalls";
 
 function CreateCourse() {
   // State for sidebar navigation
   const [activePage, setActivePage] = useState("courses");
 
   // User information (fetched from localStorage or mock user)
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
 
   // Course data with default status as "draft"
   const [courseData, setCourseData] = useState({
     courseCode: "",
     courseTitle: "",
-    totalCredits: "",
+    totalCredits: 0,
     status: "draft"
   });
 
@@ -28,15 +30,15 @@ function CreateCourse() {
   // Fetch published lessons from backend
   const fetchLessons = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/lessons");
-      if (!response.ok) {
-        console.error("API error:", response.status, response.statusText);
+      const {data: res} = await api.get("lessons");
+      if (!res.success) {
+        console.error("API error:", res.message);
         setAvailableLessons([]);
         return;
       }
-      const data = await response.json();
+      
       setAvailableLessons(
-        data.data.filter(lesson => lesson.lesson_status === "published")
+        res.data.filter(lesson => lesson.lesson_status === "published")
       );
     } catch (error) {
       console.error("Error fetching lessons:", error);
@@ -48,18 +50,18 @@ function CreateCourse() {
 
   // Load user and lessons on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      // Mock user for testing
-      setUser({
-        user_fname: "Test",
-        user_lname: "User",
-        user_email: "test@example.com",
-        user_role: "Instructor",
-      });
-    }
+    // const storedUser = localStorage.getItem("user");
+    // if (storedUser) {
+    //   setUser(JSON.parse(storedUser));
+    // } else {
+    //   // Mock user for testing
+    //   setUser({
+    //     user_fname: "Test",
+    //     user_lname: "User",
+    //     user_email: "test@example.com",
+    //     user_role: "Instructor",
+    //   });
+    // }
     fetchLessons();
   }, []);
 
@@ -69,7 +71,7 @@ function CreateCourse() {
     setCourseData(prev => ({
       ...prev,
       [name]: value,
-      totalCredits: assignedLessons.reduce((sum, lesson) => lesson.lesson_credit + sum, 0)
+      totalCredits: assignedLessons.reduce((sum, lesson) => Number(lesson.lesson_credit || 0) + sum, 0)
     }));
   };
 
@@ -112,13 +114,27 @@ function CreateCourse() {
   // Add a lesson to course (avoid duplicates)
   const addLessonToCourse = (lesson) => {
     if (!assignedLessons.find(l => l.lesson_id === lesson.lesson_id)) {
-      setAssignedLessons(prev => [...prev, lesson]);
+      const updatedLessons = [...assignedLessons, lesson];
+      setAssignedLessons(updatedLessons);
+      setCourseData(prev => ({
+      ...prev,
+      totalCredits: updatedLessons.reduce((sum, lesson) => Number(lesson.lesson_credit || 0) + sum, 0)
+    }));
+      
     }
   };
 
   // Remove a lesson from course
   const removeLessonFromCourse = (lessonId) => {
-    setAssignedLessons(prev => prev.filter(l => l.lesson_id !== lessonId));
+    const updatedLessons = assignedLessons.filter(l => l.lesson_id !== lessonId);
+    setAssignedLessons(updatedLessons);
+    setCourseData(prev => ({
+      ...prev,
+      totalCredits: updatedLessons.reduce(
+        (sum, l) => sum + Number(l.lesson_credit || 0),
+        0
+      )
+    }));
   };
 
   // Filter lessons based on search input
@@ -147,18 +163,15 @@ function CreateCourse() {
         lessons: assignedLessons.map(l => l.lesson_id)
       };
 
-      const response = await fetch("http://localhost:5000/api/courses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(courseToSave)
-      });
+      const {data: res} = await api.post("courses", courseToSave);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to save course");
+      if (!res.success) {
+        throw new Error(res.message || "Failed to save course");
+      }
+      else {
+        alert("Course saved successfully!");
       }
 
-      alert("Course saved successfully!");
       navigate("/courses");
     } catch (error) {
       console.error("Error saving course:", error);
@@ -174,6 +187,7 @@ function CreateCourse() {
   // Log out user and return to login page
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
@@ -209,7 +223,7 @@ function CreateCourse() {
           </button>
           <button
             className={activePage === "classrooms" ? "active" : ""}
-            onClick={() => setActivePage("classrooms")}
+            onClick={() => navigate("classrooms")}
           >
             Classrooms
           </button>
@@ -221,7 +235,7 @@ function CreateCourse() {
           </button>
           <button
             className={activePage === "reports" ? "active" : ""}
-            onClick={() => setActivePage("reports")}
+            onClick={() => navigate("reports")}
           >
             Reports & Statistics
           </button>
@@ -246,15 +260,19 @@ function CreateCourse() {
               </span>
             </div>
             <div className="course-actions">
-              <button className="btn-publish" onClick={handlePublishCourse}>
-                Publish
-              </button>
-              <button 
-                className="btn-archive" 
-                onClick={() => handleStatusChange("archived")}
-              >
-                Archive
-              </button>
+              {courseData.status !== "published" ? (
+                <button className="btn-publish" onClick={() => handleStatusChange("published")}>
+                  Publish
+                </button>
+              ) : ("")}
+              {courseData.status !== "archived" ? (
+                <button 
+                  className="btn-archive" 
+                  onClick={() => handleStatusChange("archived")}
+                >
+                  Archive
+                </button>
+                ) : ("")}
             </div>
           </div>
 
@@ -321,6 +339,7 @@ function CreateCourse() {
                       <div className="lesson-info">
                         <h4>{lesson.lesson_title}</h4>
                         <p>{lesson.lesson_desc}</p>
+                        <p>{lesson.lesson_credit} credits</p>
                       </div>
                       <div className="lesson-actions">
                         <span className="check-icon">✓</span>
@@ -357,6 +376,7 @@ function CreateCourse() {
                       <div className="lesson-content">
                         <h4>{lesson.lesson_title}</h4>
                         <p>{lesson.lesson_desc}</p>
+                        <p>{lesson.lesson_credit} credits</p>
                       </div>
                       <button
                         className={`add-btn ${assignedLessons.find(l => l.lesson_id === lesson.lesson_id) ? "added" : ""}`}

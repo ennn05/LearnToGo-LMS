@@ -2,15 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import { mockCourseAPI } from "../../../data/mockCourses";
 import "../styles/CourseDetails.css";
-// import "../../../styles/CourseDetails.css";
-
-// temp test
+import api from "../libs/apiCalls";
+import useStore from "../store";
 
 function InstructorCourseDetails() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  // const user = useStore((state)=>state);
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,15 +20,14 @@ function InstructorCourseDetails() {
       // TODO: Replace with api wrapper instead of fetch
       // const data = await mockCourseAPI.getCourseById(courseId);
       // const data = await api.get(`courses/instructor/${courseId}`);
-      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`);
-      if (!res.ok) {
-        console.error("Error fetching courses:", res);
+      const {data: res} = await api.get(`courses/${courseId}`);
+      if (!res.success) {
+        console.error("Error fetching courses:", res.message);
       }
-      const data = await res.json();
 
-      console.log("Course details loaded:", data.data);
-      console.log(data.data.lessons);
-      setCourse(data.data);
+      console.log("Course details loaded:", res.data);
+      console.log(res.data.lessons);
+      setCourse(res.data);
     } catch (error) {
       console.error("Error fetching course details:", error);
       setError("Course not found");
@@ -41,18 +38,18 @@ function InstructorCourseDetails() {
 
   useEffect(() => {
     // Load user from localStorage (fallback to mock user if none found)
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      // For testing: create a mock user if no user is logged in
-      setUser({
-        user_fname: "Test",
-        user_lname: "User",
-        user_email: "test@example.com",
-        user_role: "Instructor",
-      });
-    }
+    // const storedUser = localStorage.getItem("user");
+    // if (storedUser) {
+    //   setUser(JSON.parse(storedUser));
+    // } else {
+    //   // For testing: create a mock user if no user is logged in
+    //   setUser({
+    //     user_fname: "Test",
+    //     user_lname: "User",
+    //     user_email: "test@example.com",
+    //     user_role: "Instructor",
+    //   });
+    // }
     fetchCourseDetails();
   }, [courseId]);
 
@@ -69,26 +66,20 @@ function InstructorCourseDetails() {
   const handlePublishCourse = async () => {
     // TODO: Implement publish course functionality
     console.log("Publish course clicked");
-
-    const courseUpdateData = { ...course, course_status: "published" };
+    console.log(course);
+    const courseUpdateData = { ...course, lessons: undefined, course_status: "published", course_date_updated: new Date().toLocaleDateString()};
     console.log(courseUpdateData);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(courseUpdateData),
-      });
+      const {data: res} = await api.put(`courses/${courseId}`, courseUpdateData);
 
-      if (!res.ok) {
-        console.error("Error publishing course:", res);
+      if (!res.success) {
+        console.error("Error publishing course:", res.message);
+        alert('Failed publishing course.');
       }
 
-      const data = await res.json();
-      console.log("Course published:", data.data);
-      setCourse(data.data);
+      console.log("Course published:", res.data);
+      fetchCourseDetails();
     } catch (error) {
       console.error("Error publishing course:", error);
     }
@@ -98,25 +89,19 @@ function InstructorCourseDetails() {
     // TODO: Implement archive course functionality
     console.log("Archive course clicked");
 
-    const courseUpdateData = { ...course, course_status: "archived" };
+    const courseUpdateData = { ...course, lessons: undefined, course_status: "archived", course_date_updated: new Date().toLocaleDateString() };
     console.log(courseUpdateData);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(courseUpdateData),
-      });
+      const {data: res} = await api.put(`courses/${courseId}`, courseUpdateData);
 
-      if (!res.ok) {
-        console.error("Error archiving course:", res);
+      if (!res.success) {
+        console.error("Error archiving course:", res.message);
+        alert('Failed archiving course.');
       }
 
-      const data = await res.json();
-      console.log("Course archived:", data.data);
-      setCourse(data.data);
+      console.log("Course archived:", res.data);
+      fetchCourseDetails();
     } catch (error) {
       console.error("Error archiving course:", error);
     }
@@ -129,19 +114,22 @@ function InstructorCourseDetails() {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
   const handleDeleteCourse = async () => {
     try {
       // Send DELETE request
-      const res = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-        method: "DELETE",
-      });
+      const {data: res} = await api.delete(`courses/${courseId}`);
 
-      if (!res.ok) {
+      if (!res.success) {
         alert("Failed to delete course.");
         return;
+      }
+      else
+      {
+        alert("Deleted course successfully.");
       }
 
       navigate("/courses"); // Redirect back after deletion
@@ -218,9 +206,9 @@ function InstructorCourseDetails() {
             Courses
           </button>
           <button onClick={() => navigate("/lessons")}>Lessons</button>
-          <button onClick={() => console.log("Classrooms clicked")}>Classrooms</button>
-          <button onClick={() => console.log("Students clicked")}>Students</button>
-          <button onClick={() => console.log("Reports clicked")}>Reports & Statistics</button>
+          <button onClick={() => navigate("/classrooms")}>Classrooms</button>
+          <button onClick={() => navigate("/students")}>Students</button>
+          <button onClick={() => navigate("/reports")}>Reports & Statistics</button>
           <button className="logout-btn" onClick={handleLogout}>
             Log Out
           </button>
@@ -290,19 +278,19 @@ function InstructorCourseDetails() {
           {/* Lessons Assigned Section */}
           <div className="lessons-section">
             <h3>Lessons Assigned</h3>
-            <div className="lessons-container">
+            <div className="course-lessons-container">
               {course.lessons?.length === 0 ? (
                 <p className="no-lessons">No lessons assigned yet.</p>
               ) : (
-                <div className="lessons-grid">
+                <div className="course-lessons-grid">
                   {course.lessons?.map((lesson) => (
                     <div
                       key={lesson.lesson_id}
-                      className="lesson-card"
+                      className="course-lesson-card"
                       onClick={() => handleLessonClick(lesson.lesson_id)}
                     >
-                      <h4 className="lesson-title">{lesson.lesson_title}</h4>
-                      <div className="lesson-credits">
+                      <h4 className="course-lesson-title">{lesson.lesson_title}</h4>
+                      <div className="course-lesson-credits">
                         {lesson.lesson_credit ?? 0} credits
                       </div>
                     </div>

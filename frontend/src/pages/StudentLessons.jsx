@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Lessons.css";
+import useStore from "../store";
 
 function StudentLessons() {
     const [lessons, setLessons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const { user, signOut } = useStore((state) => state);
 
     /** Fetch lessons for enrolled courses */
     const fetchLessons = async () => {
@@ -29,12 +30,13 @@ function StudentLessons() {
     };
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
         fetchLessons();
     }, []);
+
+    const handleLogout = () => {
+        signOut();
+        navigate("/login");
+    }
 
     return (
         <div className="flex">
@@ -54,7 +56,7 @@ function StudentLessons() {
                     <button onClick={() => navigate("/courses")}>Courses</button>
                     <button className="active" onClick={() => navigate("/lessons")}>Lessons</button>
                     <button onClick={() => navigate("/classrooms")}>Classrooms</button>
-                    <button className="logout-btn" onClick={() => { localStorage.removeItem("user"); navigate("/"); }}>
+                    <button className="logout-btn" onClick={handleLogout}>
                         Log Out
                     </button>
                 </nav>

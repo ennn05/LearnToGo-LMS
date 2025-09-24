@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateLessons.css";
 import api from "../libs/apiCalls"; 
+import useStore from "../store";
 
 function CreateLesson() {
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
   const [activePage, setActivePage] = useState("lessons")
 
   // Lesson form state
@@ -12,8 +13,8 @@ function CreateLesson() {
     lesson_title: "",
     lesson_desc: "",
     lesson_obj: "",
-    lesson_effort_per_week: "",
-    lesson_credit: "",
+    lesson_effort_per_week: 0,
+    lesson_credit: 0,
     lesson_status: "draft",
     lesson_reading_list: [],
     lesson_assignment: [],
@@ -34,8 +35,8 @@ function CreateLesson() {
 
   // Load user + published lessons for prerequisites
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    // const storedUser = localStorage.getItem("user");
+    // if (storedUser) setUser(JSON.parse(storedUser));
 
     fetchAllLessons();
   }, []);
@@ -43,9 +44,13 @@ function CreateLesson() {
   // Fetch all lessons to pick prereqs from
   const fetchAllLessons = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/lessons");
-      const data = await res.json();
-      setAllLessons(data.data || []);
+      const {data: res} = await api.get("lessons");
+      if (!res.success) {
+        console.error("API error:", res.message);
+        setAllLessons([]);
+        return;
+      }
+      setAllLessons(res.data || []);
     } catch (err) {
       console.error("Error fetching all lessons:", err);
     }
@@ -80,20 +85,17 @@ function CreateLesson() {
     try {
       const payload = {
         ...lessonData,
+        lesson_prereq: lessonData.lesson_prereq.map((p) => p.lesson_id + ": " + p.lesson_title).join("\n"),
+        
         lesson_status: status,
         lesson_designer: user?.user_id ?? 1, // fallback mock id
       };
 
-      const response = await fetch("http://localhost:5000/api/lessons", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      console.log(response);
+      const {data: res} = await api.post("lessons", payload);
+      console.log(res);
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.message || "Failed to save lesson");
+      if (!res.success) {
+        throw new Error(res.message || "Failed to save lesson");
       }
 
       alert(`Lesson ${status === "published" ? "published" : "saved"} successfully!`);
@@ -106,6 +108,7 @@ function CreateLesson() {
   
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
@@ -163,11 +166,9 @@ function CreateLesson() {
       {/* Main Content */}
       <div className="main-content">
         <div className="topbar">
-          <h1>New Course</h1>
+          <h1>New Lesson</h1>
         </div>
         <div className="create-lesson-container">
-          <h1>Create Lesson</h1>
-
           {/* Lesson Details */}
           <div className="lesson-form">
             <input
@@ -212,7 +213,7 @@ function CreateLesson() {
               {lessonData.lesson_prereq.length > 0 ? (
                 lessonData.lesson_prereq.map((p) => (
                   <div key={p.lesson_id} className="list-item">
-                    {p.lesson_title}
+                    {p.lesson_id}: {p.lesson_title}
                     <button onClick={() => handleRemovePrereq(p.lesson_id)}>x</button>
                   </div>
                 ))
@@ -235,9 +236,6 @@ function CreateLesson() {
                     {item}
                   </div>
                 ))
-                // <div className="list-item">
-                //     {lesson.lesson_reading_list}
-                //   </div>
               ) : (
                 <p className="no-items">No reading materials yet.</p>
               )}
@@ -286,7 +284,7 @@ function CreateLesson() {
               )
               .map((l) => (
                 <div key={l.lesson_id} className="list-item">
-                  <span>{l.lesson_title}</span>
+                  <span>{l.lesson_id}: {l.lesson_title}</span>
                   <button onClick={() => handleAddPrereq(l)}>+</button>
                 </div>
               ))}

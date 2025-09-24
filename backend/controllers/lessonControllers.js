@@ -62,7 +62,7 @@ export const getLessonsByInstructor = async (req, res) => {
 
 // Add lesson
 export const addLesson = async (req, res) => {
-  const { lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_credit, lesson_designer } = req.body;
+  const { lesson_title, lesson_desc, lesson_obj, lesson_effort_per_week, lesson_credit, lesson_designer, lesson_status, lesson_prereq, lesson_reading_list, lesson_assignment } = req.body;
   try {
     const today = new Date().toISOString().split("T")[0];
     const lessonData = {
@@ -74,7 +74,10 @@ export const addLesson = async (req, res) => {
       lesson_date_updated: today,
       lesson_credit: lesson_credit,
       lesson_designer: lesson_designer,
-      lesson_status: "draft"
+      lesson_status,
+      lesson_prereq,
+      lesson_reading_list,
+      lesson_assignment
     };
     const newLesson = await createLesson(lessonData);
     return res.status(201).json({ success: true, data: newLesson });

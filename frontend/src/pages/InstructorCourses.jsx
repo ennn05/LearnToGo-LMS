@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import { mockCourseAPI } from "../data/mockCourses"; // Mock API for testing if needed
 import "../styles/Courses.css";
+import useStore from "../store";
 
 function InstructorCourses() {
   // Track active sidebar page
   const [activePage, setActivePage] = useState("courses");
 
   // Current logged-in user
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
 
   // Instructor's courses list
   const [courses, setCourses] = useState([]);
@@ -30,7 +31,7 @@ function InstructorCourses() {
       // Example with mock:
       // const data = await mockCourseAPI.getAllCourses();
 
-      const { data: res } = await api.get("courses/instructor");
+      const { data: res } = await api.get("courses");
 
       if (!res.success) {
         console.error("Error fetching courses:", res.message);
@@ -52,13 +53,13 @@ function InstructorCourses() {
    * - Fetch courses
    */
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    console.log("Stored user:", storedUser);
+    // const storedUser = localStorage.getItem("user");
+    // console.log("Stored user:", storedUser);
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      console.log("User set:", user);
-    }
+    // if (storedUser) {
+    //   setUser(JSON.parse(storedUser));
+    //   console.log("User set:", user);
+    // }
 
     fetchCourses();
   }, []);
@@ -93,6 +94,7 @@ function InstructorCourses() {
    */
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
@@ -174,9 +176,9 @@ function InstructorCourses() {
           </div>
           {loading ? (
             <div className="loading">Loading courses...</div>
-          ) : courses.length === 0 ? (
+          ) : filteredCourses.length === 0 ? (
             <div className="no-courses">
-              <p>No courses found. Create your first course!</p>
+              <p>No courses found.</p>
             </div>
           ) : (
             <div className="courses-grid">
@@ -198,6 +200,7 @@ function InstructorCourses() {
                     {/* Card body */}
                     <div className="course-body">
                       <div className="course-title">{course.course_title}</div>
+                      <div className="course-creator">Created by {course.user_fname} {course.user_lname} (InstID{course.course_creator})</div>
                       <div className="course-credits">
                         {course.course_total_credit} credits
                       </div>

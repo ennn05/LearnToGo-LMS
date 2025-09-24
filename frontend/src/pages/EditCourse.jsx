@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/EditCourse.css";
+import useStore from "../store";
+import api from "../libs/apiCalls";
 
 function EditCourse() {
     const { courseId } = useParams();
     const [activePage, setActivePage] = useState("courses");
-    const [user, setUser] = useState(null);
+    const {user, signOut} = useStore((state) => state);
     const [courseData, setCourseData] = useState({
             course_code: "",
             course_title: "",
@@ -22,21 +24,20 @@ function EditCourse() {
     const fetchCourseDetails = async () => {
         try {
             console.log("Fetching course details");
-            const res = await fetch(`http://localhost:5000/api/courses/${courseId}`);
-            if (!res.ok) {
-                console.error("Error fetching courses:", res);
+            const {data: res} = await api.get(`courses/${courseId}`);
+            if (!res.success) {
+                console.error("Error fetching courses:", res.message);
             }
-            const data = await res.json();
 
-            const course = data.data;
+            const course = res.data;
 
             setCourseData({
                 ...course,
                 course_total_credit: course.course_total_credit || 0,
             });
             setAssignedLessons(course.lessons || []);
-            console.log("Course details loaded:", data.data);
-            console.log(data.data.lessons);
+            console.log("Course details loaded:", res.data);
+            console.log(res.data.lessons);
             // setCourseData(data.data);
         } catch (error) {
             console.error("Error fetching course details:", error);
@@ -47,15 +48,16 @@ function EditCourse() {
 
     const fetchLessons = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/lessons");
-            if (!response.ok) {
-                console.error("API error:", response.status, response.statusText);
+            const {data: res} = await api.get("lessons");
+            console.log(res);
+            if (!res.success) {
+                console.error("API error:", res.message);
                 setAvailableLessons([]);
                 return;
             }
-            const data = await response.json();
+            
             setAvailableLessons(
-                data.data.filter(lesson => lesson.lesson_status === "published")
+                res.data.filter(lesson => lesson.lesson_status === "published")
             );
         } catch (error) {
             console.error("Error fetching lessons:", error);
@@ -64,18 +66,18 @@ function EditCourse() {
     };
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            // Mock user
-            setUser({
-                user_fname: "Test",
-                user_lname: "User",
-                user_email: "test@example.com",
-                user_role: "Instructor",
-            });
-        }
+        // const storedUser = localStorage.getItem("user");
+        // if (storedUser) {
+        //     setUser(JSON.parse(storedUser));
+        // } else {
+        //     // Mock user
+        //     setUser({
+        //         user_fname: "Test",
+        //         user_lname: "User",
+        //         user_email: "test@example.com",
+        //         user_role: "Instructor",
+        //     });
+        // }
         fetchCourseDetails();
         fetchLessons();
     }, [courseId]);
@@ -212,6 +214,7 @@ function EditCourse() {
 
     const handleLogout = () => {
         localStorage.removeItem("user");
+        signOut();
         navigate("/");
     };
 
