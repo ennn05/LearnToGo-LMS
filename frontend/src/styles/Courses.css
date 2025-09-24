@@ -137,8 +137,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 95%;
-  /* min-height: calc(100vh - 100px); */
-  height: 85%;
+  min-height: calc(100vh - 100px);
 }
 
 .loading, .no-courses {
@@ -315,8 +314,8 @@ body {
 
 /* Variants */
 .course-top-section.published { background-color: #27ae60; }   
-.course-top-section.archived { background-color: #f39c12; } 
-.course-top-section.draft { background-color: #9ca3af; }    
+.course-top-section.archived { background-color: #9ca3af; } 
+.course-top-section.draft { background-color: #f39c12; }    
 
 .course-body {
   padding: 16px;
@@ -334,4 +333,8 @@ body {
   color: #7f8c8d;
   font-size: 14px;
   font-style: italic;
+}
+.course-creator {
+  color: #7f8c8d;
+  font-size: 14px;
 }

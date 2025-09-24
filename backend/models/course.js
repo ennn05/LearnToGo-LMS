@@ -1,7 +1,9 @@
 import sql from "../db.js";
 
 export const getAllCourses = async () => {
-    const courses = await sql`SELECT * FROM "LMS".course;`;
+    const courses = await sql`SELECT * FROM "LMS".course c
+                            LEFT JOIN "LMS".instructor i ON c.course_creator = i.inst_user_id
+                            LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id;`;
     return courses;
 }
 
