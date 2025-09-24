@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css"; // ✅ use same stylesheet as instructor for consistent design
+import useStore from "../store";
 
 function StudentClassroomDetails() {
   const { classroomCode } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user, signOut } = useStore((state) => state);
   const [classroom, setClassroom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,15 +32,11 @@ function StudentClassroomDetails() {
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
     fetchClassroomDetails();
   }, [classroomCode]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
