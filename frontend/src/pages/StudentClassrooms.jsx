@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Classrooms.css"; // use the same CSS for consistency
+import useStore from "../store";
 
 function StudentClassrooms() {
-  const [user, setUser] = useState(null);
   const [classrooms, setClassrooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user, signOut } = useStore((state) => state);
 
   // Fetch classrooms the student is enrolled in
   const fetchClassrooms = async () => {
@@ -27,16 +28,12 @@ function StudentClassrooms() {
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
     fetchClassrooms();
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
+    signOut();
+    navigate("/login");
   };
 
   const handleClassroomClick = (classroomCode) => {
