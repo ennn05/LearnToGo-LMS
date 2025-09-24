@@ -228,15 +228,15 @@ function InstructorClassroomDetails() {
         {/* Lessons Section */}
         <div className="lessons-section">
           <h3>Lessons</h3>
-          <div className="lessons-container">
+          <div className="course-lessons-container">
             {classroom.lessons?.length === 0 ? (
               <p className="no-lessons">No lessons assigned yet.</p>
             ) : (
-              <div className="lessons-grid">
+              <div className="course-lessons-grid">
                 {classroom.lessons.map((lesson) => (
-                  <div key={lesson.lesson_id} className="lesson-card" onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
-                    <h4 className="lesson-title">{lesson.lesson_title}</h4>
-                    <div className="lesson-credits">
+                  <div key={lesson.lesson_id} className="course-lesson-card" onClick={() => navigate(`/lessons/${lesson.lesson_id}`)}>
+                    <h4 className="course-lesson-title">{lesson.lesson_title}</h4>
+                    <div className="course-lesson-credits">
                       {lesson.lesson_credit ?? 0} credits
                     </div>
                   </div>

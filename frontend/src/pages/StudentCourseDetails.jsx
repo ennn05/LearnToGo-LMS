@@ -180,15 +180,15 @@ function StudentCourseDetails() {
           {/* Lessons Assigned */}
           <div className="lessons-section">
             <h3>Lessons Assigned</h3>
-            <div className="lessons-container">
+            <div className="course-lessons-container">
               {course.lessons?.length === 0 || !course.lessons ? (
                 <p className="no-lessons">No lessons assigned yet.</p>
               ) : (
-                <div className="lessons-grid">
+                <div className="course-lessons-grid">
                   {course.lessons.map((lesson) => (
-                    <div key={lesson.lesson_id} className="lesson-card">
-                      <h4 className="lesson-title">{lesson.lesson_title}</h4>
-                      <div className="lesson-credits">{lesson.lesson_credit ?? 0} credits</div>
+                    <div key={lesson.lesson_id} className="course-lesson-card">
+                      <h4 className="course-lesson-title">{lesson.lesson_title}</h4>
+                      <div className="course-lesson-credits">{lesson.lesson_credit ?? 0} credits</div>
                     </div>
                   ))}
                 </div>

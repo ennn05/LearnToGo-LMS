@@ -330,6 +330,15 @@
   cursor: pointer;
   display: flex;
   justify-content: space-between;
+  display: flex;
+  flex-direction: column;  /* stack children vertically */
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  text-align: left;
+
 }
 
 .course-lesson-card .course-lesson-title {
