@@ -6,8 +6,7 @@ import "../styles/LessonDetails.css"; // Use same stylesheet as LessonDetails
 function EditLesson() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
-
-  const [user, setUser] = useState(null);
+  const {user, signOut} = useStore((state) => state);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -52,19 +51,19 @@ function EditLesson() {
   // Fetch all lessons to pick prereqs from
   const fetchAllLessons = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/lessons");
-      const data = await res.json();
-      setAllLessons(data.data || []);
+      const {data: res} = await api.get("lessons");
+      if (!res.success) {
+        console.error("API error:", res.message);
+        setAllLessons([]);
+        return;
+      }
+      setAllLessons(res.data || []);
     } catch (err) {
       console.error("Error fetching all lessons:", err);
     }
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
     fetchLessonDetails();
     fetchAllLessons();
   }, [lessonId]);
@@ -90,6 +89,7 @@ function EditLesson() {
   // Log the user out and navigate to the login page
   const handleLogout = () => {
     localStorage.removeItem("user");
+    signOut();
     navigate("/");
   };
 
