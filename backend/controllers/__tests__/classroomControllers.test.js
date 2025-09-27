@@ -122,4 +122,20 @@ describe("editClassroom controller", () => {
       message: "Failed to update classroom's students.",
     });
   });
+
+  it("should return 500 if updateClassroom throws error", async () => {
+    crModel.updateClassroom.mockRejectedValue(new Error("DB error"));
+
+    const req = mockReq({ id: "123" }, {});
+    const res = mockRes();
+
+    await editClassroom(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Failed to update classroom.",
+    });
+  });
+
 });
