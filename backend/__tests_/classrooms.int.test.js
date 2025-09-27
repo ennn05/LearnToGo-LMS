@@ -39,3 +39,34 @@ app.use("/classrooms", classroomRoutes);
 afterEach(() => {
   jest.clearAllMocks();
 });
+
+//
+// ------------------- TESTS -------------------
+//
+describe("Integration: PUT /classrooms/:id", () => {
+  const classroomId = "c1";
+  const baseUrl = `/classrooms/${classroomId}`;
+
+  it("✅ allows instructor to edit classroom fully (name + lessons + students)", async () => {
+    const payload = {
+      name: "Updated Name",
+      lessons: [{ id: "l1", title: "Lesson 1" }],
+      students: [{ id: "s1", name: "Student 1" }],
+    };
+
+    updateClassroom.mockResolvedValue({ id: classroomId, name: "Updated Name" });
+    updateClassroomLessons.mockResolvedValue(payload.lessons);
+    updateClassroomStudents.mockResolvedValue(payload.students);
+
+    const res = await request(app)
+      .put(baseUrl)
+      .set("x-role", "instructor")
+      .send(payload);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual({ id: classroomId, name: "Updated Name" });
+    expect(res.body.lessons).toEqual(payload.lessons);
+    expect(res.body.students).toEqual(payload.students);
+  });
+});
