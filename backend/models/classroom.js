@@ -136,7 +136,7 @@ export const updateClassroomLessons = async (classroomCode, lessons) => {
     const classroomLessons = [];
     for (const element in lessons)
     {
-        const addedLesson = await addClassroomLesson(classroomCode, element.crcl_cl_id);
+        const addedLesson = await addClassroomLesson(classroomCode, element.cl_id);
         classroomLessons.push(addedLesson);
     }
 
