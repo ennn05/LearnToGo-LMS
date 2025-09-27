@@ -10,7 +10,8 @@ import {
   editStudentMarksForClassroomLesson,
   getLessonsWithStudentsByClassroom,
   addClassroomStudentLesson,
-  getClassroomsByStudent
+  getClassroomsByStudent,
+  updateClassroomLessons
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -82,7 +83,6 @@ export const removeClassroom = async (req, res) => {
   }
 };
 
-// ✅ Update a classroom
 export const editClassroom = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
@@ -92,7 +92,21 @@ export const editClassroom = async (req, res) => {
     if (!updated) {
       return res.status(404).json({ success: false, message: "Classroom does not exist." });
     }
-    return res.status(200).json({ success: true, data: updated });
+
+    let updatedLessons = [];
+    if (updateData.lessons && Array.isArray(updateData.lessons)) {
+        try {
+          updatedLessons = await updateClassroomLessons(id, updateData.lessons);
+        } catch (error) {
+          console.error("Error updating classroom's lessons:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to update classroom's lessons."
+          });
+        }
+    }
+
+    return res.status(200).json({ success: true, data: updated, lessons: updatedLessons });
   } catch (error) {
     console.error("Error updating classroom:", error);
     return res.status(500).json({ success: false, message: "Failed to update classroom." });
