@@ -138,4 +138,25 @@ describe("editClassroom controller", () => {
     });
   });
 
+  it("should update classroom, lessons, and students successfully", async () => {
+    crModel.updateClassroom.mockResolvedValue({ id: "123", name: "Physics" });
+    crModel.updateClassroomLessons.mockResolvedValue([{ id: "L1" }, { id: "L2" }]);
+    crModel.updateClassroomStudents.mockResolvedValue([{ id: "S1" }, { id: "S2" }]);
+
+    const req = mockReq(
+        { id: "123" },
+        { lessons: ["L1", "L2"], students: ["S1", "S2"], name: "Physics" }
+    );
+    const res = mockRes();
+
+    await editClassroom(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        data: { id: "123", name: "Physics" },
+        lessons: [{ id: "L1" }, { id: "L2" }],
+        students: [{ id: "S1" }, { id: "S2" }],
+    });
+  });
 });
