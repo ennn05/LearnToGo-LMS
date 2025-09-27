@@ -90,4 +90,30 @@ describe("Integration: PUT /classrooms/:id", () => {
     expect(res.body).toEqual({ message: "Unauthorized" });
     expect(updateClassroom).not.toHaveBeenCalled();
   });
+
+  it("💥 returns 404 if classroom does not exist", async () => {
+    updateClassroom.mockResolvedValue(null);
+
+    const res = await request(app)
+      .put(baseUrl)
+      .set("x-role", "instructor")
+      .send({ name: "NotFound" });
+
+    expect(res.status).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/does not exist/i);
+  });
+
+  it("💥 returns 500 if DB update fails", async () => {
+    updateClassroom.mockRejectedValue(new Error("DB crash"));
+
+    const res = await request(app)
+      .put(baseUrl)
+      .set("x-role", "instructor")
+      .send({ name: "Fail" });
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/failed to update classroom/i);
+  });
 });
