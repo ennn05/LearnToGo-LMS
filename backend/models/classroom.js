@@ -211,6 +211,14 @@ export const removeClassroomStudent = async (classroomId, stuCourseId) => {
     return classroomStudent[0];
 };
 
+export const removeClassroomStudents = async (classroomId) => {
+    const removed = await sql`
+        DELETE FROM "LMS".classroom_student 
+        WHERE cr_id = ${classroomId}
+        RETURNING *;
+    `;
+    return removed;
+};
 // Get classrooms enrolled by a specific student
 export const getClassroomsByStudent = async (studentId) => {
   const classrooms = await sql`
