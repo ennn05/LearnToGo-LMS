@@ -219,6 +219,20 @@ export const removeClassroomStudents = async (classroomId) => {
     `;
     return removed;
 };
+
+export const updateClassroomStudents = async (classroomCode, students) => {
+    await removeClassroomStudents(classroomCode)
+
+    const classroomStudents = [];
+    for (const element in students)
+    {
+        const addedStudent = await addClassroomStudent(classroomCode, element.stucourse_id);
+        classroomStudents.push(addedStudent);
+    }
+
+    return classroomStudents;
+}
+
 // Get classrooms enrolled by a specific student
 export const getClassroomsByStudent = async (studentId) => {
   const classrooms = await sql`
