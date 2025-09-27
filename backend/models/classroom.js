@@ -130,6 +130,19 @@ export const updateClassroom = async (classroomData) => {
     return classrooms[0];
 }
 
+export const updateClassroomLessons = async (classroomCode, lessons) => {
+    await removeClassroomLessons(classroomCode)
+
+    const classroomLessons = [];
+    for (const element in lessons)
+    {
+        const addedLesson = await addClassroomLesson(classroomCode, element.crcl_cl_id);
+        classroomLessons.push(addedLesson);
+    }
+
+    return classroomLessons;
+}
+
 export const createClassroom = async (classroomData) => {
     const classroom = await sql`
         INSERT INTO "LMS".classroom
