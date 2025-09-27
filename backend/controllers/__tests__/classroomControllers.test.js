@@ -55,4 +55,37 @@ describe("editClassroom controller", () => {
     });
   });
 
+  it("should update classroom and lessons", async () => {
+    crModel.updateClassroom.mockResolvedValue({ id: "123" });
+    crModel.updateClassroomLessons.mockResolvedValue([{ id: "L1" }]);
+
+    const req = mockReq({ id: "123" }, { lessons: ["L1"] });
+    const res = mockRes();
+
+    await editClassroom(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      data: { id: "123" },
+      lessons: [{ id: "L1" }],
+      students: [],
+    });
+  });
+
+  it("should fail if lessons update throws error", async () => {
+    crModel.updateClassroom.mockResolvedValue({ id: "123" });
+    crModel.updateClassroomLessons.mockRejectedValue(new Error("DB error"));
+
+    const req = mockReq({ id: "123" }, { lessons: ["L1"] });
+    const res = mockRes();
+
+    await editClassroom(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Failed to update classroom's lessons.",
+    });
+  });
 });
