@@ -121,9 +121,7 @@ export const updateClassroom = async (classroomData) => {
                     SET 
                         cr_start_date = ${updateData.cr_start_date},
                         cr_duration = ${updateData.cr_duration},
-                        cr_date_created = ${updateData.cr_date_created},
                         cr_last_updated = ${updateData.cr_last_updated},
-                        cr_creator = ${updateData.cr_creator},
                         supervisor_id = ${updateData.supervisor_id},
                         course_code = ${updateData.course_code},
                         cr_status = ${updateData.cr_status}
