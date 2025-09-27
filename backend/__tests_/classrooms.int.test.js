@@ -69,4 +69,25 @@ describe("Integration: PUT /classrooms/:id", () => {
     expect(res.body.lessons).toEqual(payload.lessons);
     expect(res.body.students).toEqual(payload.students);
   });
+
+  it("🚫 blocks student from editing classroom", async () => {
+    const res = await request(app)
+      .put(baseUrl)
+      .set("x-role", "student")
+      .send({ name: "Hack" });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ message: "Unauthorized" });
+    expect(updateClassroom).not.toHaveBeenCalled();
+  });
+
+  it("🚫 blocks unauthenticated user", async () => {
+    const res = await request(app)
+      .put(baseUrl)
+      .send({ name: "NoAuth" });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ message: "Unauthorized" });
+    expect(updateClassroom).not.toHaveBeenCalled();
+  });
 });
