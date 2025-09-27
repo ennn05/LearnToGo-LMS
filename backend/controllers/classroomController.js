@@ -11,7 +11,8 @@ import {
   getLessonsWithStudentsByClassroom,
   addClassroomStudentLesson,
   getClassroomsByStudent,
-  updateClassroomLessons
+  updateClassroomLessons,
+  updateClassroomStudents
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -106,7 +107,20 @@ export const editClassroom = async (req, res) => {
         }
     }
 
-    return res.status(200).json({ success: true, data: updated, lessons: updatedLessons });
+    let updatedStudents = [];
+    if (updateData.students && Array.isArray(updateData.students)) {
+        try {
+          updatedStudents = await updateClassroomStudents(id, updateData.students);
+        } catch (error) {
+          console.error("Error updating classroom's students:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to update classroom's students."
+          });
+        }
+    }
+
+    return res.status(200).json({ success: true, data: updated, lessons: updatedLessons, students: updatedStudents });
   } catch (error) {
     console.error("Error updating classroom:", error);
     return res.status(500).json({ success: false, message: "Failed to update classroom." });
