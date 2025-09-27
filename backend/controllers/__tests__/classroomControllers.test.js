@@ -37,4 +37,22 @@ describe("editClassroom controller", () => {
       message: "Classroom does not exist.",
     });
   });
+
+  it("should update classroom only (no lessons/students)", async () => {
+    crModel.updateClassroom.mockResolvedValue({ id: "123", name: "Test" });
+
+    const req = mockReq({ id: "123" }, { name: "Test" });
+    const res = mockRes();
+
+    await editClassroom(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      data: { id: "123", name: "Test" },
+      lessons: [],
+      students: [],
+    });
+  });
+
 });
