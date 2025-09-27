@@ -17,3 +17,24 @@ const mockRes = () => {
   res.json = jest.fn().mockReturnValue(res);
   return res;
 };
+
+describe("editClassroom controller", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should return 404 if classroom does not exist", async () => {
+    crModel.updateClassroom.mockResolvedValue(null);
+
+    const req = mockReq({ id: "123" }, {});
+    const res = mockRes();
+
+    await editClassroom(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Classroom does not exist.",
+    });
+  });
+});
