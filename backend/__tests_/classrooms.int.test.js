@@ -30,4 +30,20 @@ afterEach(() => {
 });
 
 describe("Integration: GET /classrooms/available", () => {
+  it("returns available classrooms for student", async () => {
+    getStudentAvailableClassroomsToJoin.mockResolvedValue([
+      { id: "1", name: "Math 101" }
+    ]);
+
+    const res = await request(app)
+      .get("/classrooms/available")
+      .set("x-role", "student");
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual([{ id: "1", name: "Math 101" }]);
+
+    expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledTimes(1);
+    expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith(1);
+  });
 });
