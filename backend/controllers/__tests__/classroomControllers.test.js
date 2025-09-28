@@ -71,4 +71,20 @@ describe("getAvailableClassroomsForStudent controller", () => {
       data: []
     });
   });
+
+  it("should return 500 if service throws an error", async () => {
+    jest
+      .spyOn(crModel, "getStudentAvailableClassroomsToJoin")
+      .mockRejectedValue(new Error("DB error"));
+
+    await getAvailableClassroomsForStudent(req, res);
+
+    expect(crModel.getStudentAvailableClassroomsToJoin).toHaveBeenCalledTimes(1);
+    expect(crModel.getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith("student123");
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Failed to fetch available classrooms for student."
+    });
+  });
 });
