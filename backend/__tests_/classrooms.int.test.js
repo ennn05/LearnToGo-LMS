@@ -57,4 +57,18 @@ describe("Integration: GET /classrooms/available", () => {
 
     expect(getStudentAvailableClassroomsToJoin).not.toHaveBeenCalled();
   });
+
+  it("returns 500 on internal server error", async () => {
+    getStudentAvailableClassroomsToJoin.mockRejectedValue(new Error("DB Error"));
+
+    const res = await request(app)
+      .get("/classrooms/available")
+      .set("x-role", "student");
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("Failed to fetch available classrooms for student.");
+
+    expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith(1);
+  });
 });
