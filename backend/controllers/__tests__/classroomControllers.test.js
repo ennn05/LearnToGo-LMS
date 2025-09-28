@@ -34,4 +34,41 @@ describe("getAvailableClassroomsForStudent controller", () => {
       message: "Unauthorized"
     });
   });
+
+  it("should return 200 with classrooms if service resolves", async () => {
+    const mockClassrooms = [
+      { id: "1", name: "Math 101" },
+      { id: "2", name: "Science 201" }
+    ];
+
+    jest
+      .spyOn(crModel, "getStudentAvailableClassroomsToJoin")
+      .mockResolvedValue(mockClassrooms);
+
+    await getAvailableClassroomsForStudent(req, res);
+
+    expect(crModel.getStudentAvailableClassroomsToJoin).toHaveBeenCalledTimes(1);
+    expect(crModel.getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith("student123");
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      data: mockClassrooms
+    });
+  });
+
+  it("should return 200 with empty array if no classrooms available", async () => {
+    jest
+      .spyOn(crModel, "getStudentAvailableClassroomsToJoin")
+      .mockResolvedValue([]);
+
+    await getAvailableClassroomsForStudent(req, res);
+
+    expect(crModel.getStudentAvailableClassroomsToJoin).toHaveBeenCalledTimes(1);
+    expect(crModel.getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith("student123");
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      success: true,
+      data: []
+    });
+  });
 });
