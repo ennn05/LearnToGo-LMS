@@ -226,12 +226,16 @@ export const getClassroomLessonsWithStudents = async (req, res) => {
 export const getAvailableClassroomsForStudent = async (req, res) => {
   const {id} = req.user;
 
+  if (!id) {
+    return res.status(403).json({ success: false, message: "Unauthorized" });
+  }
+
   try {
     const classrooms = await getStudentAvailableClassroomsToJoin(id);
 
     return res.status(200).json({ success: true, data: classrooms });
   } catch (error) {
-    console.error("Error fetching classroom lessons with students:", error);
+    console.error("Error fetching available classrooms for student:", error);
     return res.status(500).json({ success: false, message: "Failed to fetch available classrooms for student." });
   }
 };
