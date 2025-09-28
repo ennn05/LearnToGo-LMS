@@ -20,4 +20,18 @@ describe("getAvailableClassroomsForStudent controller", () => {
     jest.clearAllMocks();
   });
 
+  it("should return 403 if no user id is provided", async () => {
+    req = { user: {} };
+
+    jest.spyOn(crModel, "getStudentAvailableClassroomsToJoin");
+
+    await getAvailableClassroomsForStudent(req, res);
+
+    expect(crModel.getStudentAvailableClassroomsToJoin).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Unauthorized"
+    });
+  });
 });
