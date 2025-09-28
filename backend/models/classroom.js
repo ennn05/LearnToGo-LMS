@@ -305,3 +305,8 @@ export const addClassroomStudentLesson = async (cs_id, crcl_id) => {
   return result[0];
 };
 
+// To be implemented
+export const getStudentAvailableClassroomsToJoin = async (studentId) => {
+    const classrooms = [];
+    return classrooms;
+}
