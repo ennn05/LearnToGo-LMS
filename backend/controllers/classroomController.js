@@ -10,7 +10,8 @@ import {
   editStudentMarksForClassroomLesson,
   getLessonsWithStudentsByClassroom,
   addClassroomStudentLesson,
-  getClassroomsByStudent
+  getClassroomsByStudent,
+  getStudentAvailableClassroomsToJoin
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -219,5 +220,18 @@ export const getClassroomLessonsWithStudents = async (req, res) => {
   } catch (error) {
     console.error("Error fetching classroom lessons with students:", error);
     return res.status(500).json({ success: false, message: "Failed to fetch classroom lessons." });
+  }
+};
+
+export const getAvailableClassroomsForStudent = async (req, res) => {
+  const {id} = req.user;
+
+  try {
+    const classrooms = await getStudentAvailableClassroomsToJoin(id);
+
+    return res.status(200).json({ success: true, data: classrooms });
+  } catch (error) {
+    console.error("Error fetching classroom lessons with students:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch available classrooms for student." });
   }
 };
