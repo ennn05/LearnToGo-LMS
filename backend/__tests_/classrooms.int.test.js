@@ -46,4 +46,15 @@ describe("Integration: GET /classrooms/available", () => {
     expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledTimes(1);
     expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith(1);
   });
+
+  it("blocks non-students", async () => {
+    const res = await request(app)
+      .get("/classrooms/available")
+      .set("x-role", "instructor");
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ message: "Unauthorized" });
+
+    expect(getStudentAvailableClassroomsToJoin).not.toHaveBeenCalled();
+  });
 });
