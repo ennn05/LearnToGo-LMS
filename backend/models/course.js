@@ -177,3 +177,12 @@ export const getAllStudentsByCourseEnrolled = async (courseCode=undefined) => {
         `;
     return studentsByCourse;
 };
+
+export const removeCourseEnrollment = async (studentId, courseCode) => {
+    const result = await sql`
+        DELETE FROM "LMS".student_course 
+        WHERE stu_user_id = ${studentId} AND course_code = ${courseCode}
+        RETURNING *;
+    `;
+    return result[0]; // returns deleted row if successful, undefined if nothing deleted
+};
