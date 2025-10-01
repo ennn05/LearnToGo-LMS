@@ -239,3 +239,32 @@ export const getAvailableClassroomsForStudent = async (req, res) => {
     return res.status(500).json({ success: false, message: "Failed to fetch available classrooms for student." });
   }
 };
+
+export const joinClassroom = async (req, res) => {
+  const { cr_id } = req.params;  // classroom ID
+  const studentId = req?.user?.id;
+
+  if (!studentId) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    // Check if already joined
+    const classrooms = await getClassroomsByStudent(studentId);
+    const already = classrooms.find(c => c.cr_id === cr_id);
+    if (already) {
+      return res.status(400).json({ success: false, message: "Already joined this classroom." });
+    }
+
+    // Add student to classroom
+    const result = await addClassroomStudent(cr_id, studentId);
+    if (!result) {
+      return res.status(500).json({ success: false, message: "Failed to join classroom." });
+    }
+
+    return res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    console.error("Error joining classroom:", error);
+    return res.status(500).json({ success: false, message: "Error while joining classroom." });
+  }
+};

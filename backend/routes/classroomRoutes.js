@@ -10,7 +10,7 @@ import {
   updateStudentMarksForClassroomLesson,
   getClassroomLessonsWithStudents,
   getStudentClassrooms,
-  getAvailableClassroomsForStudent
+  joinClassroom
 } from "../controllers/classroomController.js";
 
 const router = express.Router();
@@ -28,7 +28,9 @@ router.get("/", authenticate, (req, res) => {
     }    
 });
 
-router.get("/available", authenticate, authorize("student"), getAvailableClassroomsForStudent);
+router.get("/student/available", authenticate, getAvailableClassroomsForStudent);
+router.post("/:cr_id/join", authenticate, joinClassroom);
+
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);
 router.delete("/:id", authenticate, authorize("instructor"), removeClassroom);
