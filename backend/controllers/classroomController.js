@@ -14,7 +14,7 @@ import {
   getStudentAvailableClassroomsToJoin
 } from "../models/classroom.js";
 
-// ✅ Get all classrooms
+// Get all classrooms
 export const getClassrooms = async (req, res) => {
   try {
     const classrooms = await getAllClassrooms();
@@ -25,7 +25,7 @@ export const getClassrooms = async (req, res) => {
   }
 };
 
-// ✅ Get instructor's classrooms
+// Get instructor's classrooms
 export const getInstructorClassrooms = async (req, res) => {
   const instructorId = req?.user?.id;
   if (!instructorId) return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -52,7 +52,7 @@ export const getStudentClassrooms = async (req, res) => {
   }
 };
 
-// ✅ Get a classroom by code
+// Get a classroom by code
 export const getClassroom = async (req, res) => {
   const { classroomCode } = req.params;
   try {
@@ -83,7 +83,7 @@ export const removeClassroom = async (req, res) => {
   }
 };
 
-// ✅ Update a classroom
+// Update a classroom
 export const editClassroom = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
