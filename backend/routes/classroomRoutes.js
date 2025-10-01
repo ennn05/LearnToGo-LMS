@@ -10,6 +10,7 @@ import {
   updateStudentMarksForClassroomLesson,
   getClassroomLessonsWithStudents,
   getStudentClassrooms,
+  getAvailableClassroomsForStudent,
   joinClassroom
 } from "../controllers/classroomController.js";
 
