@@ -232,7 +232,7 @@ export const getClassroomsByStudent = async (studentId) => {
   return classrooms;
 };
 
-//
+//Get all published classrooms that's courses are enrolled by student
 export const getAvailableClassroomsForStudent = async (studentID) => {
     const classrooms = `SELECT 
         cr.*,
