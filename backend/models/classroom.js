@@ -232,6 +232,38 @@ export const getClassroomsByStudent = async (studentId) => {
   return classrooms;
 };
 
+//
+export const getAvailableClassroomsForStudent = async (studentID) => {
+    const classrooms = `SELECT 
+        cr.*,
+        c.*,
+        usv.user_fname AS supervisor_fname,
+        usv.user_lname AS supervisor_lname,
+        uc.user_fname AS creator_fname,
+        uc.user_lname AS creator_lname
+    FROM "LMS".student_course sc
+    JOIN "LMS".classroom cr 
+        ON sc.course_code = cr.course_code
+    LEFT JOIN "LMS".classroom_student cs 
+        ON cr.cr_id = cs.cr_id AND cs.stucourse_id = sc.stucourse_id
+    LEFT JOIN "LMS".course c 
+        ON cr.course_code = c.course_code
+    LEFT JOIN "LMS".instructor isv 
+        ON cr.supervisor_id = isv.inst_user_id
+    LEFT JOIN "LMS".user usv 
+        ON isv.inst_user_id = usv.user_id
+    LEFT JOIN "LMS".instructor ic 
+        ON cr.cr_creator = ic.inst_user_id
+    LEFT JOIN "LMS".user uc 
+        ON ic.inst_user_id = uc.user_id
+    WHERE sc.stu_user_id = ${studentId}
+    --Check that status is published
+    AND cr.cr_status = 'published'
+    --Check that student has not been enrolled into the classroom before
+    AND cs.cr_id IS NULL;`
+    return classrooms
+}
+
 // temp draft sql - update in cl_stu_lesson table
 export const editStudentMarksForClassroomLesson = async (cr_id, crcl_cl_id, student) => {
     const { stucourse_id, attendance, completion, grade } = student;
@@ -304,4 +336,3 @@ export const addClassroomStudentLesson = async (cs_id, crcl_id) => {
   `;
   return result[0];
 };
-
