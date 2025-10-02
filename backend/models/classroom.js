@@ -234,7 +234,7 @@ export const getClassroomsByStudent = async (studentId) => {
 
 //Get all published classrooms that's courses are enrolled by student
 export const getAvailableClassroomsForStudent = async (studentID) => {
-    const classrooms = `SELECT 
+    const classrooms = await sql `SELECT 
         cr.*,
         c.*,
         usv.user_fname AS supervisor_fname,
