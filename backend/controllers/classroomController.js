@@ -89,7 +89,7 @@ export const editClassroom = async (req, res) => {
   const updateData = req.body;
 
   try {
-    const updated = await updateClassroom( id, updateData );
+    const updated = await updateClassroom( {id, updateData} );
     if (!updated) {
       return res.status(404).json({ success: false, message: "Classroom does not exist." });
     }
