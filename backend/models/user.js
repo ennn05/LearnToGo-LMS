@@ -8,3 +8,12 @@ export const getAllInstructors = async () => {
     `;
     return instructors;
 };
+
+//TODO: Need to check for admin? or is it done in frontend
+export const deleteInstructorbyAdmin = async (instructorID) => {
+    const instructor = await sql `
+    DELETE FROM "LMS".user 
+    WHERE user_id = ${instructorID} 
+    RETURNING *;
+    `
+}
