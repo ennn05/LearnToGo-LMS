@@ -17,6 +17,9 @@ function StudentCourseDetails() {
   const [enrolled, setEnrolled] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [unenrolling, setUnenrolling] = useState(false);
+  const [unEnrollSuccess, setUnEnrollSuccess] = useState(false);
+
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -49,6 +52,25 @@ function StudentCourseDetails() {
       setError("Failed to enroll. Try again later.");
     } finally {
       setEnrolling(false);
+    }
+  };
+  
+  const handleUnenroll = async () => {
+    setUnenrolling(true);
+    setUnEnrollSuccess(false);
+    try {
+      const { data: res } = await api.delete(`courses/${courseId}/enroll`);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to unenroll");
+      }
+      setEnrolled(false);
+      setUnEnrollSuccess(true);
+      console.log("Unenrolled successfully:", res.message || res);
+    } catch (error) {
+      console.error("Error during unenrollment:", error);
+      alert("Failed to unenroll. Please try again.");
+    } finally {
+      setUnenrolling(false);
     }
   };
 
@@ -136,7 +158,8 @@ function StudentCourseDetails() {
         </div>
         
         <div className="course-details-container">
-            {success && <span style={{ display: "block", color: "#27ae60", textAlign: "center", padding: "0 12px" }}>Enrolled successfully!</span>}
+          {success && <span style={{ display: "block", color: "#27ae60", textAlign: "center", padding: "0 12px" }}>Enrolled successfully!</span>}
+          {unEnrollSuccess && <span style={{ display: "block", color: "#e74c3c", textAlign: "center", padding: "0 12px"}}>Unenrolled successfully!</span>}
           {/* Enroll Button */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
               {!fromMyCourses && (
@@ -155,8 +178,30 @@ function StudentCourseDetails() {
                   </button>
                 )
               )}
-            </div>
-
+              {!fromMyCourses && (
+              <>
+                {enrolled ? (
+                  <button
+                    style={{ width: "fit-content", backgroundColor: "#e74c3c" }}
+                    className="btn-edit"
+                    onClick={handleUnenroll}
+                    disabled={unenrolling}
+                  >
+                    {unenrolling ? "Unenrolling..." : "Unenroll"}
+                  </button>
+                ) : (
+                  <button
+                    style={{ width: "fit-content" }}
+                    className="btn-edit"
+                    onClick={handleEnroll}
+                    disabled={enrolling}
+                  >
+                    {enrolling ? "Enrolling..." : "Enroll"}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
           {/* Course Information */}
           <div className="course-info">
             <div className="info-item">
