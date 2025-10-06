@@ -3,23 +3,34 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Classrooms.css"; // use the same CSS for consistency
 import useStore from "../store";
+import e from "express";
 
 function StudentClassrooms() {
   const [classrooms, setClassrooms] = useState([]);
+  const [activeTab, setActiveTab] = useState("my"); // 'my' or 'available'
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user, signOut } = useStore((state) => state);
 
   // Fetch classrooms the student is enrolled in
   const fetchClassrooms = async () => {
+    setLoading(true);
     try {
-      const { data: res } = await api.get("classrooms");
+      let res;
+      if (activeTab === "my") {
+        ({ data: res } = await api.get("classrooms"));
+      } else {
+        ({ data: res } = await api.get("classrooms/student/available"));
+      }
       if (res.success) {
-        const publishedClassrooms = res.data.filter((cr) => cr.cr_status?.toLowerCase() === "published");
-        setClassrooms(publishedClassrooms);
+        const filteredClassrooms = activeTab === "my"
+          ? res.data.filter((cr) => cr.cr_status?.toLowerCase() === "published")
+          : res.data;
+        setClassrooms(filteredClassrooms);
       } else {
         setClassrooms([]);
       }
+
     } catch (error) {
       console.error("Error fetching classrooms:", error);
       setClassrooms([]);
@@ -30,7 +41,7 @@ function StudentClassrooms() {
 
   useEffect(() => {
     fetchClassrooms();
-  }, []);
+  }, [activeTab]);
 
   const handleLogout = () => {
     signOut();
@@ -38,7 +49,8 @@ function StudentClassrooms() {
   };
 
   const handleClassroomClick = (classroomCode) => {
-    navigate(`/classrooms/${classroomCode}`);
+    navigate(`/classrooms/${classroomCode}`, { state: { from: activeTab },
+     });
   };
 
   return (
