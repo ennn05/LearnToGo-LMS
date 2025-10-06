@@ -1,0 +1,113 @@
+/* Container */
+.instructors-container {
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  overflow-x: auto;
+}
+
+/* Topbar */
+.topbar h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Search */
+.search-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.search-container input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-container input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0,123,255,0.4);
+}
+
+/* Table */
+.instructors-container table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.instructors-container th, 
+.instructors-container td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.instructors-container th {
+  background-color: #f4f6f9;
+  font-weight: 600;
+  color: #444;
+}
+
+.instructors-container tr:hover {
+  background-color: #f9f9f9;
+}
+
+.instructors-container .action {
+  text-align: center;
+}
+
+/* Buttons */
+.instructors-container button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.instructors-container button:hover {
+  opacity: 0.9;
+}
+
+.instructors-container button {
+  background-color: #e74c3c;
+  color: white;
+}
+
+/* Feedback messages */
+.feedback {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.feedback.success {
+  background-color: #e6f8ec;
+  color: #2e7d32;
+  border: 1px solid #b3e6c5;
+}
+
+.feedback.error {
+  background-color: #fdecea;
+  color: #b71c1c;
+  border: 1px solid #f5c6cb;
+}
+
+/* Loading / Empty states */
+.loading,
+.no-instructors {
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+}
