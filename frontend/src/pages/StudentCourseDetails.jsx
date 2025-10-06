@@ -27,7 +27,7 @@ function StudentCourseDetails() {
       try {
         const { data: response } = await api.get(`courses/${courseId}`);
         setCourse(response.data);
-        setEnrolled(!!response.data?.enrolled);
+        setEnrolled(fromMyCourses);
       } catch (err) {
         setError("Course not found");
       } finally {
@@ -35,7 +35,7 @@ function StudentCourseDetails() {
       }
     };
     fetchCourseDetails();
-  }, [courseId]);
+  }, [courseId, fromMyCourses]);
 
   const handleEnroll = async () => {
     setEnrolling(true);
@@ -165,29 +165,34 @@ function StudentCourseDetails() {
           {unEnrollSuccess && <span style={{ display: "block", color: "#e74c3c", textAlign: "center", padding: "0 12px"}}>Unenrolled successfully!</span>}
           {/* Enroll Button */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
-              {!fromMyCourses && (
-              <>
-                {enrolled ? (
-                  <button
-                    style={{ width: "fit-content", backgroundColor: "#e74c3c" }}
-                    className="btn-edit"
-                    onClick={handleUnenroll}
-                    disabled={unenrolling}
-                  >
-                    {unenrolling ? "Unenrolling..." : "Unenroll"}
-                  </button>
-                ) : (
-                  <button
-                    style={{ width: "fit-content" }}
-                    className="btn-edit"
-                    onClick={handleEnroll}
-                    disabled={enrolling}
-                  >
-                    {enrolling ? "Enrolling..." : "Enroll"}
-                  </button>
-                )}
-              </>
-            )}
+              {fromMyCourses ? (
+                <button
+                  style={{
+                    width: "fit-content",
+                    backgroundColor: "#e74c3c",
+                    opacity: unenrolling || !enrolled ? 0.6 : 1,
+                    cursor: unenrolling || !enrolled ? "not-allowed" : "pointer",
+                  }}
+                  className="btn-edit"
+                  onClick={handleUnenroll}
+                  disabled={unenrolling || !enrolled}
+                >
+                  {unenrolling ? "Un-enrolling..." : "Un-enroll"}
+                </button>
+              ) : (
+                <button
+                  style={{
+                    width: "fit-content",
+                    opacity: enrolling || enrolled ? 0.6 : 1,
+                    cursor: enrolling || enrolled ? "not-allowed" : "pointer",
+                  }}
+                  className="btn-edit"
+                  onClick={handleEnroll}
+                  disabled={enrolling || enrolled}
+                >
+                  {enrolling ? "Enrolling..." : "Enroll"}
+                </button>
+              )}
           </div>
           {/* Course Information */}
           <div className="course-info">
