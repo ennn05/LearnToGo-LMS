@@ -12,6 +12,7 @@ export const getAllInstructors = async () => {
 export const getAllInstructorsbyAdmin = async () => {
     const instructors = await sql`
         SELECT 
+        user_id,
         user_fname,
         user_lname,
         user_email
