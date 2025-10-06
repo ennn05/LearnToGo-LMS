@@ -56,9 +56,11 @@ function StudentCourseDetails() {
   };
   
   const handleUnenroll = async () => {
-    setUnenrolling(true);
-    setUnEnrollSuccess(false);
+    const confirmUnenroll = window.confirm("Are you sure you want to unenroll from this course?");
+    if (!confirmUnenroll) return;
     try {
+      setUnenrolling(true);
+      setUnEnrollSuccess(false);
       const { data: res } = await api.delete(`courses/${courseId}/enroll`);
       if (!res.success) {
         throw new Error(res.message || "Failed to unenroll");
@@ -71,6 +73,7 @@ function StudentCourseDetails() {
       alert("Failed to unenroll. Please try again.");
     } finally {
       setUnenrolling(false);
+      setTimeout(() => setUnEnrollSuccess(false), 3000);
     }
   };
 
@@ -162,22 +165,6 @@ function StudentCourseDetails() {
           {unEnrollSuccess && <span style={{ display: "block", color: "#e74c3c", textAlign: "center", padding: "0 12px"}}>Unenrolled successfully!</span>}
           {/* Enroll Button */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
-              {!fromMyCourses && (
-                enrolled ? (
-                  <button style={{ width: "fit-content" }} className="btn-edit" disabled>
-                    Enrolled
-                  </button>
-                ) : (
-                  <button
-                    style={{ width: "fit-content" }}
-                    className="btn-edit"
-                    onClick={handleEnroll}
-                    disabled={enrolling}
-                  >
-                    {enrolling ? "Enrolling..." : "Enroll"}
-                  </button>
-                )
-              )}
               {!fromMyCourses && (
               <>
                 {enrolled ? (
