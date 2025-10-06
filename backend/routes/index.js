@@ -7,6 +7,7 @@ import classroomsRoutes from './classroomRoutes.js';
 import userRoutes from './userRoutes.js';
 import authenticate from '../middleware/authMiddleware.js';
 import { use } from 'react';
+import instructorsRoutes from "./instructorsRoutes.js";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use('/courses', coursesRoutes);
 router.use('/students', studentsRoutes);
 router.use('/classrooms', classroomsRoutes);
 router.use('/users', userRoutes);
+router.use("/instructors", instructorsRoutes);
 
 export default router;

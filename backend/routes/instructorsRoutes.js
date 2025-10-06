@@ -3,7 +3,10 @@ import { getInstructors, removeInstructor } from "../controllers/instructorContr
 
 const router = express.Router();
 
+// GET all instructors
 router.get("/", getInstructors);
+
+// DELETE instructor by ID
 router.delete("/:id", removeInstructor);
 
 export default router;

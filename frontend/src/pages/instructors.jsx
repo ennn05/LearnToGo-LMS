@@ -163,16 +163,16 @@ const Instructors = () => {
             Students
           </button>
           <button
-            className={activePage === "instructors" ? "active" : ""}
-            onClick={() => navigate("/instructors")}
-          >
-            Instructors
-          </button>
-          <button
             className={activePage === "reports" ? "active" : ""}
             onClick={() => navigate("/reports")}
           >
             Reports & Statistics
+          </button>
+            <button
+            className={activePage === "instructors" ? "active" : ""}
+            onClick={() => navigate("/instructors")}
+          >
+            Instructors
           </button>
           <button className="logout-btn" onClick={handleLogout}>
             Log Out
