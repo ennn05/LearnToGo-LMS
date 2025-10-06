@@ -178,8 +178,8 @@ function ClassroomGrade() {
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Attendance</th>
-                                    <th>Completion</th>
                                     <th>Grade</th>
+                                    <th>Completion</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -195,18 +195,10 @@ function ClassroomGrade() {
                                                     const updated = [...lessons];
                                                     const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
                                                     updated[lessonIdx].students[idx].attendance = e.target.checked;
-                                                    setLessons(updated);
-                                                }}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                type="checkbox"
-                                                checked={stu.completion || false}
-                                                onChange={e => {
-                                                    const updated = [...lessons];
-                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                    updated[lessonIdx].students[idx].completion = e.target.checked;
+                                                    if (!e.target.checked) {
+                                                        updated[lessonIdx].students[idx].grade = 0;
+                                                        updated[lessonIdx].students[idx].completion = false;
+                                                    }
                                                     setLessons(updated);
                                                 }}
                                             />
@@ -214,15 +206,24 @@ function ClassroomGrade() {
                                         <td>
                                             <input
                                                 type="number"
-                                                value={stu.grade || ""}
-                                                placeholder="e.g. 80%"
+                                                step="1"
+                                                min="0"
+                                                max="100"
+                                                value={stu.grade ?? 0}
+                                                disabled={!stu.attendance}
+                                                className={`grade-input ${!stu.attendance ? "disabled" : ""} ${stu.grade < 0 || stu.grade > 100 ? "invalid" : ""}`}
                                                 onChange={e => {
+                                                    const value = parseFloat(e.target.value) || 0;
                                                     const updated = [...lessons];
                                                     const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                    updated[lessonIdx].students[idx].grade = e.target.value;
+                                                    updated[lessonIdx].students[idx].grade = isNaN(value) ? "" : value;
+                                                    updated[lessonIdx].students[idx].completion = value >= 50;
                                                     setLessons(updated);
                                                 }}
                                             />
+                                        </td>
+                                        <td>
+                                            <span>{stu.completion ? "Pass" : "Fail"}</span>
                                         </td>
                                     </tr>
                                 ))}
@@ -231,12 +232,21 @@ function ClassroomGrade() {
                         <button
                             className="save-btn"
                             onClick={async () => {
+                                const invalidStudents = lessons.flatMap(lesson =>
+                                    lesson.students.filter(stu =>
+                                        stu.grade === "" || stu.grade < 0 || stu.grade > 100
+                                    )
+                                );
+                                if (invalidStudents.length > 0) {
+                                    alert("Please ensure all grades are between 0 and 100 before saving.");
+                                    return;
+                                }
                                 try {
                                     const studentData = lesson.students.map(stu => ({
                                         stucourse_id: stu.stucourse_id,
                                         attendance: stu.attendance || false,
                                         grade: stu.grade || 0,
-                                        completion: stu.completion || false,
+                                        completion: typeof stu.completion === "boolean" ? stu.completion : stu.grade >= 50,
                                     }));
                                     await api.put(`classrooms/${classroomCode}/lessons/${lesson.crcl_cl_id}/students`, studentData);
                                     alert("Grades updated successfully!");

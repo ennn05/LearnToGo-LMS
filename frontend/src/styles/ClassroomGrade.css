@@ -191,3 +191,43 @@
 .empty button:hover {
   background-color: #2980b9;
 }
+
+.grade-input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.grade-input:focus {
+  border-color: #2980b9;
+  box-shadow: 0 0 4px rgba(41, 128, 185, 0.4);
+}
+
+.grade-input.disabled,
+.grade-input:disabled {
+  background-color: #f0f0f0;
+  border-color: #ddd;
+  color: #888;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.grade-input.disabled:hover,
+.grade-input:disabled:hover {
+  background-color: #e8e8e8;
+  border-color: #ccc;
+}
+
+.grade-input.invalid {
+  border-color: #e74c3c;
+  background-color: #fdecea;
+  color: #c0392b;
+}
+
+.grade-input.invalid:focus {
+  box-shadow: 0 0 4px rgba(231, 76, 60, 0.4);
+}
