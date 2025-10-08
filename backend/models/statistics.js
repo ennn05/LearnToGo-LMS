@@ -22,3 +22,22 @@ export const countTotalNumCoursesByInstructor = async (instructorId) => {
     return courses;
 }
 
+export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
+    const result = await sql`
+    SELECT 
+        AVG(lesson_count) AS avg_lessons_per_course
+    FROM (
+        SELECT 
+        c.course_code,
+        COUNT(l.lesson_id) AS lesson_count
+        FROM "LMS".course_lesson cl
+        JOIN "LMS".course c 
+        ON cl.cl_course_code = c.course_code
+        JOIN "LMS".lesson l 
+        ON cl.lesson_id = l.lesson_id
+        WHERE c.course_creator = ${instructorId}
+        GROUP BY c.course_code
+    ) AS per_course;
+    `;
+    return result
+}
