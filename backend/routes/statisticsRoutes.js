@@ -20,7 +20,7 @@ router.get("/courses/average-lessons", authenticate, authorize("admin", "instruc
                 case "instructor":
                     // return 
                 case "admin":
-                    // return 
+                    return getAvgLessonsPerCourse(req, res);
                 default:
                     return res.status(403).json({ message: "Unauthorized" });
             }
