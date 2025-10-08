@@ -1,9 +1,10 @@
 import sql from "../db.js";
 
+
 export const countTotalNumCourses = async () => {
-    const count = 0; // dummy values for now
+    const courses = await sql`SELECT COUNT(*) FROM "LMS".course;`;
+    return courses;
 }
 
-export const countTotalNumCoursesByInstructor = async (instId) => {
-    const count = 0; // dummy values for now
-}
+
+
