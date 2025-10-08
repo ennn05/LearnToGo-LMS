@@ -15,4 +15,15 @@ router.get("/courses/total", authenticate, authorize("admin", "instructor"), (re
             }
         });
 
+router.get("/courses/average-lessons", authenticate, authorize("admin", "instructor"), (req, res) => {
+            switch (req?.user?.role) {
+                case "instructor":
+                    // return 
+                case "admin":
+                    // return 
+                default:
+                    return res.status(403).json({ message: "Unauthorized" });
+            }
+        });
+
 export default router;
