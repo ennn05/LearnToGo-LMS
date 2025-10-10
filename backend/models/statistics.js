@@ -52,6 +52,7 @@ export const numCourseBreakdownByStatus = async () => {
                         {course_status: 'published', count: 0}, 
                         {course_status: 'archived', count: 0} 
                     ]; 
+    return breakdown;                    
 }
 
 export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
@@ -60,4 +61,6 @@ export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
                         {course_status: 'published', count: 0}, 
                         {course_status: 'archived', count: 0} 
                     ]; 
+
+    return breakdown;                    
 }
