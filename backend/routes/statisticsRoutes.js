@@ -1,6 +1,6 @@
 import express from "express";
-import {authenticate, authorize} from "../middleware/authMiddleware";
-import { getAvgLessonsPerCourseOfInstructor, getTotalNumCourses, getTotalNumCoursesOfInstructor } from "../controllers/statisticsControllers";
+import {authenticate, authorize} from "../middleware/authMiddleware.js";
+import { getAvgLessonsPerCourseOfInstructor, getTotalNumCourses, getTotalNumCoursesOfInstructor } from "../controllers/statisticsControllers.js";
 
 const router = express.Router();
 

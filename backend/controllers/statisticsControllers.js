@@ -1,4 +1,4 @@
-import { avgNumLessonsPerCourse, avgNumLessonsPerCourseByInstructor, countTotalNumCourses, countTotalNumCoursesByInstructor } from "../models/statistics";
+import { avgNumLessonsPerCourse, avgNumLessonsPerCourseByInstructor, countTotalNumCourses, countTotalNumCoursesByInstructor } from "../models/statistics.js";
 
 export const getTotalNumCourses = async (req, res) => {
     try {
