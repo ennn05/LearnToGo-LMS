@@ -45,3 +45,19 @@ export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
     `;
     return result
 }
+
+export const numCourseBreakdownByStatus = async () => {
+    // dummy values for now
+    const breakdown = [ {course_status: 'draft', count: 0}, 
+                        {course_status: 'published', count: 0}, 
+                        {course_status: 'archived', count: 0} 
+                    ]; 
+}
+
+export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
+    // dummy values for now
+    const breakdown = [ {course_status: 'draft', count: 0}, 
+                        {course_status: 'published', count: 0}, 
+                        {course_status: 'archived', count: 0} 
+                    ]; 
+}
