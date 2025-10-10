@@ -26,17 +26,6 @@ router.get("/courses/average-lessons", authenticate, authorize("admin", "instruc
             }
         });
 
-        router.get("/courses/average-lessons", authenticate, authorize("admin", "instructor"), (req, res) => {
-            switch (req?.user?.role) {
-                case "instructor":
-                    return getAvgLessonsPerCourseOfInstructor(req, res);
-                case "admin":
-                    return getAvgLessonsPerCourse(req, res);
-                default:
-                    return res.status(403).json({ message: "Unauthorized" });
-            }
-        });
-
 router.get("/courses/status-breakdown", authenticate, authorize("admin", "instructor"), (req, res) => {
             switch (req?.user?.role) {
                 case "instructor":
