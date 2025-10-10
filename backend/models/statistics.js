@@ -40,12 +40,12 @@ export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
         JOIN "LMS".course c 
         ON cl.cl_course_code = c.course_code
         JOIN "LMS".lesson l 
-        ON cl.lesson_id = l.lesson_id
+        ON cl.cl_lesson_id = l.lesson_id
         WHERE c.course_creator = ${instructorId}
         GROUP BY c.course_code
     ) AS per_course;
     `;
-    return result
+    return result[0];
 }
 
 export const numCourseBreakdownByStatus = async () => {
