@@ -24,6 +24,8 @@ export const countTotalNumCoursesByInstructor = async (instructorId) => {
 
 export const avgNumLessonsPerCourse = async () => {
     const avg = 0; // dummy values for now
+
+    return avg;
 }
 
 export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
