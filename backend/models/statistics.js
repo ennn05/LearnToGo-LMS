@@ -98,6 +98,11 @@ export const avgCreditPointsPerLesson = async () => {
 }
 
 //total num of classrooms created
+export const totalNumOfClassrooms = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".classroom`;
+  return total
+}
 
 //num of classrooms completed
 
