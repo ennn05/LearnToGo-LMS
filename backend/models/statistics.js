@@ -157,3 +157,23 @@ export const avgNumOfStuPerClassroomByInstructor = async (instructorId) => {
     ) AS classroom_counts;`;
   return total
 }
+
+//total num of instructors
+export const totalNumOfInstructors = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".instructor`;
+  return total
+}
+
+//total num of students
+export const totalNumOfStudents = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".student`;
+  return total
+}
+
+//total num of students not enrolled (not enrolled into course or cr?)
+
+//total num of students that are in an ongoing classroom
+
+//total num of students who completed everything(?)
