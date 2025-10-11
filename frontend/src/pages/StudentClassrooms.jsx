@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Classrooms.css"; // use the same CSS for consistency
 import useStore from "../store";
-import e from "express";
 
 function StudentClassrooms() {
   const [classrooms, setClassrooms] = useState([]);
