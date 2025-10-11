@@ -144,3 +144,16 @@ export const numClassroomNotStartedByInstructor = async (instructorId) => {
 }
 
 //avg num of stu per classroom
+export const avgNumOfStuPerClassroomByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT 
+        AVG(student_count) AS avg_students_per_classroom
+    FROM (
+        SELECT 
+            cs.cr_id,
+            COUNT(sc.stu_user_id) AS student_count
+        FROM "LMS".classroom_student cs join "LMS".student_course sc on cs.stucourse_id = sc.stucourse_id
+        GROUP BY cs.cr_id
+    ) AS classroom_counts;`;
+  return total
+}
