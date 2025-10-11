@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-import "../styles/Classrooms.css"; // use the same CSS for consistency
+import "../styles/Classrooms.css";
+import "../styles/students.css"; // Import student styles for consistent tab design
 import useStore from "../store";
 
 function StudentClassrooms() {
   const [classrooms, setClassrooms] = useState([]);
   const [activeTab, setActiveTab] = useState("my"); // 'my' or 'available'
   const [loading, setLoading] = useState(true);
+  const [joining, setJoining] = useState({}); // Track joining state per classroom
   const navigate = useNavigate();
   const { user, signOut } = useStore((state) => state);
 
-  // Fetch classrooms the student is enrolled in
+  // Fetch classrooms based on active tab
   const fetchClassrooms = async () => {
     setLoading(true);
     try {
@@ -29,7 +31,6 @@ function StudentClassrooms() {
       } else {
         setClassrooms([]);
       }
-
     } catch (error) {
       console.error("Error fetching classrooms:", error);
       setClassrooms([]);
@@ -48,8 +49,30 @@ function StudentClassrooms() {
   };
 
   const handleClassroomClick = (classroomCode) => {
-    navigate(`/classrooms/${classroomCode}`, { state: { from: activeTab },
-     });
+    navigate(`/classrooms/${classroomCode}`, { state: { from: activeTab } });
+  };
+
+  const handleJoinClassroom = async (classroomId, e) => {
+    e.stopPropagation(); // Prevent card click event
+    setJoining(prev => ({ ...prev, [classroomId]: true }));
+    
+    try {
+      const { data: res } = await api.post(`classrooms/${classroomId}/join`);
+      if (res.success) {
+        alert("Successfully joined classroom!");
+        // Refresh available classrooms
+        if (activeTab === "available") {
+          fetchClassrooms();
+        }
+      } else {
+        alert(res.message || "Failed to join classroom");
+      }
+    } catch (error) {
+      console.error("Error joining classroom:", error);
+      alert(error.response?.data?.message || "Error joining classroom");
+    } finally {
+      setJoining(prev => ({ ...prev, [classroomId]: false }));
+    }
   };
 
   return (
@@ -78,8 +101,21 @@ function StudentClassrooms() {
 
       {/* Main Content */}
       <div className="main-content">
-        <div className="topbar">
-          <h1>My Classrooms</h1>
+        <div className="topbar" style={{ padding: 0, boxShadow: "none", background: "transparent" }}>
+          <div className="student-tabbar">
+            <button
+              className={activeTab === "my" ? "student-tab-btn active" : "student-tab-btn"}
+              onClick={() => setActiveTab("my")}
+            >
+              My Classrooms
+            </button>
+            <button
+              className={activeTab === "available" ? "student-tab-btn active" : "student-tab-btn"}
+              onClick={() => setActiveTab("available")}
+            >
+              Available Classrooms
+            </button>
+          </div>
         </div>
 
         <div className="classrooms-container">
@@ -87,7 +123,12 @@ function StudentClassrooms() {
             <div className="loading">Loading classrooms...</div>
           ) : classrooms.length === 0 ? (
             <div className="no-classrooms">
-              <p>No classrooms found. Please check with your instructor.</p>
+              <p>
+                {activeTab === "my" 
+                  ? "You are not enrolled in any classrooms yet."
+                  : "No available classrooms found."
+                }
+              </p>
             </div>
           ) : (
             <div className="classrooms-grid">
@@ -129,6 +170,17 @@ function StudentClassrooms() {
                       <strong>Duration:</strong>{" "}
                       {classroom.cr_duration || "N/A"} week(s)
                     </div>
+
+                    {/* Join Button for Available Classrooms */}
+                    {activeTab === "available" && (
+                      <button
+                        className="join-btn"
+                        onClick={(e) => handleJoinClassroom(classroom.cr_id, e)}
+                        disabled={joining[classroom.cr_id]}
+                      >
+                        {joining[classroom.cr_id] ? "Joining..." : "Join Classroom"}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
