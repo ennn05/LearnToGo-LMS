@@ -210,8 +210,8 @@ const Instructors = () => {
             <table className="instructors-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
+                  <th>Instructor Name</th>
+                  <th>Instructor Email</th>
                   <th></th>
                 </tr>
               </thead>
