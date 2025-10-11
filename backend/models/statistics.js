@@ -103,7 +103,11 @@ export const totalNumOfClassrooms = async () => {
     `select count(*) from "LMS".classroom`;
   return total
 }
-
+export const totalNumOfClassroomsByInstructor = async (instructorId) => {
+  const total = await sql 
+    `select count(*) from "LMS".classroom where cr_creator = ${instructorId}`;
+  return total
+}
 //num of classrooms completed
 
 //num of cr ongoing
