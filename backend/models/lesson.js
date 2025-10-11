@@ -188,3 +188,8 @@ export const countLessonsByStatus = async () => {
 
 
 //avg credit points per lesson (overall)
+export const avgCreditPointsPerLesson = async () => {
+  const total = await sql 
+    `select round(avg(lesson_credit), 2) from "LMS".lesson`;
+  return total
+}
