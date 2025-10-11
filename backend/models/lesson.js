@@ -164,32 +164,3 @@ export const getPublishedLessons = async () => {
     `;
     return lessons;
 };
-//total number of lessons in lesson table
-export const countTotalNumLessons = async () => {
-  const total = await sql `SELECT COUNT(*) FROM "LMS".lesson`
-  return total
-}
-
-//number of lessons published, archived (overall)
-export const countLessonsByStatus = async () => {
-  const total = await sql 
-    `SELECT
-    CASE 
-        WHEN lesson_status = 'published' THEN 'Published'
-        WHEN lesson_status = 'draft' THEN 'Draft'
-        WHEN lesson_status = 'archived' THEN 'Archived'
-        ELSE 'Null'
-    END AS status,
-    COUNT(*) AS lesson_count
-    FROM "LMS".lesson 
-    GROUP BY status;`;
-  return total
-}
-
-
-//avg credit points per lesson (overall)
-export const avgCreditPointsPerLesson = async () => {
-  const total = await sql 
-    `select round(avg(lesson_credit), 2) from "LMS".lesson`;
-  return total
-}
