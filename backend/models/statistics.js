@@ -133,6 +133,14 @@ export const numClassroomOngoingByInstructor = async (instructorId) => {
 
 
 //num of cr not started
-
+export const numClassroomNotStartedByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT COUNT(*)
+    FROM "LMS".classroom
+    WHERE cr_creator = ${instructorId}
+    AND CURRENT_DATE < cr_start_date`;
+;
+  return total
+}
 
 //avg num of stu per classroom
