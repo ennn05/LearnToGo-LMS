@@ -172,8 +172,15 @@ export const totalNumOfStudents = async () => {
   return total
 }
 
+export const totalNumOfUsers = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".user 
+    where user_role = "instructor" or user_role = "student"`;
+  return total
+}
+
 //total num of students not enrolled (not enrolled into course or cr?)
 
-//total num of students that are in an ongoing classroom
+//total num of students that are in an ongoing (ongoing what?)
 
 //total num of students who completed everything(?)
