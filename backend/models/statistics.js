@@ -96,3 +96,13 @@ export const avgCreditPointsPerLesson = async () => {
     `select round(avg(lesson_credit), 2) from "LMS".lesson`;
   return total
 }
+
+//total num of classrooms created
+
+//num of classrooms completed
+
+//num of cr ongoing
+
+//num of cr not started
+
+//avg num of stu per classroom
