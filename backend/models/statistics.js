@@ -115,8 +115,8 @@ export const numClassroomsCompletedByInstructor = async (instructorId) => {
     `SELECT COUNT(*) AS completed_classrooms
     FROM "LMS".classroom
     WHERE cr_creator = ${instructorId}
-    AND CURRENT_DATE > DATEADD(week, cr_duration, cr_start_date)`;
-``;
+    AND CURRENT_DATE > cr_start_date + (cr_duration * INTERVAL '1 week')`;
+;
   return total
 }
 
