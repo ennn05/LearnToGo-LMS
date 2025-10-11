@@ -6,9 +6,7 @@ export const getAllInstructors = async () => {
                u.user_fname,
                u.user_lname,
                u.user_email,
-               u.user_role,
-               i.inst_department,
-               i.inst_specialization
+               u.user_role
         FROM "LMS".instructor i
         JOIN "LMS".user u ON i.inst_user_id = u.user_id;
     `;
