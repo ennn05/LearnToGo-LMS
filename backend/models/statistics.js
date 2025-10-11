@@ -108,7 +108,17 @@ export const totalNumOfClassroomsByInstructor = async (instructorId) => {
     `select count(*) from "LMS".classroom where cr_creator = ${instructorId}`;
   return total
 }
-//num of classrooms completed
+//num of classrooms completed by instructor
+//note: dateadd is to get the end date
+export const numClassroomsCompletedByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT COUNT(*) AS completed_classrooms
+    FROM "LMS".classroom
+    WHERE cr_creator = ${instructorId}
+    AND CURRENT_DATE > DATEADD(week, cr_duration, cr_start_date)`;
+``;
+  return total
+}
 
 //num of cr ongoing
 
