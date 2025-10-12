@@ -141,19 +141,14 @@ export const avgCreditPointsPerLesson = async () => {
   return total
 }
 
-//total num of classrooms created
-export const totalNumOfClassrooms = async () => {
-  const total = await sql 
-    `select count(*) from "LMS".classroom`;
-  return total
-}
+//us44 : classroom stats (instructor view)
 export const totalNumOfClassroomsByInstructor = async (instructorId) => {
   const total = await sql 
     `select count(*) from "LMS".classroom where cr_creator = ${instructorId}`;
   return total
 }
+
 //num of classrooms completed by instructor
-//note: dateadd is to get the end date
 export const numClassroomsCompletedByInstructor = async (instructorId) => {
   const total = await sql 
     `SELECT COUNT(*) AS completed_classrooms
@@ -202,26 +197,7 @@ export const avgNumOfStuPerClassroomByInstructor = async (instructorId) => {
   return total
 }
 
-//total num of instructors
-export const totalNumOfInstructors = async () => {
-  const total = await sql 
-    `select count(*) from "LMS".instructor`;
-  return total
-}
 
-//total num of students
-export const totalNumOfStudents = async () => {
-  const total = await sql 
-    `select count(*) from "LMS".student`;
-  return total
-}
-
-export const totalNumOfUsers = async () => {
-  const total = await sql 
-    `select count(*) from "LMS".user 
-    where user_role = "instructor" or user_role = "student"`;
-  return total
-}
 
 //total num of students not enrolled (not enrolled into course or cr?)
 
