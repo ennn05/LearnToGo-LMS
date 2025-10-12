@@ -105,6 +105,13 @@ export const countLessonsByStatusByInstructor = async (instructorId) => {
   return total
 }
 
+//avg credit points per lesson 
+export const avgCreditPointsPerLessonByInstructor = async (instructorId) => {
+  const total = await sql 
+    `select round(avg(lesson_credit), 2) from "LMS".lesson where lesson_designer = ${instructorId}`;
+  return total
+}
+
 //us43 : lesson stats (admin view)
 export const countTotalNumLessons = async () => {
   const total = await sql `SELECT COUNT(*) FROM "LMS".lesson`
