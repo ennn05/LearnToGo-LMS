@@ -246,10 +246,27 @@ export const totalNumOfStudents = async () => {
 
 //us45 : student stats (instructor view)
 //total num of students not enrolled in course
+export const totalNumOfStudentsNotEnrolledInCourse = async () => {
+  const total = await sql 
+    `select count(*)
+    from "LMS".student s left join "LMS".student_course sc on s.stu_user_id = sc.stu_user_id
+    where sc.stu_user_id is null`;
+  return total
+}
 
 //total num of students that are in an ongoing course
+export const totalNumOfStudentsInOngoingCourse = async () => {
+  const total = await sql 
+    ``;
+  return total
+}
 
 //total num of students who completed all their enrolled courses
+export const totalNumOfStudentsCompletedAllCourse = async () => {
+  const total = await sql 
+
+  return total
+}
 
 //us45 : student stats (admin view)
 //total num of instructors
