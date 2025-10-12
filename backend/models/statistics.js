@@ -1,12 +1,12 @@
 import sql from "../db.js";
 
-
-export const countTotalNumCourses = async () => {
-    const courses = await sql`SELECT COUNT(*) FROM "LMS".course;`;
+//instructor stats
+export const countTotalNumCoursesByInstructor = async (instructorId) => {
+    const courses = await sql`SELECT COUNT(*) FROM "LMS".course WHERE cr_course_creator = ${instructorId};`;
     return courses[0];
 }
 
-export const countTotalNumCoursesByInstructor = async (instructorId) => {
+export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
     const courses = await sql`
     SELECT
     CASE 
@@ -20,12 +20,6 @@ export const countTotalNumCoursesByInstructor = async (instructorId) => {
     WHERE course_creator = ${instructorId}
     GROUP BY status;`;
     return courses;
-}
-
-export const avgNumLessonsPerCourse = async () => {
-    const avg = 0; // dummy values for now
-
-    return avg;
 }
 
 export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
@@ -48,21 +42,9 @@ export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
     return result[0];
 }
 
-export const numCourseBreakdownByStatus = async () => {
-    // dummy values for now
-    const breakdown = [ {course_status: 'draft', count: 0}, 
-                        {course_status: 'published', count: 0}, 
-                        {course_status: 'archived', count: 0} 
-                    ]; 
-    return breakdown;                    
+//admin stats
+export const countTotalNumCourses = async () => {
+    const courses = await sql`SELECT COUNT(*) FROM "LMS".course;`;
+    return courses[0];
 }
 
-export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
-    // dummy values for now
-    const breakdown = [ {course_status: 'draft', count: 0}, 
-                        {course_status: 'published', count: 0}, 
-                        {course_status: 'archived', count: 0} 
-                    ]; 
-
-    return breakdown;                    
-}
