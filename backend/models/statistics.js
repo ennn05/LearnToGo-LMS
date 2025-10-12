@@ -205,7 +205,36 @@ export const totalNumOfClassrooms = async () => {
   return total
 }
 
+//num of classrooms completed by instructor
+export const numClassroomsCompleted = async () => {
+  const total = await sql 
+    `SELECT COUNT(*) AS completed_classrooms
+    FROM "LMS".classroom
+    WHERE CURRENT_DATE > cr_start_date + (cr_duration * INTERVAL '1 week')`;
+;
+  return total
+}
 
+//num of cr ongoing
+export const numClassroomOngoing = async () => {
+  const total = await sql 
+    `SELECT COUNT(*)
+    FROM "LMS".classroom
+    WHERE CURRENT_DATE <= cr_start_date + (cr_duration * INTERVAL '1 week')`;
+;
+  return total
+}
+
+
+//num of cr not started
+export const numClassroomNotStarted = async () => {
+  const total = await sql 
+    `SELECT COUNT(*)
+    FROM "LMS".classroom
+    WHERE CURRENT_DATE < cr_start_date`;
+;
+  return total
+}
 
 
 //total num of students not enrolled (not enrolled into course or cr?)
