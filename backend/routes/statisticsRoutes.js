@@ -1,6 +1,6 @@
 import express from "express";
 import {authenticate, authorize} from "../middleware/authMiddleware.js";
-import { getAvgLessonsPerCourse, getAvgLessonsPerCourseOfInstructor, getNumCoursesBreakdownByStatus, getNumCoursesBreakdownByStatusForInstructor, getNumLessonsBreakdownByStatus, getNumLessonsBreakdownByStatusForInstructor, getTotalNumCourses, getTotalNumCoursesOfInstructor, getTotalNumLessons, getTotalNumLessonsOfInstructor } from "../controllers/statisticsControllers.js";
+import { getAvgCpPerLesson, getAvgCpPerLessonOfInstructor, getAvgLessonsPerCourse, getAvgLessonsPerCourseOfInstructor, getNumCoursesBreakdownByStatus, getNumCoursesBreakdownByStatusForInstructor, getNumLessonsBreakdownByStatus, getNumLessonsBreakdownByStatusForInstructor, getTotalNumCourses, getTotalNumCoursesOfInstructor, getTotalNumLessons, getTotalNumLessonsOfInstructor } from "../controllers/statisticsControllers.js";
 
 const router = express.Router();
 
@@ -54,6 +54,17 @@ router.get("/lessons/status-breakdown", authenticate, authorize("admin", "instru
                     return getNumLessonsBreakdownByStatusForInstructor(req, res);
                 case "admin":
                     return getNumLessonsBreakdownByStatus(req, res);
+                default:
+                    return res.status(403).json({ message: "Unauthorized" });
+            }
+        });
+
+router.get("/lessons/average-cp", authenticate, authorize("admin", "instructor"), (req, res) => {
+            switch (req?.user?.role) {
+                case "instructor":
+                    return getAvgCpPerLessonOfInstructor(req, res);
+                case "admin":
+                    return getAvgCpPerLesson(req, res);
                 default:
                     return res.status(403).json({ message: "Unauthorized" });
             }
