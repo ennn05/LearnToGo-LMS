@@ -114,9 +114,8 @@ export const getClassroomByCode = async (classroomCode) => {
     return classroom[0];
 }
 
-export const updateClassroom = async (classroomData) => {
-    const {id, updateData} = classroomData;
-    console.log(classroomData);
+export const updateClassroom = async (id, updateData) => {
+    console.log(id, updateData);
     const classrooms = await sql`UPDATE "LMS".classroom 
                     SET 
                         cr_start_date = ${updateData.cr_start_date},
@@ -134,9 +133,9 @@ export const updateClassroomLessons = async (classroomCode, lessons) => {
     await removeClassroomLessons(classroomCode)
 
     const classroomLessons = [];
-    for (const element in lessons)
+    for (const lesson of lessons)
     {
-        const addedLesson = await addClassroomLesson(classroomCode, element.cl_id);
+        const addedLesson = await addClassroomLesson(classroomCode, lesson.cl_id);
         classroomLessons.push(addedLesson);
     }
 
@@ -224,9 +223,9 @@ export const updateClassroomStudents = async (classroomCode, students) => {
     await removeClassroomStudents(classroomCode)
 
     const classroomStudents = [];
-    for (const element in students)
+    for (const student of students)
     {
-        const addedStudent = await addClassroomStudent(classroomCode, element.stucourse_id);
+        const addedStudent = await addClassroomStudent(classroomCode, student.stucourse_id);
         classroomStudents.push(addedStudent);
     }
 
