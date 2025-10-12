@@ -1,6 +1,6 @@
 import express from "express";
 import {authenticate, authorize} from "../middleware/authMiddleware.js";
-import { getAvgLessonsPerCourse, getAvgLessonsPerCourseOfInstructor, getNumCoursesBreakdownByStatus, getNumCoursesBreakdownByStatusForInstructor, getTotalNumCourses, getTotalNumCoursesOfInstructor, getTotalNumLessons, getTotalNumLessonsOfInstructor } from "../controllers/statisticsControllers.js";
+import { getAvgLessonsPerCourse, getAvgLessonsPerCourseOfInstructor, getNumCoursesBreakdownByStatus, getNumCoursesBreakdownByStatusForInstructor, getNumLessonsBreakdownByStatus, getNumLessonsBreakdownByStatusForInstructor, getTotalNumCourses, getTotalNumCoursesOfInstructor, getTotalNumLessons, getTotalNumLessonsOfInstructor } from "../controllers/statisticsControllers.js";
 
 const router = express.Router();
 
@@ -48,5 +48,15 @@ router.get("/lessons/total", authenticate, authorize("admin", "instructor"), (re
             }
         });
 
+router.get("/lessons/status-breakdown", authenticate, authorize("admin", "instructor"), (req, res) => {
+            switch (req?.user?.role) {
+                case "instructor":
+                    return getNumLessonsBreakdownByStatusForInstructor(req, res);
+                case "admin":
+                    return getNumLessonsBreakdownByStatus(req, res);
+                default:
+                    return res.status(403).json({ message: "Unauthorized" });
+            }
+        });
 
 export default router;
