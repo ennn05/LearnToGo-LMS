@@ -1,4 +1,4 @@
-import { avgNumLessonsPerCourse, avgNumLessonsPerCourseByInstructor, countLessonsByStatus, countLessonsByStatusByInstructor, countTotalNumCourses, countTotalNumCoursesByInstructor, countTotalNumLessons, countTotalNumLessonsByInstructor, numCourseBreakdownByStatus, numCourseBreakdownByStatusForInstructor } from "../models/statistics.js";
+import { avgCreditPointsPerLesson, avgCreditPointsPerLessonByInstructor, avgNumLessonsPerCourse, avgNumLessonsPerCourseByInstructor, countLessonsByStatus, countLessonsByStatusByInstructor, countTotalNumCourses, countTotalNumCoursesByInstructor, countTotalNumLessons, countTotalNumLessonsByInstructor, numCourseBreakdownByStatus, numCourseBreakdownByStatusForInstructor } from "../models/statistics.js";
 
 export const getTotalNumCourses = async (req, res) => {
     try {
@@ -207,3 +207,23 @@ export const getNumLessonsBreakdownByStatusForInstructor = async (req, res) => {
         return res.status(500).json({ success: false, message: "Failed to fetch number of lessons by status." });
     }
 }
+
+export const getAvgCpPerLesson = async (req, res) => {
+    try {
+        const avg = await avgCreditPointsPerLesson();
+
+        if (avg === null || avg === undefined) {
+            return res.status(404).json({
+                success: false,
+                message: "Lesson statistics not found.",
+            });
+        }
+        
+        return res.status(200).json({ success: true, data: avg });
+    }
+    catch (error) {
+        console.error("Error fetching average credit points per lesson:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch average credit points per lesson." });
+    }
+}
+
