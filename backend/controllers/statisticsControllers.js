@@ -227,3 +227,24 @@ export const getAvgCpPerLesson = async (req, res) => {
     }
 }
 
+export const getAvgCpPerLessonOfInstructor = async (req, res) => {
+    const instructorId = req?.user?.id;
+    if (!instructorId) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    try {
+        const avg = await avgCreditPointsPerLessonByInstructor(instructorId);
+
+        if (avg === null || avg === undefined) {
+            return res.status(404).json({
+                success: false,
+                message: "Lesson statistics not found.",
+            });
+        }
+        
+        return res.status(200).json({ success: true, data: avg });
+    }
+    catch (error) {
+        console.error("Error fetching average credit points per lesson:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch average credit points per lesson." });
+    }
+}
