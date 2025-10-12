@@ -62,6 +62,13 @@ export const getLessonById = async (lessonId) => {
   return lesson[0];
 };
 
+// to be implemented - to include student's grade and completion for this lesson
+export const getStudentLessonById = async (lessonId) => {
+  // dummy data for now
+  const lesson = [{lesson_id: 1, lesson_title: "Sample Lesson"}];
+  return lesson[0];
+};
+
 // Get lessons by instructor
 export const getLessonByInstructor = async (instructorId) => {
   const lessons = await sql`
