@@ -81,3 +81,20 @@ export const avgNumLessonsPerCourse = async() => {
     `;
     return result[0];
 }
+
+//us43 : lesson stats (instructor view)
+
+export const countTotalNumLessonsByInstructor = async (instructorId) => {
+  const total = await sql `SELECT COUNT(*) FROM "LMS".lesson WHERE lesson_designer = ${instructorId}`
+  return total
+}
+
+
+
+//us43 : lesson stats (admin view)
+export const countTotalNumLessons = async () => {
+  const total = await sql `SELECT COUNT(*) FROM "LMS".lesson`
+  return total
+}
+
+
