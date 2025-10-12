@@ -1,4 +1,4 @@
-import { avgNumLessonsPerCourse, avgNumLessonsPerCourseByInstructor, countTotalNumCourses, countTotalNumCoursesByInstructor, numCourseBreakdownByStatus, numCourseBreakdownByStatusForInstructor } from "../models/statistics.js";
+import { avgNumLessonsPerCourse, avgNumLessonsPerCourseByInstructor, countTotalNumCourses, countTotalNumCoursesByInstructor, countTotalNumLessons, countTotalNumLessonsByInstructor, numCourseBreakdownByStatus, numCourseBreakdownByStatusForInstructor } from "../models/statistics.js";
 
 export const getTotalNumCourses = async (req, res) => {
     try {
@@ -123,3 +123,24 @@ export const getNumCoursesBreakdownByStatusForInstructor = async (req, res) => {
         return res.status(500).json({ success: false, message: "Failed to fetch number of courses by status." });
     }
 }
+
+
+export const getTotalNumLessons = async (req, res) => {
+    try {
+        const count = await countTotalNumLessons();
+
+        if (count === null || count === undefined) {
+            return res.status(404).json({
+                success: false,
+                message: "Lesson statistics not found.",
+            });
+        }
+        
+        return res.status(200).json({ success: true, data: count });
+    }
+    catch (error) {
+        console.error("Error fetching total number of lessons:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch total number of lessons." });
+    }
+}
+
