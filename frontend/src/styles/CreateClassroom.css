@@ -817,3 +817,36 @@ body {
 .available-lessons-grid::-webkit-scrollbar-thumb:hover {
   background: #95a5a6;
 }
+
+/* Status and field notes for published classrooms */
+.field-note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.section-note {
+  font-size: 14px;
+  color: #666;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.status-note {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Disabled state styling for better UX */
+input:disabled, select:disabled, button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+input:disabled:hover, select:disabled:hover, button:disabled:hover {
+  border-color: #ccc !important;
+  background-color: #f8f9fa !important;
+}

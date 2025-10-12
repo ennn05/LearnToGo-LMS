@@ -23,6 +23,7 @@ function EditClassroom() {
     status: "draft",
   });
 
+  const [isPublished, setIsPublished] = useState(false); // Track if classroom is published
   const [assignedCourse, setAssignedCourse] = useState(null);
   const [availableCourses, setAvailableCourses] = useState([]);
   const [assignedLessons, setAssignedLessons] = useState([]);
@@ -49,6 +50,9 @@ function EditClassroom() {
         supervisor: cr.supervisor_id,
         status: cr.cr_status,
       });
+
+      // Check if classroom is published (ongoing)
+      setIsPublished(cr.cr_status === 'published');
 
       setAssignedCourse(
         cr.course_code ? { course_code: cr.course_code, course_title: cr.course_title } : null
@@ -163,19 +167,43 @@ function EditClassroom() {
     cr_status: classroomData.status,
     course_code: assignedCourse?.course_code || null,
     supervisor_id: classroomData.supervisor,
-    cr_date_updated: today,
+    cr_last_updated: today,
+    lessons: assignedLessons.map(lesson => ({
+      cl_id: lesson.cl_id // Send only cl_id, not the full lesson object
+    })),
+    students: assignedStudents.map(student => ({
+      stucourse_id: student.stucourse_id // Send only stucourse_id, not the full student object
+    }))
   };
+
+  // Remove any undefined or null values from the arrays
+  updatedClassroom.lessons = updatedClassroom.lessons.filter(lesson => lesson.cl_id != null);
+  updatedClassroom.students = updatedClassroom.students.filter(student => student.stucourse_id != null);
+
+  // Debug: Check if lessons have cl_id property
+  console.log("Assigned lessons:", assignedLessons);
+  console.log("Lessons with cl_id:", assignedLessons.map(l => ({ hasClId: !!l.cl_id, cl_id: l.cl_id, lesson_id: l.lesson_id })));
+  
+  // Debug: Check if students have stucourse_id property  
+  console.log("Assigned students:", assignedStudents);
+  console.log("Students with stucourse_id:", assignedStudents.map(s => ({ hasStucourseId: !!s.stucourse_id, stucourse_id: s.stucourse_id, cs_id: s.cs_id })));
 
   try {
     console.log("Sending update payload:", updatedClassroom);
 
     const response = await api.put(`/classrooms/${classroomData.classroomId}`, updatedClassroom);
 
-    console.log("Update success:", response.data);
-    alert("Classroom updated successfully!");
+    if (response.data.success) {
+      console.log("Update success:", response.data);
+      alert("Classroom updated successfully!");
+    } else {
+      console.error("Update failed:", response.data.message);
+      alert(`Failed to update classroom: ${response.data.message}`);
+    }
   } catch (error) {
     console.error("Error updating classroom:", error);
-    alert("Failed to update classroom.");
+    console.error("Error response:", error.response?.data);
+    alert(`Failed to update classroom: ${error.response?.data?.message || error.message}`);
   }
 };
 
@@ -233,8 +261,22 @@ function EditClassroom() {
               </span>
             </div>
             <div className="classroom-actions">
-              <button className="btn-publish" onClick={() => handleStatusChange("published")}>Publish</button>
-              <button className="btn-archive" onClick={() => handleStatusChange("archived")}>Archive</button>
+              <button 
+                className="btn-publish" 
+                onClick={() => handleStatusChange("published")}
+                disabled={isPublished}
+                title={isPublished ? "Classroom is already published" : ""}
+              >
+                Publish
+              </button>
+              <button 
+                className="btn-archive" 
+                onClick={() => handleStatusChange("archived")}
+                disabled={isPublished}
+                title={isPublished ? "Cannot archive published classrooms" : ""}
+              >
+                Archive
+              </button>
             </div>
           </div>
 
@@ -247,7 +289,14 @@ function EditClassroom() {
               </div>
               <div className="form-group">
                 <label>Start Date:</label>
-                <input type="date" name="startDate" value={classroomData.startDate} onChange={handleInputChange} />
+                <input 
+                  type="date" 
+                  name="startDate" 
+                  value={classroomData.startDate} 
+                  onChange={handleInputChange} 
+                  disabled={isPublished}
+                  title={isPublished ? "Cannot change start date for published classrooms" : ""}
+                />
               </div>
               <div className="form-group">
                 <label>Duration (weeks):</label>
@@ -283,6 +332,8 @@ function EditClassroom() {
                     const selected = availableCourses.find((c) => c.course_code === e.target.value);
                     handleCourseSelect(selected);
                   }}
+                  disabled={isPublished}
+                  title={isPublished ? "Cannot change course for published classrooms" : ""}
                 >
                   <option value="">-- Select a course --</option>
                   {availableCourses.map((c) => (
@@ -311,7 +362,14 @@ function EditClassroom() {
                       </div>
                       <div className="lesson-actions">
                         <span className="check-icon">✓</span>
-                        <button className="remove-btn" onClick={() => removeLessonFromClassroom(lesson.lesson_id)}>×</button>
+                        <button 
+                          className="remove-btn" 
+                          onClick={() => removeLessonFromClassroom(lesson.lesson_id)}
+                          disabled={isPublished}
+                          title={isPublished ? "Cannot remove lessons from published classrooms" : ""}
+                        >
+                          ×
+                        </button>
                       </div>
                     </div>
                   ))
@@ -326,6 +384,8 @@ function EditClassroom() {
                   placeholder="Search lessons..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  disabled={isPublished}
+                  title={isPublished ? "Cannot add lessons to published classrooms" : ""}
                 />
               </div>
               <div className="available-lessons-grid">
@@ -338,7 +398,8 @@ function EditClassroom() {
                     <button
                       className={`add-btn ${assignedLessons.find((l) => l.lesson_id === lesson.lesson_id) ? "added" : ""}`}
                       onClick={() => addLessonToClassroom(lesson)}
-                      disabled={assignedLessons.find((l) => l.lesson_id === lesson.lesson_id)}
+                      disabled={isPublished || assignedLessons.find((l) => l.lesson_id === lesson.lesson_id)}
+                      title={isPublished ? "Cannot add lessons to published classrooms" : ""}
                     >
                       {assignedLessons.find((l) => l.lesson_id === lesson.lesson_id) ? "✓" : "+"}
                     </button>
