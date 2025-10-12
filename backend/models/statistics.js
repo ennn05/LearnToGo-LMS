@@ -63,3 +63,21 @@ export const numCourseBreakdownByStatus = async () => {
     return courses;
 }
 
+export const avgNumLessonsPerCourse = async() => {
+    const result = await sql`
+    SELECT 
+        ROUND(AVG(lesson_count), 2) AS avg_lessons_per_course
+    FROM (
+        SELECT 
+        c.course_code,
+        COUNT(l.lesson_id) AS lesson_count
+        FROM "LMS".course_lesson cl
+        JOIN "LMS".course c 
+        ON cl.cl_course_code = c.course_code
+        JOIN "LMS".lesson l 
+        ON cl.cl_lesson_id = l.lesson_id
+        GROUP BY c.course_code
+    ) AS per_course;
+    `;
+    return result[0];
+}
