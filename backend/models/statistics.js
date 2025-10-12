@@ -197,6 +197,15 @@ export const avgNumOfStuPerClassroomByInstructor = async (instructorId) => {
   return total
 }
 
+//us44 : admin view of classroom stats
+//total num of classrooms created
+export const totalNumOfClassrooms = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".classroom`;
+  return total
+}
+
+
 
 
 //total num of students not enrolled (not enrolled into course or cr?)
