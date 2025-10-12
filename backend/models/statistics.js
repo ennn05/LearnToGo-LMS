@@ -48,3 +48,18 @@ export const countTotalNumCourses = async () => {
     return courses[0];
 }
 
+export const numCourseBreakdownByStatus = async () => {
+    const courses = await sql`
+    SELECT
+    CASE 
+        WHEN course_status = 'published' THEN 'Published'
+        WHEN course_status = 'draft' THEN 'Draft'
+        WHEN course_status = 'archived' THEN 'Archived'
+        ELSE 'Null'
+    END AS status,
+    COUNT(*) AS course_count
+    FROM "LMS".course 
+    GROUP BY status;`;
+    return courses;
+}
+
