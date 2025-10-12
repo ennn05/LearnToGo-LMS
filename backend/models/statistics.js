@@ -1,12 +1,12 @@
 import sql from "../db.js";
 
-
-export const countTotalNumCourses = async () => {
-    const courses = await sql`SELECT COUNT(*) FROM "LMS".course;`;
+//instructor stats
+export const countTotalNumCoursesByInstructor = async (instructorId) => {
+    const courses = await sql`SELECT COUNT(*) FROM "LMS".course WHERE cr_course_creator = ${instructorId};`;
     return courses[0];
 }
 
-export const countTotalNumCoursesByInstructor = async (instructorId) => {
+export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
     const courses = await sql`
     SELECT
     CASE 
@@ -20,12 +20,6 @@ export const countTotalNumCoursesByInstructor = async (instructorId) => {
     WHERE course_creator = ${instructorId}
     GROUP BY status;`;
     return courses;
-}
-
-export const avgNumLessonsPerCourse = async () => {
-    const avg = 0; // dummy values for now
-
-    return avg;
 }
 
 export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
@@ -48,51 +42,42 @@ export const avgNumLessonsPerCourseByInstructor = async(instructorId) => {
     return result[0];
 }
 
+//admin stats
+export const countTotalNumCourses = async () => {
+    const courses = await sql`SELECT COUNT(*) FROM "LMS".course;`;
+    return courses[0];
+}
+
 export const numCourseBreakdownByStatus = async () => {
-    // dummy values for now
-    const breakdown = [ {course_status: 'draft', count: 0}, 
-                        {course_status: 'published', count: 0}, 
-                        {course_status: 'archived', count: 0} 
-                    ]; 
-    return breakdown;                    
-}
-
-export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
-    // dummy values for now
-    const breakdown = [ {course_status: 'draft', count: 0}, 
-                        {course_status: 'published', count: 0}, 
-                        {course_status: 'archived', count: 0} 
-                    ]; 
-
-    return breakdown;                    
-}
-
-//total number of lessons in lesson table
-export const countTotalNumLessons = async () => {
-  const total = await sql `SELECT COUNT(*) FROM "LMS".lesson`
-  return total
-}
-
-//number of lessons published, archived (overall)
-export const countLessonsByStatus = async () => {
-  const total = await sql 
-    `SELECT
+    const courses = await sql`
+    SELECT
     CASE 
-        WHEN lesson_status = 'published' THEN 'Published'
-        WHEN lesson_status = 'draft' THEN 'Draft'
-        WHEN lesson_status = 'archived' THEN 'Archived'
+        WHEN course_status = 'published' THEN 'Published'
+        WHEN course_status = 'draft' THEN 'Draft'
+        WHEN course_status = 'archived' THEN 'Archived'
         ELSE 'Null'
     END AS status,
-    COUNT(*) AS lesson_count
-    FROM "LMS".lesson 
+    COUNT(*) AS course_count
+    FROM "LMS".course 
     GROUP BY status;`;
-  return total
+    return courses;
 }
 
-
-//avg credit points per lesson (overall)
-export const avgCreditPointsPerLesson = async () => {
-  const total = await sql 
-    `select round(avg(lesson_credit), 2) from "LMS".lesson`;
-  return total
+export const avgNumLessonsPerCourse = async() => {
+    const result = await sql`
+    SELECT 
+        ROUND(AVG(lesson_count), 2) AS avg_lessons_per_course
+    FROM (
+        SELECT 
+        c.course_code,
+        COUNT(l.lesson_id) AS lesson_count
+        FROM "LMS".course_lesson cl
+        JOIN "LMS".course c 
+        ON cl.cl_course_code = c.course_code
+        JOIN "LMS".lesson l 
+        ON cl.cl_lesson_id = l.lesson_id
+        GROUP BY c.course_code
+    ) AS per_course;
+    `;
+    return result[0];
 }
