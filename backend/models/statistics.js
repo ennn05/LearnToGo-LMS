@@ -236,9 +236,25 @@ export const numClassroomNotStarted = async () => {
   return total
 }
 
+// us45 : student stats (shared by instructor and admin)
+//total num of students
+export const totalNumOfStudents = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".student`;
+  return total
+}
 
-//total num of students not enrolled (not enrolled into course or cr?)
+//us45 : student stats (instructor view)
+//total num of students not enrolled in course
 
-//total num of students that are in an ongoing (ongoing what?)
+//total num of students that are in an ongoing course
 
-//total num of students who completed everything(?)
+//total num of students who completed all their enrolled courses
+
+//us45 : student stats (admin view)
+//total num of instructors
+export const totalNumOfInstructors = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".instructor`;
+  return total
+}
