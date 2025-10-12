@@ -89,7 +89,21 @@ export const countTotalNumLessonsByInstructor = async (instructorId) => {
   return total
 }
 
-
+export const countLessonsByStatusByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT
+    CASE 
+        WHEN lesson_status = 'published' THEN 'Published'
+        WHEN lesson_status = 'draft' THEN 'Draft'
+        WHEN lesson_status = 'archived' THEN 'Archived'
+        ELSE 'Null'
+    END AS status,
+    COUNT(*) AS lesson_count
+    FROM "LMS".lesson 
+    WHERE lesson_designer = ${instructorId}
+    GROUP BY status;`;
+  return total
+}
 
 //us43 : lesson stats (admin view)
 export const countTotalNumLessons = async () => {
