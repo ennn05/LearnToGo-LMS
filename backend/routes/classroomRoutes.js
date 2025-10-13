@@ -29,10 +29,10 @@ router.get("/", authenticate, (req, res) => {
 
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);
-router.delete("/:id", authenticate, authorize("instructor"), removeClassroom);
+router.delete("/:id", authenticate, authorize("instructor", "admin"), removeClassroom);
 router.put("/:id", authenticate, editClassroom);
-router.post("/", authenticate, authorize("instructor"), addClassroom);
-router.put("/:cr_id/lessons/:crcl_cl_id/students", authenticate, authorize("instructor"), updateStudentMarksForClassroomLesson);
-router.get("/:cr_id/lessons/students", authenticate, authorize("instructor"), getClassroomLessonsWithStudents);
+router.post("/", authenticate, authorize("instructor", "admin"), addClassroom);
+router.put("/:cr_id/lessons/:crcl_cl_id/students", authenticate, authorize("instructor", "admin"), updateStudentMarksForClassroomLesson);
+router.get("/:cr_id/lessons/students", authenticate, authorize("instructor", "admin"), getClassroomLessonsWithStudents);
 
 export default router;
