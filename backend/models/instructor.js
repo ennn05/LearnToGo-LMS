@@ -8,7 +8,8 @@ export const getAllInstructors = async () => {
                u.user_email,
                u.user_role
         FROM "LMS".instructor i
-        JOIN "LMS".user u ON i.inst_user_id = u.user_id;
+        JOIN "LMS".user u ON i.inst_user_id = u.user_id
+        WHERE user_role = 'instructor';
     `;
     console.log(instructors);
     return instructors;
