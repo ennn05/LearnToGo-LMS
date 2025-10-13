@@ -244,7 +244,7 @@ export const totalNumOfStudents = async () => {
   return total
 }
 
-//us45 : student stats (instructor view)
+//us45 : student stats (inst and admin view)
 //total num of students not enrolled in course
 export const totalNumOfStudentsNotEnrolledInCourse = async () => {
   const total = await sql 
@@ -256,17 +256,34 @@ export const totalNumOfStudentsNotEnrolledInCourse = async () => {
 
 //total num of students that are in an ongoing course
 export const totalNumOfStudentsInOngoingCourse = async () => {
-  const total = await sql 
-    ``;
+  const total = await sql `
+    SELECT COUNT(*) as ongoing_course
+    FROM (
+      SELECT 
+        sc.stu_user_id,
+        sc.course_code,
+        ROUND(
+          (
+            COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+            / NULLIF(COUNT(*), 0)
+          ) * 100,
+          2
+        ) AS completion_rate
+      FROM "LMS".student_course sc
+      JOIN "LMS".course_lesson cl 
+        ON cl.cl_course_code = sc.course_code
+      LEFT JOIN "LMS".grade g 
+        ON g.lesson_id = cl.cl_lesson_id 
+        AND g.stu_user_id = sc.stu_user_id
+      GROUP BY sc.stu_user_id, sc.course_code
+    ) AS student_course_ongoing
+    WHERE completion_rate < 100 and completion_rate >= 0;
+  `;
   return total
 }
 
-//total num of students who completed all their enrolled courses
-export const totalNumOfStudentsCompletedAllCourse = async () => {
-  const total = await sql 
 
-  return total
-}
+
 
 //us45 : student stats (admin view)
 //total num of instructors
