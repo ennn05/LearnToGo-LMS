@@ -2,7 +2,7 @@ import sql from "../db.js";
 
 //instructor stats
 export const countTotalNumCoursesByInstructor = async (instructorId) => {
-    const courses = await sql`SELECT COUNT(*) FROM "LMS".course WHERE cr_course_creator = ${instructorId};`;
+    const courses = await sql`SELECT COUNT(*) FROM "LMS".course WHERE course_creator = ${instructorId};`;
     return courses[0];
 }
 
