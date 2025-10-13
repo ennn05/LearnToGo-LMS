@@ -282,6 +282,37 @@ export const totalNumOfStudentsInOngoingCourse = async () => {
   return total
 }
 
+export const totalNumOfStudentsCompletedAllCourses = async () => {
+  const result = await sql`
+    SELECT COUNT(*) AS students_completed_all_courses
+    FROM (
+      SELECT 
+        stu_user_id
+      FROM (
+        SELECT 
+          sc.stu_user_id,
+          sc.course_code,
+          ROUND(
+            (
+              COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+              / NULLIF(COUNT(*), 0)
+            ) * 100,
+            2
+          ) AS completion_rate
+        FROM "LMS".student_course sc
+        JOIN "LMS".course_lesson cl 
+          ON cl.cl_course_code = sc.course_code
+        LEFT JOIN "LMS".grade g 
+          ON g.lesson_id = cl.cl_lesson_id 
+          AND g.stu_user_id = sc.stu_user_id
+        GROUP BY sc.stu_user_id, sc.course_code
+      ) AS student_course_completion
+      GROUP BY stu_user_id
+      HAVING MIN(completion_rate) = 100
+    ) AS fully_completed_students;
+  `;
+  return result[0];
+};
 
 
 
