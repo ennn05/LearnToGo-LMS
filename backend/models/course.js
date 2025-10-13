@@ -186,3 +186,20 @@ export const removeCourseEnrollment = async (studentId, courseCode) => {
     `;
     return result[0]; // returns deleted row if successful, undefined if nothing deleted
 };
+
+export const getPercentageLessonCompletionByStudentForCourse = async (studentId, courseCode) => {
+    const result = await sql `SELECT
+    ROUND(
+        (
+        COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+        / NULLIF(COUNT(*), 0)
+        ) * 100,
+        2
+    ) AS completion_rate
+    FROM "LMS".course_lesson cl
+    LEFT JOIN "LMS".grade g 
+    ON g.lesson_id = cl.cl_lesson_id
+    AND g.stu_user_id = ${studentId}
+    WHERE cl.cl_course_code = ${courseCode} `
+    return result
+}
