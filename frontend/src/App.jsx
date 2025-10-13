@@ -15,6 +15,7 @@ import ClassroomDetails from "./pages/ClassroomDetails";
 import CreateClassroom from "./pages/CreateClassroom";
 import ClassroomGrade from "./pages/ClassroomGrade";
 import CreateLesson from "./pages/CreateLessons";
+import Reports from "./pages/Reports";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
