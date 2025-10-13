@@ -25,9 +25,9 @@ function Reports() {
         try {
             setLoading(true);
             const [totalRes, avgRes, breakdownRes] = await Promise.all([
-                api.get("/reports/courses/total"),
-                api.get("/reports/courses/average-lessons"),
-                api.get("/reports/courses/status-breakdown"),
+                api.get("/statistics/courses/total"),
+                api.get("/statistics/courses/average-lessons"),
+                api.get("/statistics/courses/status-breakdown"),
             ])
             if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
                 throw new Error("Some reports could not be retrieved.");
