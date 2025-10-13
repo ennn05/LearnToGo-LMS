@@ -271,3 +271,47 @@ export const upsertStudentLessonGrade = async (gradeData) => {
   `;
   return result[0]; // Will be undefined if no update (already passed)
 };
+export const getLessonsWithStudentsByClassroom = async (cr_id) => {
+  const lessonsWithStudents = await sql`
+    SELECT 
+      crcl.crcl_cl_id,
+      l.lesson_id,
+      l.lesson_title,
+      l.lesson_credit,
+      (
+        -- All students in this classroom, with global grade info
+        SELECT json_agg(
+          json_build_object(
+            'stucourse_id', sc.stucourse_id,
+            'stu_user_id', s.stu_user_id,
+            'stu_user_fname', u.user_fname,
+            'stu_user_lname', u.user_lname,
+            'stu_user_email', u.user_email,
+            'attendance', g.attendance,
+            'completion', g.completion,
+            'grade_value', g.grade_value,
+            'pass', g.pass
+          )
+        )
+        FROM "LMS".classroom_student cs
+        JOIN "LMS".student_course sc ON cs.stucourse_id = sc.stucourse_id
+        JOIN "LMS".student s ON sc.stu_user_id = s.stu_user_id
+        JOIN "LMS".user u ON s.stu_user_id = u.user_id
+        LEFT JOIN "LMS".grade g 
+          ON g.stu_user_id = s.stu_user_id
+         AND g.lesson_id = l.lesson_id
+        WHERE cs.cr_id = cr.cr_id
+      ) AS students
+    FROM "LMS".classroom cr
+    JOIN "LMS".classroom_course_lesson crcl 
+      ON cr.cr_id = crcl.crcl_cr_id
+    JOIN "LMS".course_lesson cl 
+      ON crcl.crcl_cl_id = cl.cl_id
+    JOIN "LMS".lesson l 
+      ON cl.cl_lesson_id = l.lesson_id
+    WHERE cr.cr_id = ${cr_id}
+    GROUP BY crcl.crcl_id, l.lesson_id, l.lesson_title, l.lesson_credit, cr.cr_id;
+  `;
+
+  return lessonsWithStudents;
+};
