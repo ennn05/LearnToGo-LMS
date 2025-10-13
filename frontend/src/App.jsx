@@ -74,7 +74,6 @@ function App() {
           <Route path="/classrooms/:classroomCode/grades" element={<ClassroomGrade />} />
           <Route path="/classrooms" element={<Classrooms />} />
           <Route path="/reports" element={<Reports />} />
-          {/* <Route path="/reports" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Reports /></ProtectedRoute>} /> */}
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
