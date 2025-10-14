@@ -72,6 +72,32 @@ export const getCourseByCode = async (courseCode) => {
                                 )
                             ) FILTER (WHERE l.lesson_id IS NOT NULL),
                                 '[]' ::json)
+                            AS lessons
+                                FROM "LMS".course c 
+                                LEFT JOIN "LMS".instructor i 
+                                    ON c.course_creator = i.inst_user_id 
+                                LEFT JOIN "LMS".user u
+                                    ON i.inst_user_id = u.user_id 
+                                LEFT JOIN "LMS".course_lesson cl
+                                    ON c.course_code = cl.cl_course_code
+                                LEFT JOIN "LMS".lesson l
+                                    ON cl.cl_lesson_id = l.lesson_id
+                            WHERE c.course_code = ${courseCode}
+                            GROUP BY c.course_code, u.user_id;`;
+    
+    return courses[0];
+}
+
+export const getStudentCourseByCode = async (courseCode, studentId) => {
+    const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
+                            COALESCE(json_agg(
+                                json_build_object(
+                                    'lesson_id', l.lesson_id,
+                                    'lesson_title', l.lesson_title,
+                                    'lesson_credit', l.lesson_credit
+                                )
+                            ) FILTER (WHERE l.lesson_id IS NOT NULL),
+                                '[]' ::json)
                             AS lessons,
                             (
                                 SELECT 
