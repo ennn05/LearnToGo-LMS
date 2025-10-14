@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticate, authorize } from '../middleware/authMiddleware.js';
-import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getPublished, getEnrolledStudentsByCourse, getStudentCourses, getAvailableCoursesForEnrollment, enrollCourse, unenrollCourse, updateCourseLessonAssignments } from "../controllers/courseControllers.js"
+import { getCourses, getCourse, getInstructorCourses, addCourse, removeCourse, editCourse, getPublished, getEnrolledStudentsByCourse, getStudentCourses, getAvailableCoursesForEnrollment, enrollCourse, unenrollCourse, updateCourseLessonAssignments, getStudentCourse } from "../controllers/courseControllers.js"
 
 const router = express.Router();
 
@@ -22,7 +22,17 @@ router.post("/:courseCode/enroll", authenticate, authorize("student"), enrollCou
 router.get("/published", getPublished);
 router.get("/instructor", authenticate, getInstructorCourses);
 // router.get("/instructor/:id", getInstructorCourses);
-router.get("/:id", getCourse);
+router.get("/:id", authenticate, (req, res) => {
+    switch (req?.user?.role) {
+        case "student":
+            return getStudentCourse(req, res);
+        case "instructor":
+        case "admin":
+            return getCourse(req, res);
+        default:
+            return res.status(403).json({ message: "Unauthorized" });
+    }
+});
 router.post("/", addCourse);
 router.delete("/:id", removeCourse);
 router.put("/:id", editCourse);
