@@ -128,7 +128,7 @@ function Reports() {
                 <div className="reports-container">
                     {/** Course Reports */}
                     <h1 className="reports-title">Course Reports</h1>
-                    <h2 className="reports-subtitle">Instructor: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
+                    <h2 className="reports-subtitle">{user?.user_role}: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
                     <div className="reports-row">
                         <div className="reports-card">
                             <h3>Total Courses</h3>
