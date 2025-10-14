@@ -42,13 +42,12 @@ function Reports() {
                 }
                 setTotalCourses(totalRes.data.data.count);
                 setAvgLessons(avgRes.data.data.avg_lessons_per_course);
-
                 setStatusBreakdown(
                     ALL_STATUSES.map(status => {
                         const found = breakdownRes.data.data.find(item => item.status === status);
                         return {
-                        name: status,
-                        value: found ? Number(found.course_count) : 0
+                            name: status,
+                            value: found ? Number(found.course_count) : 0
                         };
                     })
                 );
