@@ -72,7 +72,7 @@ export const getCourseByCode = async (courseCode) => {
                                 )
                             ) FILTER (WHERE l.lesson_id IS NOT NULL),
                                 '[]' ::json)
-                            AS lessons
+                            AS lessons,
                             (
                                 SELECT 
                                 ROUND(
