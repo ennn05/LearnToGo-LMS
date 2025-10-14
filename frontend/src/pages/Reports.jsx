@@ -21,28 +21,6 @@ function Reports() {
         Null: "#bdc3c7",
     };
 
-    const fetchCourseReports = async () => {
-        try {
-            setLoading(true);
-            const [totalRes, avgRes, breakdownRes] = await Promise.all([
-                api.get("/statistics/courses/total"),
-                api.get("/statistics/courses/average-lessons"),
-                api.get("/statistics/courses/status-breakdown"),
-            ])
-            if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
-                throw new Error("Some reports could not be retrieved.");
-            }
-            setTotalCourses(totalRes.data.data);
-            setAvgLessons(avgRes.data.data);
-            setStatusBreakdown(breakdownRes.data.data);
-        } catch (err) {
-            console.error("Error fetching course reports:", err);
-            setError("Failed to load course reports.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleLogout = () => {
         localStorage.removeItem("user");
         signOut();
@@ -50,6 +28,32 @@ function Reports() {
     };
 
     useEffect(() => {
+        const fetchCourseReports = async () => {
+            try {
+                setLoading(true);
+                const [totalRes, avgRes, breakdownRes] = await Promise.all([
+                    api.get("/statistics/courses/total"),
+                    api.get("/statistics/courses/average-lessons"),
+                    api.get("/statistics/courses/status-breakdown"),
+                ])
+                if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
+                    throw new Error("Some reports could not be retrieved.");
+                }
+                setTotalCourses(totalRes.data.data.count);
+                setAvgLessons(avgRes.data.data.avg_lessons_per_course);
+                setStatusBreakdown(
+                    breakdownRes.data.data.map(item => ({
+                        name: item.status,
+                        value: Number(item.course_count),
+                    }))
+                );
+            } catch (err) {
+                console.error("Error fetching course reports:", err);
+                setError("Failed to load course reports.");
+            } finally {
+                setLoading(false);
+            }
+        };
         fetchCourseReports();
     }, []);
 
@@ -123,7 +127,7 @@ function Reports() {
                 {/** Reports containers */}
                 <div className="reports-container">
                     <h1 className="reports-title">Course Reports</h1>
-                    <h2 className="reports-subtitle">Instructor: {user?.name}</h2>
+                    <h2 className="reports-subtitle">Instructor: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
                     <div className="reports-row">
                         <div className="reports-card">
                             <h3>Total Courses</h3>
@@ -138,8 +142,8 @@ function Reports() {
                                     <PieChart>
                                         <Pie
                                             data={statusBreakdown}
-                                            dataKey="course_count"
-                                            nameKey="status"
+                                            dataKey="value"
+                                            nameKey="name"
                                             cx="50%"
                                             cy="50%"
                                             outerRadius={80}
@@ -148,7 +152,7 @@ function Reports() {
                                             {statusBreakdown.map((entry, index) => (
                                                 <Cell
                                                     key={`cell-${index}`}
-                                                    fill={STATUS_COLORS[entry.status] || STATUS_COLORS["Null"]}
+                                                    fill={STATUS_COLORS[entry.name] || STATUS_COLORS["Null"]}
                                                 />
                                             ))}
                                         </Pie>
@@ -158,13 +162,14 @@ function Reports() {
                                 </ResponsiveContainer>
                             )}
                         </div>
-                        <div className="reports-card"></div>
+                        <div className="reports-card">
                             <h3>Average Lessons per Course</h3>
                             <p className="reports-number">{avgLessons ?? "N/A"}</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     );
 }
 
