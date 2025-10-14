@@ -8,17 +8,27 @@ export const countTotalNumCoursesByInstructor = async (instructorId) => {
 
 export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
     const courses = await sql`
-    SELECT
-    CASE 
-        WHEN course_status = 'published' THEN 'Published'
-        WHEN course_status = 'draft' THEN 'Draft'
-        WHEN course_status = 'archived' THEN 'Archived'
-        ELSE 'Null'
-    END AS status,
-    COUNT(*) AS course_count
-    FROM "LMS".course 
-    WHERE course_creator = ${instructorId}
-    GROUP BY status;`;
+            WITH status_list AS (
+                SELECT * FROM (VALUES ('Published'), ('Draft'), ('Archived')) AS s(status)
+            ),
+            course_counts AS (
+                SELECT
+                    CASE 
+                        WHEN course_status = 'published' THEN 'Published'
+                        WHEN course_status = 'draft' THEN 'Draft'
+                        WHEN course_status = 'archived' THEN 'Archived'
+                    END AS status,
+                    COUNT(*) AS course_count
+                FROM "LMS".course 
+                WHERE course_creator = ${instructorId}
+                GROUP BY status
+            )
+            SELECT 
+                status_list.status,
+                COALESCE(course_counts.course_count, 0) AS course_count
+            FROM status_list
+            LEFT JOIN course_counts ON status_list.status = course_counts.status;
+        `;
     return courses;
 }
 
