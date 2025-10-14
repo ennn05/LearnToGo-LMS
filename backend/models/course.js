@@ -73,6 +73,21 @@ export const getCourseByCode = async (courseCode) => {
                             ) FILTER (WHERE l.lesson_id IS NOT NULL),
                                 '[]' ::json)
                             AS lessons
+                            (
+                                SELECT 
+                                ROUND(
+                                    (
+                                    COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+                                    / NULLIF(COUNT(*), 0)
+                                    ) * 100,
+                                    2
+                                )
+                                FROM "LMS".course_lesson cl2
+                                LEFT JOIN "LMS".grade g 
+                                ON g.lesson_id = cl2.cl_lesson_id
+                                AND g.stu_user_id = ${studentId}
+                                WHERE cl2.cl_course_code = c.course_code
+                            ) AS completion_rate
                                 FROM "LMS".course c 
                                 LEFT JOIN "LMS".instructor i 
                                     ON c.course_creator = i.inst_user_id 
@@ -186,7 +201,7 @@ export const removeCourseEnrollment = async (studentId, courseCode) => {
     `;
     return result[0]; // returns deleted row if successful, undefined if nothing deleted
 };
-
+/*
 export const getPercentageLessonCompletionByStudentForCourse = async (studentId, courseCode) => {
     const result = await sql `SELECT
     ROUND(
@@ -202,4 +217,4 @@ export const getPercentageLessonCompletionByStudentForCourse = async (studentId,
     AND g.stu_user_id = ${studentId}
     WHERE cl.cl_course_code = ${courseCode} `
     return result
-}
+}*/
