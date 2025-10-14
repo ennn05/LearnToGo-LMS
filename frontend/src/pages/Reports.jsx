@@ -126,6 +126,7 @@ function Reports() {
                 </div>
                 {/** Reports containers */}
                 <div className="reports-container">
+                    {/** Course Reports */}
                     <h1 className="reports-title">Course Reports</h1>
                     <h2 className="reports-subtitle">Instructor: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
                     <div className="reports-row">
@@ -167,6 +168,7 @@ function Reports() {
                             <p className="reports-number">{avgLessons ?? "N/A"}</p>
                         </div>
                     </div>
+                    {/** Additional reports can be added here in the future */}
                 </div>
             </div>
         </div>
