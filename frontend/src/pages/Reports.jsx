@@ -20,6 +20,7 @@ function Reports() {
         Archived: "#95a5a6",
         Null: "#bdc3c7",
     };
+    const ALL_STATUSES = ["Published", "Draft", "Archived"];
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -41,11 +42,15 @@ function Reports() {
                 }
                 setTotalCourses(totalRes.data.data.count);
                 setAvgLessons(avgRes.data.data.avg_lessons_per_course);
+
                 setStatusBreakdown(
-                    breakdownRes.data.data.map(item => ({
-                        name: item.status,
-                        value: Number(item.course_count),
-                    }))
+                    ALL_STATUSES.map(status => {
+                        const found = breakdownRes.data.data.find(item => item.status === status);
+                        return {
+                        name: status,
+                        value: found ? Number(found.course_count) : 0
+                        };
+                    })
                 );
             } catch (err) {
                 console.error("Error fetching course reports:", err);
