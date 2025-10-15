@@ -101,32 +101,32 @@ function Reports() {
           ) : !stats ? (
             <p>No classroom data available yet.</p>
           ) : (
+            <div className="stats-container">
+            <h2 className="stats-title">Classroom Statistics</h2>
             <div className="stats-grid">
               <div className="stat-card">
                 <h3>Total Classrooms</h3>
                 <p>{stats.total_classrooms ?? 0}</p>
               </div>
-
               <div className="stat-card">
                 <h3>Not Started</h3>
                 <p>{stats.not_started ?? 0}</p>
               </div>
-
               <div className="stat-card">
                 <h3>Ongoing</h3>
                 <p>{stats.ongoing ?? 0}</p>
               </div>
-
               <div className="stat-card">
                 <h3>Ended</h3>
                 <p>{stats.ended ?? 0}</p>
               </div>
-
               <div className="stat-card">
                 <h3>Average Students per Classroom</h3>
                 <p>{stats.avg_students ?? 0}</p>
               </div>
             </div>
+          </div>
+
           )}
         </div>
       </div>
