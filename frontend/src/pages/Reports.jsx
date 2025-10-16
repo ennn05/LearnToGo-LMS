@@ -27,9 +27,9 @@ function Reports() {
 
         // Fetch all three stats in parallel
         const [totalRes, breakdownRes, avgRes] = await Promise.all([
-          api.get("/statistics/courses/total"),
-          api.get("/statistics/courses/status-breakdown"),
-          api.get("/statistics/courses/average-lessons")
+          api.get("/classroomStatistics/total"),
+          api.get("/classroomStatistics/status-breakdown"),
+          api.get("/classroomStatistics/average-students")
         ]);
 
         const total = totalRes.data?.data ?? {};
