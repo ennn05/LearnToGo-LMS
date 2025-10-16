@@ -32,6 +32,10 @@ function EditClassroom() {
   const [availableStudents, setAvailableStudents] = useState([]);
   const [availableSupervisors, setAvailableSupervisors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [validationErrors, setValidationErrors] = useState({});
+  const [isOngoing, setIsOngoing] = useState(false);
+  const [originalStartDate, setOriginalStartDate] = useState("");
+  const [originalDuration, setOriginalDuration] = useState("");
 
   // ---- Fetch classroom details ----
   const fetchClassroomDetails = async () => {
@@ -51,8 +55,23 @@ function EditClassroom() {
         status: cr.cr_status,
       });
 
+      setOriginalStartDate(cr.cr_start_date);
+      setOriginalDuration(cr.cr_duration);
+
       // Check if classroom is published (ongoing)
       setIsPublished(cr.cr_status === 'published');
+      
+      // Check if classroom is ongoing: today is between start and end (start + duration weeks)
+      // Use date-only (00:00:00) comparison to avoid timezone issues
+      const normalize = (d) => {
+        const nd = new Date(d);
+        nd.setHours(0, 0, 0, 0);
+        return nd;
+      };
+      const today = normalize(new Date());
+      const startDate = normalize(cr.cr_start_date);
+      // A classroom is considered started/ongoing once the start date is today or earlier
+      setIsOngoing(today >= startDate);
 
       setAssignedCourse(
         cr.course_code ? { course_code: cr.course_code, course_title: cr.course_title } : null
@@ -125,6 +144,11 @@ function EditClassroom() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setClassroomData((prev) => ({ ...prev, [name]: value }));
+    
+    // Clear validation errors when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
   const handleStatusChange = (newStatus) => {
@@ -158,27 +182,65 @@ function EditClassroom() {
     }
   };
 
-  const handleUpdateClassroom = async () => {
-  const today = new Date().toISOString().split("T")[0];
-
-  const updatedClassroom = {
-    cr_start_date: classroomData.startDate,
-    cr_duration: classroomData.duration,
-    cr_status: classroomData.status,
-    course_code: assignedCourse?.course_code || null,
-    supervisor_id: classroomData.supervisor,
-    cr_last_updated: today,
-    lessons: assignedLessons.map(lesson => ({
-      cl_id: lesson.cl_id // Send only cl_id, not the full lesson object
-    })),
-    students: assignedStudents.map(student => ({
-      stucourse_id: student.stucourse_id // Send only stucourse_id, not the full student object
-    }))
+  const validateForm = () => {
+    const errors = {};
+    const today = new Date().toISOString().split("T")[0];
+    
+    // Validate start date only if editable
+    if (isStartDateEditable) {
+      if (!classroomData.startDate) {
+        errors.startDate = "Start date is required";
+      } else if (classroomData.startDate < today) {
+        errors.startDate = "Start date must be today or in the future";
+      }
+    }
+    
+    // Validate duration
+    if (!classroomData.duration || classroomData.duration <= 0) {
+      errors.duration = "Duration must be a positive number";
+    }
+    
+    // Validate supervisor
+    if (!classroomData.supervisor) {
+      errors.supervisor = "Supervisor is required";
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  // Remove any undefined or null values from the arrays
-  updatedClassroom.lessons = updatedClassroom.lessons.filter(lesson => lesson.cl_id != null);
-  updatedClassroom.students = updatedClassroom.students.filter(student => student.stucourse_id != null);
+  const handleUpdateClassroom = async () => {
+    // Validate form before submitting
+    if (!validateForm()) {
+      return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const updatedClassroom = {
+      // Always include all NOT NULL fields with current values
+      cr_start_date: classroomData.startDate,
+      cr_duration: classroomData.duration,
+      cr_status: classroomData.status,
+      course_code: assignedCourse?.course_code || null,
+      supervisor_id: classroomData.supervisor,
+      cr_last_updated: today,
+      lessons: assignedLessons.map(lesson => ({ cl_id: lesson.cl_id })),
+      students: assignedStudents.map(student => ({ stucourse_id: student.stucourse_id }))
+    };
+
+  // When these sections are not editable (ongoing/published), keep current values but avoid sending empty arrays that would wipe data
+  if (!areLessonsEditable) {
+    delete updatedClassroom.lessons;
+  } else {
+    updatedClassroom.lessons = updatedClassroom.lessons.filter(lesson => lesson.cl_id != null);
+  }
+  if (!assignedStudents || assignedStudents.length === 0) {
+    // Allow clearing students if user deselects all
+    updatedClassroom.students = [];
+  } else {
+    updatedClassroom.students = updatedClassroom.students.filter(student => student.stucourse_id != null);
+  }
 
   // Debug: Check if lessons have cl_id property
   console.log("Assigned lessons:", assignedLessons);
@@ -196,6 +258,7 @@ function EditClassroom() {
     if (response.data.success) {
       console.log("Update success:", response.data);
       alert("Classroom updated successfully!");
+      navigate("/classrooms");
     } else {
       console.error("Update failed:", response.data.message);
       alert(`Failed to update classroom: ${response.data.message}`);
@@ -203,7 +266,18 @@ function EditClassroom() {
   } catch (error) {
     console.error("Error updating classroom:", error);
     console.error("Error response:", error.response?.data);
-    alert(`Failed to update classroom: ${error.response?.data?.message || error.message}`);
+    
+    // Handle validation errors from backend
+    if (error.response?.status === 400) {
+      const errorMessage = error.response.data.message;
+      if (errorMessage.includes("Duration")) {
+        setValidationErrors(prev => ({ ...prev, duration: errorMessage }));
+      } else {
+        alert(`Validation Error: ${errorMessage}`);
+      }
+    } else {
+      alert(`Failed to update classroom: ${error.response?.data?.message || error.message}`);
+    }
   }
 };
 
@@ -225,6 +299,13 @@ function EditClassroom() {
 
   if (loading) return <p>Loading classroom...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
+
+  // Determine editability flags based on status and timing
+  // Editability follows acceptance criteria
+  const isStartDateEditable = !isOngoing; // editable only if NOT ongoing
+  const isCourseEditable = !isOngoing;    // editable only if NOT ongoing
+  const areLessonsEditable = !isOngoing;  // editable only if NOT ongoing
+  const isStatusEditable = !isOngoing;    // publish/archive only if NOT ongoing
 
   return (
     <div className="flex">
@@ -261,22 +342,26 @@ function EditClassroom() {
               </span>
             </div>
             <div className="classroom-actions">
-              <button 
-                className="btn-publish" 
-                onClick={() => handleStatusChange("published")}
-                disabled={isPublished}
-                title={isPublished ? "Classroom is already published" : ""}
-              >
-                Publish
-              </button>
-              <button 
-                className="btn-archive" 
-                onClick={() => handleStatusChange("archived")}
-                disabled={isPublished}
-                title={isPublished ? "Cannot archive published classrooms" : ""}
-              >
-                Archive
-              </button>
+              {isStatusEditable && (
+                <>
+                  <button 
+                    className="btn-publish" 
+                    onClick={() => handleStatusChange("published")}
+                    disabled={isPublished}
+                    title={isPublished ? "Classroom is already published" : ""}
+                  >
+                    Publish
+                  </button>
+                  <button 
+                    className="btn-archive" 
+                    onClick={() => handleStatusChange("archived")}
+                    disabled={isPublished}
+                    title={isPublished ? "Cannot archive published classrooms" : ""}
+                  >
+                    Archive
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -294,13 +379,27 @@ function EditClassroom() {
                   name="startDate" 
                   value={classroomData.startDate} 
                   onChange={handleInputChange} 
-                  disabled={isPublished}
-                  title={isPublished ? "Cannot change start date for published classrooms" : ""}
+                  disabled={!isStartDateEditable}
+                  min={isStartDateEditable ? new Date().toISOString().split("T")[0] : undefined}
+                  title={!isStartDateEditable ? "Cannot change start date for ongoing/published classrooms" : ""}
                 />
+                {validationErrors.startDate && (
+                  <span className="error-message">{validationErrors.startDate}</span>
+                )}
               </div>
               <div className="form-group">
                 <label>Duration (weeks):</label>
-                <input type="number" name="duration" value={classroomData.duration} onChange={handleInputChange} />
+                <input 
+                  type="number" 
+                  name="duration" 
+                  value={classroomData.duration} 
+                  onChange={handleInputChange}
+                  min="1"
+                  step="1"
+                />
+                {validationErrors.duration && (
+                  <span className="error-message">{validationErrors.duration}</span>
+                )}
               </div>
             </div>
           </div>
@@ -315,12 +414,16 @@ function EditClassroom() {
                   value={classroomData.supervisor}
                   onChange={handleInputChange}
                 >
+                  <option value="">-- Select a supervisor --</option>
                   {availableSupervisors.map((s) => (
                     <option key={s.user_id} value={s.user_id}>
                       {s.user_fname} {s.user_lname}
                     </option>
                   ))}
                 </select>
+                {validationErrors.supervisor && (
+                  <span className="error-message">{validationErrors.supervisor}</span>
+                )}
               </div>
             </div>
             <div className="form-row">
@@ -332,8 +435,8 @@ function EditClassroom() {
                     const selected = availableCourses.find((c) => c.course_code === e.target.value);
                     handleCourseSelect(selected);
                   }}
-                  disabled={isPublished}
-                  title={isPublished ? "Cannot change course for published classrooms" : ""}
+                  disabled={!isCourseEditable}
+                  title={!isCourseEditable ? "Cannot change course for ongoing/published classrooms" : ""}
                 >
                   <option value="">-- Select a course --</option>
                   {availableCourses.map((c) => (
@@ -365,8 +468,8 @@ function EditClassroom() {
                         <button 
                           className="remove-btn" 
                           onClick={() => removeLessonFromClassroom(lesson.lesson_id)}
-                          disabled={isPublished}
-                          title={isPublished ? "Cannot remove lessons from published classrooms" : ""}
+                          disabled={!areLessonsEditable}
+                          title={!areLessonsEditable ? "Cannot remove lessons from ongoing/published classrooms" : ""}
                         >
                           ×
                         </button>
@@ -384,8 +487,8 @@ function EditClassroom() {
                   placeholder="Search lessons..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  disabled={isPublished}
-                  title={isPublished ? "Cannot add lessons to published classrooms" : ""}
+                  disabled={!areLessonsEditable}
+                  title={!areLessonsEditable ? "Cannot add lessons to ongoing/published classrooms" : ""}
                 />
               </div>
               <div className="available-lessons-grid">
@@ -398,8 +501,8 @@ function EditClassroom() {
                     <button
                       className={`add-btn ${assignedLessons.find((l) => l.lesson_id === lesson.lesson_id) ? "added" : ""}`}
                       onClick={() => addLessonToClassroom(lesson)}
-                      disabled={isPublished || assignedLessons.find((l) => l.lesson_id === lesson.lesson_id)}
-                      title={isPublished ? "Cannot add lessons to published classrooms" : ""}
+                      disabled={!areLessonsEditable || assignedLessons.find((l) => l.lesson_id === lesson.lesson_id)}
+                      title={!areLessonsEditable ? "Cannot add lessons to ongoing/published classrooms" : ""}
                     >
                       {assignedLessons.find((l) => l.lesson_id === lesson.lesson_id) ? "✓" : "+"}
                     </button>
