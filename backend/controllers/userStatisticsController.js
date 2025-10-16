@@ -36,7 +36,7 @@ export const getUserStatistics = async (req, res) => {
       students_completed: Number(
         (studentsCompleted?.students_completed_all_courses || 0)
       ),
-    };s
+    };
 
     // Admin-only field
     if (userRole === "admin") {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Reports.css";
 import useStore from "../store";
+import setAuthToken  from "../libs/apiCalls";
 
 function Reports() {
   const [activePage, setActivePage] = useState("reports");
@@ -29,12 +30,20 @@ function Reports() {
         const [totalRes, breakdownRes, avgRes] = await Promise.all([
           api.get("/statistics/courses/total"),
           api.get("/statistics/courses/status-breakdown"),
-          api.get("/statistics/courses/average-lessons")
+          api.get("/statistics/courses/average-lessons"),
+          // api.get("/userStatistics/users")
         ]);
 
+        
         const total = totalRes.data?.data ?? {};
         const breakdown = breakdownRes.data?.data ?? {};
         const avg = avgRes.data?.data ?? {};
+        // const userStats = userStatsRes.data?.data ?? {};
+
+        
+        // const studentTotal = studentTotalRes.data?.data ?? {};
+        // const studentBreakdown = studentBreakdownRes.data?.data ?? {};
+
 
         setStats({
             total_classrooms: total.total_classrooms ?? 0,
@@ -42,6 +51,11 @@ function Reports() {
             ongoing: breakdown.ongoing ?? 0,
             ended: breakdown.ended ?? 0,
             avg_students: avg.avg_students ?? 0,
+
+            // total_students: userStats.total_students ?? 0,
+            // students_not_enrolled: userStats.students_not_enrolled ?? 0,
+            // students_ongoing: userStats.students_ongoing ?? 0,
+            // students_completed: userStats.students_completed ?? 0,
         });
         } catch (err) {
         console.error("Error fetching stats:", err);
@@ -123,6 +137,28 @@ function Reports() {
               <div className="stat-card">
                 <h3>Average Students per Classroom</h3>
                 <p>{stats.avg_students ?? 0}</p>
+              </div>
+            </div>
+
+            <h2 className="stats-title" style={{ marginTop: "2rem" }}>
+              Student Statistics
+            </h2>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <h3>Total Students</h3>
+                <p>{stats.total_students ?? 0}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Not Enrolled</h3>
+                <p>{stats.students_not_enrolled ?? 0}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Ongoing</h3>
+                <p>{stats.students_ongoing ?? 0}</p>
+              </div>
+              <div className="stat-card">
+                <h3>Completed</h3>
+                <p>{stats.students_completed ?? 0}</p>
               </div>
             </div>
           </div>

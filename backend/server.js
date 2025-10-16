@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import morgan from 'morgan';
 import routes from './routes/index.js';
-import userStatisticsRoutes from './routes/userStatisticsRoutes.js'; 
+// import userStatisticsRoutes from './routes/userStatisticsRoutes.js'; 
 import { sql } from './db.js'; // your database connection
 
 dotenv.config();
@@ -17,7 +17,6 @@ app.use(morgan('dev'));
 
 // Routes
 app.use("/api", routes);
-app.use("/api/statistics", userStatisticsRoutes); 
 
 // Test DB
 // async function testDB() {

@@ -6,6 +6,7 @@ import studentsRoutes from './studentsRoutes.js';
 import classroomsRoutes from './classroomRoutes.js';
 import userRoutes from './userRoutes.js';
 import statisticsRoutes from './statisticsRoutes.js';
+import userStatisticsRoutes from './userStatisticsRoutes.js';
 import authenticate from '../middleware/authMiddleware.js';
 import { use } from 'react';
 
@@ -24,5 +25,6 @@ router.use('/students', studentsRoutes);
 router.use('/classrooms', classroomsRoutes);
 router.use('/users', userRoutes);
 router.use('/statistics', statisticsRoutes);
+router.use('/userStatistics', userStatisticsRoutes);
 
 export default router;
