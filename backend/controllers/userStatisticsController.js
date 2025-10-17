@@ -12,7 +12,7 @@ import {
  */
 export const getUserStatistics = async (req, res) => {
   try {
-    const userRole = req.user?.user_role; // Assuming middleware sets req.user
+    const userRole = req.user?.role; // Assuming middleware sets req.user
     if (!userRole) {
       return res.status(401).json({ message: "Unauthorized access" });
     }
@@ -37,6 +37,8 @@ export const getUserStatistics = async (req, res) => {
         (studentsCompleted?.students_completed_all_courses || 0)
       ),
     };
+
+    console.log(statistics.total_students);
 
     // Admin-only field
     if (userRole === "admin") {

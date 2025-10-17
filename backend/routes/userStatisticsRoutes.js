@@ -1,7 +1,5 @@
 import express from "express";
 import { getUserStatistics } from "../controllers/userStatisticsController.js";
-// import { verifyToken, authorizeRoles } from "../middleware/auth.js"; 
-// // assuming you have middleware for JWT + role checking
 import { authenticate, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -14,11 +12,11 @@ const router = express.Router();
 //   getUserStatistics
 // );
 
-router.get(
-  "/users",
-  authenticate,
-  authorize("admin", "instructor"),
-  getUserStatistics
+router.get("/users", authenticate, authorize("admin", "instructor"),
+  (req, res) => { 
+    console.log("HITTTT")
+    return getUserStatistics(req, res);
+  }
 );
 
 export default router;

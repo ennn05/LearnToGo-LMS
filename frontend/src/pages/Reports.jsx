@@ -27,23 +27,18 @@ function Reports() {
         setError(null);
 
         // Fetch all three stats in parallel
-        const [totalRes, breakdownRes, avgRes] = await Promise.all([
+        const [totalRes, breakdownRes, avgRes, userStatsRes] = await Promise.all([
           api.get("/classroomStatistics/total"),
           api.get("/classroomStatistics/status-breakdown"),
-          api.get("/classroomStatistics/average-students")
-          // api.get("/userStatistics/users")
+          api.get("/classroomStatistics/average-students"),
+          api.get("/userStatistics/users")
         ]);
-
         
         const total = totalRes.data?.data ?? {};
         const breakdown = breakdownRes.data?.data ?? {};
         const avg = avgRes.data?.data ?? {};
-        // const userStats = userStatsRes.data?.data ?? {};
-
-        
-        // const studentTotal = studentTotalRes.data?.data ?? {};
-        // const studentBreakdown = studentBreakdownRes.data?.data ?? {};
-
+        const userStats = userStatsRes.data?.data ?? {};
+        console.log(userStatsRes.data);
 
         setStats({
             total_classrooms: total.total_classrooms ?? 0,
@@ -52,10 +47,10 @@ function Reports() {
             ended: breakdown.ended ?? 0,
             avg_students: avg.avg_students ?? 0,
 
-            // total_students: userStats.total_students ?? 0,
-            // students_not_enrolled: userStats.students_not_enrolled ?? 0,
-            // students_ongoing: userStats.students_ongoing ?? 0,
-            // students_completed: userStats.students_completed ?? 0,
+            total_students: userStats.total_students ?? 0,
+            students_not_enrolled: userStats.students_not_enrolled ?? 0,
+            students_ongoing: userStats.students_ongoing ?? 0,
+            students_completed: userStats.students_completed ?? 0,
         });
         } catch (err) {
         console.error("Error fetching stats:", err);
@@ -67,7 +62,6 @@ function Reports() {
 
     if (user) fetchStats();
     }, [user]);
-
   return (
     <div className="flex">
       {/* Sidebar */}

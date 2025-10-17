@@ -8,7 +8,7 @@ import {
   getAvgStudentsPerClassroomByInstructor,
 } from "../controllers/classroomStatisticsControllers.js";
 
-const router = express.Router();
+const router = express.Router();                
 
 // Total classrooms
 router.get("/total", authenticate, authorize("admin", "instructor"), (req, res) => {
