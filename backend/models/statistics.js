@@ -2,23 +2,24 @@ import sql from "../db.js";
 
 //instructor stats
 export const countTotalNumCoursesByInstructor = async (instructorId) => {
-    const courses = await sql`SELECT COUNT(*) FROM "LMS".course WHERE cr_course_creator = ${instructorId};`;
+    const courses = await sql`SELECT COUNT(*) FROM "LMS".course WHERE course_creator = ${instructorId};`;
     return courses[0];
 }
 
 export const numCourseBreakdownByStatusForInstructor = async (instructorId) => {
     const courses = await sql`
-    SELECT
-    CASE 
-        WHEN course_status = 'published' THEN 'Published'
-        WHEN course_status = 'draft' THEN 'Draft'
-        WHEN course_status = 'archived' THEN 'Archived'
-        ELSE 'Null'
-    END AS status,
-    COUNT(*) AS course_count
-    FROM "LMS".course 
-    WHERE course_creator = ${instructorId}
-    GROUP BY status;`;
+        SELECT
+        CASE 
+            WHEN course_status = 'published' THEN 'Published'
+            WHEN course_status = 'draft' THEN 'Draft'
+            WHEN course_status = 'archived' THEN 'Archived'
+            ELSE 'Null'
+        END AS status,
+        COUNT(*) AS course_count
+        FROM "LMS".course 
+        WHERE course_creator = ${instructorId}
+        GROUP BY status;`;
+
     return courses;
 }
 
