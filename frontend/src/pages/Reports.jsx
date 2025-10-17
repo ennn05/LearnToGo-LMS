@@ -202,6 +202,50 @@ function Reports() {
                             <p className="reports-number">{avgLessons ?? "N/A"}</p>
                         </div>
                     </div>
+                    {/** Lesson Reports */}
+                    <h1 className="reports-title">Lesson Reports</h1>
+                    <h2 className="reports-subtitle">{user?.user_role}: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
+                    <div className="reports-row">
+                        <div className="reports-card">
+                            <h3>Total Lessons</h3>
+                            <p className="reports-number">{totalLessons ?? "N/A"}</p>
+                        </div>
+                        <div className="reports-card reports-pie">
+                            <h3>Lesson by Status</h3>
+                            {lessonStatusBreakdown.length === 0 ? (
+                                <p>No lessons found.</p>
+                            ) : (
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <PieChart>
+                                        <Pie
+                                            data={lessonStatusBreakdown}
+                                            dataKey="value"
+                                            nameKey="name"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            label
+                                        >
+                                            {lessonStatusBreakdown.map((entry, index) => (
+                                                <Cell
+                                                    key={`cell-lesson-${index}`}
+                                                    fill={STATUS_COLORS[entry.name] || STATUS_COLORS["Null"]}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+                        <div className="reports-card">
+                            <h3>Average Credit Points per Lesson</h3>
+                            <p className="reports-number">
+                                {avgCreditPoint ? avgCreditPoint.toFixed(2) : "N/A"}
+                            </p>
+                        </div>
+                    </div>
                     {/** Additional reports can be added here in the future */}
                 </div>
             </div>
