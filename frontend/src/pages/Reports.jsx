@@ -12,6 +12,9 @@ function Reports() {
     const [totalCourses, setTotalCourses] = useState(null);
     const [avgLessons, setAvgLessons] = useState(null);
     const [statusBreakdown, setStatusBreakdown] = useState([]);
+    const [totalLessons, setTotalLessons] = useState(null);
+    const [avgCreditPoint, setAvgCreditPoint] = useState(null);
+    const [lessonStatusBreakdown, setLessonStatusBreakdown] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const STATUS_COLORS = {
@@ -58,7 +61,34 @@ function Reports() {
                 setLoading(false);
             }
         };
+        const fetchLessonReports = async () => {
+            try {
+                const [totalRes, avgRes, breakdownRes] = await Promise.all([
+                    api.get("/statistics/lessons/total"),
+                    api.get("/statistics/lessons/average-cp"),
+                    api.get("/statistics/lessons/status-breakdown"),
+                ]);
+                if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
+                    throw new Error("Some lesson reports could not be retrieved.");
+                }
+                setTotalLessons(totalRes.data.data.count);
+                setAvgCreditPoint(avgRes.data.data.avg_credit_point);
+                setLessonStatusBreakdown(
+                    ALL_STATUSES.map(status => {
+                        const found = breakdownRes.data.data.find(item => item.status === status);
+                        return {
+                            name: status,
+                            value: found ? Number(found.lesson_count) : 0
+                        };
+                    })
+                );
+            } catch (err) {
+                console.error("Error fetching lesson reports:", err);
+                setError("Failed to load lesson reports.");
+            }
+        };
         fetchCourseReports();
+        fetchLessonReports();
     }, []);
 
     if (loading) {
