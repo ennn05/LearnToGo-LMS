@@ -20,6 +20,7 @@ function StudentLessonDetails() {
                 setError(res.message || "Lesson not found");
                 setLesson(null);
             } else {
+                console.log("Lessons fetched:", res.data);
                 setLesson(res.data);
             }
         } catch (err) {

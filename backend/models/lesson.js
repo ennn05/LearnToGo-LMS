@@ -63,30 +63,16 @@ export const getLessonById = async (lessonId) => {
 };
 
 // to be implemented - to include student's grade and completion for this lesson
-export const getStudentLessonById = async (studentId) => {
+export const getStudentLessonById = async (studentId, lessonId) => {
   // dummy data for now
-  const lesson = `
+  const lesson = await sql`
   select 
-    g.stu_user_id,
-        COALESCE(
-        json_agg(
-          json_build_object(
-            'lesson_id', l.lesson_id,
-            'lesson_title', l.lesson_title,
-            'lesson_credit', l.lesson_credit,
-            'lesson_status', l.lesson_status,
-            'completion', g.completion,
-            'grade', g.grade_value
-          )
-        ) FILTER (WHERE l.lesson_id IS NOT NULL),
-        '[]'::json
-      ) 
+    l.*, g.*
   from "LMS".grade g join "LMS".lesson l on g.lesson_id = l.lesson_id
-    join "LMS".student s on g.stu_user_id = s.stu_user_id
   where g.stu_user_id = ${studentId}
-  group by g.stu_user_id;
+  and g.lesson_id = ${lessonId};
   `;
-  return lesson
+  return lesson[0];
 };
 
 // Get lessons by instructor

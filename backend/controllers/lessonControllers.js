@@ -29,8 +29,12 @@ export const getLesson = async (req, res) => {
 
 export const getStudentLesson = async (req, res) => {
     const { id } = req.params;
+    const studentId = req?.user?.id;
+    if (!studentId) return res.status(401).json({success: false, error: "Unauthorized" });
+
     try {
-        const lesson = await getStudentLessonById(id);
+        const lesson = await getStudentLessonById(studentId, id);
+        console.log(lesson);
         if (lesson) {
             return res.status(200).json({ success: true, data: lesson });
         }
