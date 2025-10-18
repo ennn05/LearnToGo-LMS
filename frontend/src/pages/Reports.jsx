@@ -113,7 +113,7 @@ function Reports() {
 
                 {/* Middle: Pie Chart */}
                 <div className="piechart-section">
-                  <h3>Status Breakdown</h3>
+                  <h3>Classroom Status Breakdown</h3>
                   <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                       <Pie
