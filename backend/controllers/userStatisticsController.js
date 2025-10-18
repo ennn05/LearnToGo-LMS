@@ -35,10 +35,10 @@ export const getUserStatistics = async (req, res) => {
       data.totalInstructors = Number(totalInstructors[0].count);
     }
 
-    res.status(200).json(data);
+    res.status(200).json({ success: true, data: data });
   } catch (err) {
     console.error("Error fetching user statistics:", err);
-    res.status(500).json({ error: "Failed to fetch user statistics" });
+    res.status(500).json({ success: false, message: "Failed to fetch user statistics" });
   }
 };
 
