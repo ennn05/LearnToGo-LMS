@@ -166,17 +166,21 @@ function StudentCourseDetails() {
 
       {/* === Header Row (Progress + Button) === */}
       <div className="course-header-row">
-        <div className="progress-container">
-          <span className="progress-label">Progress</span>
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${course.completion_rate}%` }}
-            ></div>
+        {enrolled ? (
+          <div className="progress-container">
+            <span className="progress-label">Progress</span>
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${course.completion_rate ?? 0}%` }}
+              ></div>
+            </div>
+            <span className="progress-percent">{course.completion_rate ?? 0}%</span>
           </div>
-          <span className="progress-percent">{course.completion_rate}%</span>
-        </div>
-
+        ) : (
+          <div className="progress-placeholder"></div> // keeps layout consistent
+        )}
+        
         {fromMyCourses ? (
           <button
             style={{
