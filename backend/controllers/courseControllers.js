@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent, addCourseEnrollment, getPublishedCourses, getAllStudentsByCourseEnrolled } from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent, addCourseEnrollment, getPublishedCourses, getAllStudentsByCourseEnrolled, addStudentLessonsForCourse } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -94,10 +94,16 @@ export const enrollCourse = async (req, res) => {
 
         const enrollment = await addCourseEnrollment(studentId, courseCode);
         console.log(enrollment);
-        if (enrollment) {
-            return res.status(201).json({ success: true, data: enrollment, message: "Enrolled successfully." });
+        if (!enrollment) {
+            return res.status(409).json({ success: false, message: "Failed to enroll in course." });
         }
-        return res.status(409).json({ success: false, message: "Failed to enroll in course." });
+
+        const enrolledLessons = await addStudentLessonsForCourse(studentId, courseCode);
+
+        if (!enrolledLessons) {
+            return res.status(409).json({ success: false, message: "Failed to enroll in lessons for course." });
+        }
+        return res.status(201).json({ success: true, data: enrollment, message: "Enrolled successfully." });
     }
     catch (error) {
         console.error("Error enrolling course:", error);
