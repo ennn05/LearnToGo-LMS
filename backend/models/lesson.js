@@ -67,8 +67,10 @@ export const getStudentLessonById = async (studentId, lessonId) => {
   // dummy data for now
   const lesson = await sql`
   select 
-    l.*, g.*
+    l.*, g.*, u.user_id, u.user_fname, u.user_lname, u.user_email, u.user_role
   from "LMS".grade g join "LMS".lesson l on g.lesson_id = l.lesson_id
+  LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+  LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
   where g.stu_user_id = ${studentId}
   and g.lesson_id = ${lessonId};
   `;
