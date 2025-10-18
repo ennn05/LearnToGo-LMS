@@ -167,25 +167,27 @@ export const deleteLesson = async (lessonId) => {
     return lesson[0];
 }
 
-export const getPublishedLessons = async (studentId, lessonId) => {
+export const getPublishedLessons = async () => {
     const lessons = await sql`
-    select 
-          l.lesson_id,
-          l.lesson_title,
-          l.lesson_desc,
-          l.lesson_obj,
-          l.lesson_effort_per_week,
-          l.lesson_date_created,
-          l.lesson_date_updated,
-          l.lesson_credit,
-          l.lesson_designer,
-          l.lesson_status,
-          g.stu_user_id,
-          g.completion,
-          g.grade_value
-    from "LMS".grade g join "LMS".lesson l on g.lesson_id = l.lesson_id
-      join "LMS".student s on g.stu_user_id = s.stu_user_id
-    where g.stu_user_id = ${studentId} and g.lesson_id = ${lessonId};
+      SELECT 
+            cl.cl_course_code, 
+            COALESCE(
+              json_agg(
+                json_build_object(
+                  'cl_id', cl.cl_id,
+                  'lesson_id', l.lesson_id,
+                  'lesson_title', l.lesson_title,
+                  'lesson_credit', l.lesson_credit,
+                  'lesson_status', l.lesson_status
+                )
+              ) FILTER (WHERE l.lesson_id IS NOT NULL),
+              '[]'::json
+            ) AS lessons
+        FROM "LMS".course_lesson cl
+        LEFT JOIN "LMS".lesson l 
+            ON cl.cl_lesson_id = l.lesson_id
+        WHERE l.lesson_status = 'published'
+        GROUP BY cl.cl_course_code;
     `;
     return lessons;
 };
