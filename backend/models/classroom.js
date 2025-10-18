@@ -304,7 +304,7 @@ export const getLessonsWithStudentsByClassroom = async (cr_id) => {
             'stu_user_email', u.user_email,
             'attendance', g.attendance,
             'completion', g.completion,
-            'grade_value', g.grade_value,
+            'grade', g.grade_value,
             'pass', g.pass
           )
         )
