@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Reports.css";
 import useStore from "../store";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 function Reports() {
   const [activePage, setActivePage] = useState("reports");
@@ -101,31 +102,50 @@ function Reports() {
           ) : !stats ? (
             <p>No classroom data available yet.</p>
           ) : (
-            <div className="stats-container">
-            <h2 className="stats-title">Classroom Statistics</h2>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <h3>Total Classrooms</h3>
-                <p>{stats.total_classrooms ?? 0}</p>
-              </div>
-              <div className="stat-card">
-                <h3>Not Started</h3>
-                <p>{stats.not_started ?? 0}</p>
-              </div>
-              <div className="stat-card">
-                <h3>Ongoing</h3>
-                <p>{stats.ongoing ?? 0}</p>
-              </div>
-              <div className="stat-card">
-                <h3>Ended</h3>
-                <p>{stats.ended ?? 0}</p>
-              </div>
-              <div className="stat-card">
-                <h3>Average Students per Classroom</h3>
-                <p>{stats.avg_students ?? 0}</p>
+           <div className="stats-container">
+              <h2 className="stats-title">Classroom Statistics</h2>
+              <div className="stats-row">
+                {/* Left: Total Classrooms */}
+                <div className="stat-card">
+                  <h3>Total Classrooms</h3>
+                  <p>{stats.total_classrooms ?? 0}</p>
+                </div>
+
+                {/* Middle: Pie Chart */}
+                <div className="piechart-section">
+                  <h3>Status Breakdown</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <PieChart>
+                      <Pie
+                        dataKey="value"
+                        data={[
+                          { name: "Not Started", value: stats.not_started ?? 0 },
+                          { name: "Ongoing", value: stats.ongoing ?? 0 },
+                          { name: "Ended", value: stats.ended ?? 0 },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        label
+                      >
+                        <Cell fill="#f39c12" /> {/* Not Started */}
+                        <Cell fill="#3498db" /> {/* Ongoing */}
+                        <Cell fill="#2ecc71" /> {/* Ended */}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Right: Average Students */}
+                <div className="stat-card">
+                  <h3>Average Students per Classroom</h3>
+                  <p>{stats.avg_students ?? 0}</p>
+                </div>
               </div>
             </div>
-          </div>
+
 
           )}
         </div>
