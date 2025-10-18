@@ -161,39 +161,46 @@ function StudentCourseDetails() {
         </div>
         
         <div className="course-details-container">
-          {success && <span style={{ display: "block", color: "#27ae60", textAlign: "center", padding: "0 12px" }}>Enrolled successfully!</span>}
-          {unEnrollSuccess && <span style={{ display: "block", color: "#e74c3c", textAlign: "center", padding: "0 12px"}}>Unenrolled successfully!</span>}
-          {/* Enroll Button */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
-              {fromMyCourses ? (
-                <button
-                  style={{
-                    width: "fit-content",
-                    backgroundColor: "#e74c3c",
-                    opacity: unenrolling || !enrolled ? 0.6 : 1,
-                    cursor: unenrolling || !enrolled ? "not-allowed" : "pointer",
-                  }}
-                  className="btn-edit"
-                  onClick={handleUnenroll}
-                  disabled={unenrolling || !enrolled}
-                >
-                  {unenrolling ? "Un-enrolling..." : "Un-enroll"}
-                </button>
-              ) : (
-                <button
-                  style={{
-                    width: "fit-content",
-                    opacity: enrolling || enrolled ? 0.6 : 1,
-                    cursor: enrolling || enrolled ? "not-allowed" : "pointer",
-                  }}
-                  className="btn-edit"
-                  onClick={handleEnroll}
-                  disabled={enrolling || enrolled}
-                >
-                  {enrolling ? "Enrolling..." : "Enroll"}
-                </button>
-              )}
+
+      {/* === Header Row (Progress + Button) === */}
+      <div className="course-header-row">
+        <div className="progress-container">
+          <span className="progress-label">Progress</span>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: "60%" }}></div>
           </div>
+          <span className="progress-percent">60%</span>
+        </div>
+
+        {fromMyCourses ? (
+          <button
+            style={{
+              width: "fit-content",
+              backgroundColor: "#e74c3c",
+              opacity: unenrolling || !enrolled ? 0.6 : 1,
+              cursor: unenrolling || !enrolled ? "not-allowed" : "pointer",
+            }}
+            className="btn-edit"
+            onClick={handleUnenroll}
+            disabled={unenrolling || !enrolled}
+          >
+            {unenrolling ? "Un-enrolling..." : "Un-enroll"}
+          </button>
+        ) : (
+          <button
+            style={{
+              width: "fit-content",
+              opacity: enrolling || enrolled ? 0.6 : 1,
+              cursor: enrolling || enrolled ? "not-allowed" : "pointer",
+            }}
+            className="btn-edit"
+            onClick={handleEnroll}
+            disabled={enrolling || enrolled}
+          >
+            {enrolling ? "Enrolling..." : "Enroll"}
+          </button>
+        )}
+      </div>
           {/* Course Information */}
           <div className="course-info">
             <div className="info-item">
