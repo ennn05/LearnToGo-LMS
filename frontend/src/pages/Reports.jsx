@@ -51,6 +51,8 @@ function Reports() {
             students_not_enrolled: userStats.students_not_enrolled ?? 0,
             students_ongoing: userStats.students_ongoing ?? 0,
             students_completed: userStats.students_completed ?? 0,
+
+            total_instructors: userStats.total_instructors ?? 0
         });
         } catch (err) {
         console.error("Error fetching stats:", err);
@@ -155,6 +157,23 @@ function Reports() {
                 <p>{stats.students_completed ?? 0}</p>
               </div>
             </div>
+
+
+              {/* === Instructor Section (Admin Only) === */}
+              {user?.user_role === "admin" && (
+                <>
+                  <h2 className="stats-title" style={{ marginTop: "2rem" }}>
+                    Instructor Statistics
+                  </h2>
+                  <div className="stats-grid">
+                    <div className="stat-card">
+                      <h3>Total Instructors</h3>
+                      <p>{stats.total_instructors}</p>
+                    </div>
+                  </div>
+                </>
+              )}
+
           </div>
 
           )}
