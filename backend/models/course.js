@@ -62,6 +62,17 @@ export const addCourseEnrollment = async (studentId, courseCode) => {
     return course[0];
 }   
 
+export const addStudentLessonsForCourse = async (studentId, courseCode) => {
+    const lessons = await sql`INSERT INTO grade (stu_user_id, lesson_id)
+        SELECT ${studentId}, cl.cl_lesson_id
+        FROM course_lesson cl
+        WHERE cl.cl_course_code = ${courseCode}
+        ON CONFLICT (stu_user_id, lesson_id) DO NOTHING;
+        `;
+
+    return lessons;
+}   
+
 export const getCourseByCode = async (courseCode) => {
     const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
                             COALESCE(json_agg(
