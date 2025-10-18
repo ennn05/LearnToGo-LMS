@@ -3,54 +3,42 @@ import {
   totalNumOfStudentsNotEnrolledInCourse,
   totalNumOfStudentsInOngoingCourse,
   totalNumOfStudentsCompletedAllCourses,
-  totalNumOfInstructors
+  totalNumOfInstructors,
 } from "../models/statistics.js";
 
-/**
- * Controller: getUserStatistics
- * For both Admin and Instructor roles
- */
+// Controller to fetch user statistics (for admin or instructor view)
 export const getUserStatistics = async (req, res) => {
   try {
-    const userRole = req.user?.role; // Assuming middleware sets req.user
-    if (!userRole) {
-      return res.status(401).json({ message: "Unauthorized access" });
-    }
+    const role = req.user?.role; // 'admin' or 'instructor'
 
-    // Common statistics for Admin & Instructor
-    const totalStudents = await totalNumOfStudents();
-    const studentsNotEnrolled = await totalNumOfStudentsNotEnrolledInCourse();
-    const studentsOngoing = await totalNumOfStudentsInOngoingCourse();
-    const studentsCompleted = await totalNumOfStudentsCompletedAllCourses();
+    const [
+      totalStudents,
+      notEnrolled,
+      ongoing,
+      completedAll,
+    ] = await Promise.all([
+      totalNumOfStudents(),
+      totalNumOfStudentsNotEnrolledInCourse(),
+      totalNumOfStudentsInOngoingCourse(),
+      totalNumOfStudentsCompletedAllCourses(),
+    ]);
 
-    const statistics = {
-      total_students: Number(
-        (totalStudents?.count || totalStudents?.total || 0)
-      ),
-      students_not_enrolled: Number(
-        (studentsNotEnrolled?.count || 0)
-      ),
-      students_ongoing: Number(
-        (studentsOngoing?.ongoing_course || studentsOngoing?.count || 0)
-      ),
-      students_completed: Number(
-        (studentsCompleted?.students_completed_all_courses || 0)
-      ),
+    let data = {
+      totalStudents: Number(totalStudents[0].count),
+      totalNotEnrolled: Number(notEnrolled[0].count),
+      totalInOngoingCourse: Number(ongoing[0].ongoing_course),
+      totalCompletedAllCourses: Number(completedAll.students_completed_all_courses),
     };
 
-    console.log(statistics.total_students);
-
-    // Admin-only field
-    if (userRole === "admin") {
-      const instructors = await totalNumOfInstructors();
-      statistics.total_instructors = Number(
-        (instructors?.count || instructors?.total || 0)
-      );
+    if (role === 'admin') {
+      const [totalInstructors] = await Promise.all([totalNumOfInstructors()]);
+      data.totalInstructors = Number(totalInstructors[0].count);
     }
 
-    res.status(200).json({ success: true, statistics });
-  } catch (error) {
-    console.error("Error fetching user statistics:", error);
-    res.status(500).json({ message: "Failed to load user statistics." });
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Error fetching user statistics:", err);
+    res.status(500).json({ error: "Failed to fetch user statistics" });
   }
 };
+
