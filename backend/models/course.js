@@ -88,6 +88,47 @@ export const getCourseByCode = async (courseCode) => {
     return courses[0];
 }
 
+export const getStudentCourseByCode = async (courseCode, studentId) => {
+    const courses = await sql`SELECT c.*, u.user_id, u.user_fname, u.user_lname, 
+                            COALESCE(json_agg(
+                                json_build_object(
+                                    'lesson_id', l.lesson_id,
+                                    'lesson_title', l.lesson_title,
+                                    'lesson_credit', l.lesson_credit
+                                )
+                            ) FILTER (WHERE l.lesson_id IS NOT NULL),
+                                '[]' ::json)
+                            AS lessons,
+                            (
+                                SELECT 
+                                ROUND(
+                                    (
+                                    COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+                                    / NULLIF(COUNT(*), 0)
+                                    ) * 100,
+                                    2
+                                )
+                                FROM "LMS".course_lesson cl2
+                                LEFT JOIN "LMS".grade g 
+                                ON g.lesson_id = cl2.cl_lesson_id
+                                AND g.stu_user_id = ${studentId}
+                                WHERE cl2.cl_course_code = c.course_code
+                            ) AS completion_rate
+                                FROM "LMS".course c 
+                                LEFT JOIN "LMS".instructor i 
+                                    ON c.course_creator = i.inst_user_id 
+                                LEFT JOIN "LMS".user u
+                                    ON i.inst_user_id = u.user_id 
+                                LEFT JOIN "LMS".course_lesson cl
+                                    ON c.course_code = cl.cl_course_code
+                                LEFT JOIN "LMS".lesson l
+                                    ON cl.cl_lesson_id = l.lesson_id
+                            WHERE c.course_code = ${courseCode}
+                            GROUP BY c.course_code, u.user_id;`;
+    
+    return courses[0];
+}
+
 export const createCourse = async (courseData) => {
     const course = await sql`INSERT INTO "LMS".course 
     (course_code, course_title, course_total_credit, course_date_created, course_date_updated, course_creator, course_status)
@@ -186,3 +227,20 @@ export const removeCourseEnrollment = async (studentId, courseCode) => {
     `;
     return result[0]; // returns deleted row if successful, undefined if nothing deleted
 };
+/*
+export const getPercentageLessonCompletionByStudentForCourse = async (studentId, courseCode) => {
+    const result = await sql `SELECT
+    ROUND(
+        (
+        COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+        / NULLIF(COUNT(*), 0)
+        ) * 100,
+        2
+    ) AS completion_rate
+    FROM "LMS".course_lesson cl
+    LEFT JOIN "LMS".grade g 
+    ON g.lesson_id = cl.cl_lesson_id
+    AND g.stu_user_id = ${studentId}
+    WHERE cl.cl_course_code = ${courseCode} `
+    return result
+}*/
