@@ -233,12 +233,12 @@ function ClassroomGrade() {
                             onClick={async () => {
                                 try {
                                     const studentData = lesson.students.map(stu => ({
-                                        stucourse_id: stu.stucourse_id,
+                                        stu_user_id: stu.stu_user_id,
                                         attendance: stu.attendance || false,
                                         grade: stu.grade || 0,
                                         completion: stu.completion || false,
                                     }));
-                                    await api.put(`classrooms/${classroomCode}/lessons/${lesson.crcl_cl_id}/students`, studentData);
+                                    await api.put(`classrooms/${classroomCode}/lessons/${lesson.lesson_id}/students`, studentData);
                                     alert("Grades updated successfully!");
                                 } catch (err) {
                                     console.error("Error updating student marks:", err);
