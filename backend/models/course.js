@@ -63,9 +63,9 @@ export const addCourseEnrollment = async (studentId, courseCode) => {
 }   
 
 export const addStudentLessonsForCourse = async (studentId, courseCode) => {
-    const lessons = await sql`INSERT INTO grade (stu_user_id, lesson_id)
+    const lessons = await sql`INSERT INTO "LMS".grade (stu_user_id, lesson_id)
         SELECT ${studentId}, cl.cl_lesson_id
-        FROM course_lesson cl
+        FROM "LMS".course_lesson cl
         WHERE cl.cl_course_code = ${courseCode}
         ON CONFLICT (stu_user_id, lesson_id) DO NOTHING;
         `;
