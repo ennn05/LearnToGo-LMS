@@ -9,8 +9,9 @@ import {
   addClassroomStudent,
   editStudentMarksForClassroomLesson,
   getLessonsWithStudentsByClassroom,
-  addClassroomStudentLesson,
-  getClassroomsByStudent
+  // addClassroomStudentLesson,
+  getClassroomsByStudent,
+  updateStudentLessonGrade
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -168,17 +169,17 @@ export const addClassroom = async (req, res) => {
             }
 
 
-            try {
-                for (const crcl of createdLessons) {
-                  for (const cs of createdStudents) {
-                    await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
-                  }
-                }
-            }
-            catch (error) {
-              console.error("Error in adding cl_stu_lesson records:", error);
-              return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
-            }
+            // try {
+            //     for (const crcl of createdLessons) {
+            //       for (const cs of createdStudents) {
+            //         await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
+            //       }
+            //     }
+            // }
+            // catch (error) {
+            //   console.error("Error in adding cl_stu_lesson records:", error);
+            //   return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
+            // }
 
             return res.status(201).json({ success: true, data: classroom });
         }
