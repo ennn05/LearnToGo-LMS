@@ -55,11 +55,11 @@ function Reports() {
           ongoing: breakdown.ongoing ?? 0,
           ended: breakdown.ended ?? 0,
           avg_students: avg.avg_students ?? 0,
-          total_students: userStats.total_students ?? 0,
-          students_not_enrolled: userStats.students_not_enrolled ?? 0,
-          students_ongoing: userStats.students_ongoing ?? 0,
-          students_completed: userStats.students_completed ?? 0,
-          total_instructors: userStats.total_instructors ?? 0,
+          total_students: userStats.totalStudents ?? 0,
+          students_not_enrolled: userStats.totalNotEnrolled ?? 0,
+          students_ongoing: userStats.totalInOngoingCourse ?? 0,
+          students_completed: userStats.totalCompletedAllCourses ?? 0,
+          total_instructors: userStats.totalInstructors ?? 0,
         });
       } catch (err) {
         console.error("Error fetching stats:", err);
