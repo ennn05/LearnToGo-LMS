@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css"; 
-import useStore from "../store/index.js";
-import api from "../libs/apiCalls.js";  
+import useStore from "../store/index.js"; 
+import api, { setAuthToken } from "../libs/apiCalls.js";
 
 function Login() {
   // State for switching between login/register forms
@@ -51,6 +51,9 @@ function Login() {
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
 
+        // Set auth token globally for axios
+        setAuthToken(res.token);
+
         // setTimeout(() => navigate("/"), 1000);
       } else {
         setLoginMsg(" No user found");
@@ -81,6 +84,8 @@ function Login() {
         const userInfo = { ...res.user, token: res.token };
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
+
+        setAuthToken(res.token);
 
         // setTimeout(() => navigate("/"), 1000);
       } else {
