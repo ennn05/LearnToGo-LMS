@@ -506,7 +506,7 @@ function CreateClassroom() {
                                 </thead>
                                 <tbody>
                                     {availableStudents.map(student => (
-                                        <tr key={student.user_id}>
+                                        <tr key={student.stu_user_id}>
                                             <td>
                                                 <input 
                                                     type="checkbox"
