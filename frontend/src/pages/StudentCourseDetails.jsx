@@ -26,6 +26,8 @@ function StudentCourseDetails() {
       setLoading(true);
       try {
         const { data: response } = await api.get(`courses/${courseId}`);
+        console.log("pogg");
+        console.log(response.data);
         setCourse(response.data);
         setEnrolled(fromMyCourses);
       } catch (err) {
@@ -167,9 +169,12 @@ function StudentCourseDetails() {
         <div className="progress-container">
           <span className="progress-label">Progress</span>
           <div className="progress-bar">
-            <div className="progress-fill" style={{ width: "60%" }}></div>
+            <div
+              className="progress-fill"
+              style={{ width: `${course.completion_rate}%` }}
+            ></div>
           </div>
-          <span className="progress-percent">60%</span>
+          <span className="progress-percent">{course.completion_rate}%</span>
         </div>
 
         {fromMyCourses ? (
