@@ -147,6 +147,7 @@ body {
     gap: 20px;
     align-items: stretch;
     flex-wrap: wrap;
+    margin-bottom: 40px;
 }
 
 .reports-card {

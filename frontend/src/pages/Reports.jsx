@@ -12,6 +12,9 @@ function Reports() {
     const [totalCourses, setTotalCourses] = useState(null);
     const [avgLessons, setAvgLessons] = useState(null);
     const [statusBreakdown, setStatusBreakdown] = useState([]);
+    const [totalLessons, setTotalLessons] = useState(null);
+    const [avgCreditPoint, setAvgCreditPoint] = useState(null);
+    const [lessonStatusBreakdown, setLessonStatusBreakdown] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const STATUS_COLORS = {
@@ -58,7 +61,34 @@ function Reports() {
                 setLoading(false);
             }
         };
+        const fetchLessonReports = async () => {
+            try {
+                const [totalRes, avgRes, breakdownRes] = await Promise.all([
+                    api.get("/statistics/lessons/total"),
+                    api.get("/statistics/lessons/average-cp"),
+                    api.get("/statistics/lessons/status-breakdown"),
+                ]);
+                if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
+                    throw new Error("Some lesson reports could not be retrieved.");
+                }
+                setTotalLessons(Number(totalRes.data.data[0].count));
+                setAvgCreditPoint(Number(avgRes.data.data[0].round));
+                setLessonStatusBreakdown(
+                    ALL_STATUSES.map(status => {
+                        const found = breakdownRes.data.data.find(item => item.status === status);
+                        return {
+                            name: status,
+                            value: found ? Number(found.lesson_count) : 0
+                        };
+                    })
+                );
+            } catch (err) {
+                console.error("Error fetching lesson reports:", err);
+                setError("Failed to load lesson reports.");
+            }
+        };
         fetchCourseReports();
+        fetchLessonReports();
     }, []);
 
     if (loading) {
@@ -170,6 +200,50 @@ function Reports() {
                         <div className="reports-card">
                             <h3>Average Lessons per Course</h3>
                             <p className="reports-number">{avgLessons ?? "N/A"}</p>
+                        </div>
+                    </div>
+                    {/** Lesson Reports */}
+                    <h1 className="reports-title">Lesson Reports</h1>
+                    <h2 className="reports-subtitle">{user?.user_role}: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
+                    <div className="reports-row">
+                        <div className="reports-card">
+                            <h3>Total Lessons</h3>
+                            <p className="reports-number">{totalLessons ?? "N/A"}</p>
+                        </div>
+                        <div className="reports-card reports-pie">
+                            <h3>Lesson by Status</h3>
+                            {lessonStatusBreakdown.length === 0 ? (
+                                <p>No lessons found.</p>
+                            ) : (
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <PieChart>
+                                        <Pie
+                                            data={lessonStatusBreakdown}
+                                            dataKey="value"
+                                            nameKey="name"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            label
+                                        >
+                                            {lessonStatusBreakdown.map((entry, index) => (
+                                                <Cell
+                                                    key={`cell-lesson-${index}`}
+                                                    fill={STATUS_COLORS[entry.name] || STATUS_COLORS["Null"]}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+                        <div className="reports-card">
+                            <h3>Average Credit Points per Lesson</h3>
+                            <p className="reports-number">
+                                {avgCreditPoint ? avgCreditPoint.toFixed(2) : "N/A"}
+                            </p>
                         </div>
                     </div>
                     {/** Additional reports can be added here in the future */}

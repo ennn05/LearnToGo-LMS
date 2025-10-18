@@ -82,3 +82,62 @@ export const avgNumLessonsPerCourse = async() => {
     `;
     return result[0];
 }
+
+//us43 : lesson stats (instructor view)
+
+export const countTotalNumLessonsByInstructor = async (instructorId) => {
+  const total = await sql `SELECT COUNT(*) FROM "LMS".lesson WHERE lesson_designer = ${instructorId}`
+  return total
+}
+
+export const countLessonsByStatusByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT
+    CASE 
+        WHEN lesson_status = 'published' THEN 'Published'
+        WHEN lesson_status = 'draft' THEN 'Draft'
+        WHEN lesson_status = 'archived' THEN 'Archived'
+        ELSE 'Null'
+    END AS status,
+    COUNT(*) AS lesson_count
+    FROM "LMS".lesson 
+    WHERE lesson_designer = ${instructorId}
+    GROUP BY status;`;
+  return total
+}
+
+//avg credit points per lesson 
+export const avgCreditPointsPerLessonByInstructor = async (instructorId) => {
+  const total = await sql 
+    `select round(avg(lesson_credit), 2) from "LMS".lesson where lesson_designer = ${instructorId}`;
+  return total
+}
+
+//us43 : lesson stats (admin view)
+export const countTotalNumLessons = async () => {
+  const total = await sql `SELECT COUNT(*) FROM "LMS".lesson`
+  return total
+}
+
+
+export const countLessonsByStatus = async () => {
+  const total = await sql 
+    `SELECT
+    CASE 
+        WHEN lesson_status = 'published' THEN 'Published'
+        WHEN lesson_status = 'draft' THEN 'Draft'
+        WHEN lesson_status = 'archived' THEN 'Archived'
+        ELSE 'Null'
+    END AS status,
+    COUNT(*) AS lesson_count
+    FROM "LMS".lesson 
+    GROUP BY status;`;
+  return total
+}
+
+//avg credit points per lesson 
+export const avgCreditPointsPerLesson = async () => {
+  const total = await sql 
+    `select round(avg(lesson_credit), 2) from "LMS".lesson`;
+  return total
+}
