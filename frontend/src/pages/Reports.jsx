@@ -71,8 +71,8 @@ function Reports() {
                 if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
                     throw new Error("Some lesson reports could not be retrieved.");
                 }
-                setTotalLessons(totalRes.data.data.count);
-                setAvgCreditPoint(avgRes.data.data.avg_credit_point);
+                setTotalLessons(Number(totalRes.data.data[0].count));
+                setAvgCreditPoint(Number(avgRes.data.data[0].round));
                 setLessonStatusBreakdown(
                     ALL_STATUSES.map(status => {
                         const found = breakdownRes.data.data.find(item => item.status === status);
