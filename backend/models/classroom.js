@@ -255,22 +255,37 @@ export const getClassroomsByStudent = async (studentId) => {
     return result[0];
 }*/
 
-export const upsertStudentLessonGrade = async (gradeData) => {
-  const { stu_user_id, lesson_id, attendance, completion, grade_value } = gradeData;
+// export const upsertStudentLessonGrade = async (gradeData) => {
+//   const { stu_user_id, lesson_id, attendance, completion, grade_value } = gradeData;
 
-  const result = await sql`
-    INSERT INTO "LMS".grade (stu_user_id, lesson_id, attendance, completion, grade_value)
-    VALUES (${stu_user_id}, ${lesson_id}, ${attendance}, ${completion}, ${grade_value})
-    ON CONFLICT (stu_user_id, lesson_id)
-    DO UPDATE
-    SET attendance = EXCLUDED.attendance,
-        completion = EXCLUDED.completion,
-        grade_value = EXCLUDED.grade_value
-    WHERE "LMS".grade.pass = false  -- only update if student hasn't passed
+//   const result = await sql`
+//     INSERT INTO "LMS".grade (stu_user_id, lesson_id, attendance, completion, grade_value)
+//     VALUES (${stu_user_id}, ${lesson_id}, ${attendance}, ${completion}, ${grade_value})
+//     ON CONFLICT (stu_user_id, lesson_id)
+//     DO UPDATE
+//     SET attendance = EXCLUDED.attendance,
+//         completion = EXCLUDED.completion,
+//         grade_value = EXCLUDED.grade_value
+//     WHERE "LMS".grade.pass = false  -- only update if student hasn't passed
+//     RETURNING *;
+//   `;
+//   return result[0]; // Will be undefined if no update (already passed)
+// };
+
+export const updateStudentLessonGrade = async (lessonId, studentGrade) => {
+  const { stu_user_id, attendance, completion, grade } = studentGrade;
+
+  const result = await sql`UPDATE "LMS".grade
+    SET
+      attendance = ${attendance},
+      completion = ${completion},
+      grade_value = ${grade}
+    WHERE stu_user_id = ${stu_user_id} AND lesson_id = ${lessonId}
     RETURNING *;
   `;
-  return result[0]; // Will be undefined if no update (already passed)
+  return result[0]; 
 };
+
 export const getLessonsWithStudentsByClassroom = async (cr_id) => {
   const lessonsWithStudents = await sql`
     SELECT 
