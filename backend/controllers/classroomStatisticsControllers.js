@@ -8,6 +8,7 @@ import {
   numClassroomNotStarted,
   numClassroomNotStartedByInstructor,
   avgNumOfStuPerClassroomByInstructor,
+  avgNumOfStuPerClassroom,
 } from "../models/statistics.js";
 
 //  Get total number of classrooms
@@ -69,16 +70,44 @@ export const getClassroomStatusBreakdownByInstructor = async (req, res) => {
 };
 
 //  Average number of students per classroom
-export const getAvgStudentsPerClassroomByInstructor = async (req, res) => {
+export const getAvgStudentsPerClassroom = async (req, res) => {
+  const userRole = req?.user?.role;
   const instructorId = req?.user?.id;
-  if (!instructorId) return res.status(401).json({ success: false, message: "Unauthorized" });
+
+  if (!userRole) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Unauthorized - Missing role." });
+  }
 
   try {
-    const result = await avgNumOfStuPerClassroomByInstructor(instructorId);
-    const avg = parseFloat(result[0]?.avg_students_per_classroom ?? 0);
-    return res.status(200).json({ success: true, data: avg });
+    let result;
+    if (userRole === "admin") {
+      // Admin: average across all classrooms
+      result = await avgNumOfStuPerClassroom();
+    } else if (userRole === "instructor") {
+      // Instructor: average only for their classrooms
+      result = await avgNumOfStuPerClassroomByInstructor(instructorId);
+    } else {
+      return res
+        .status(403)
+        .json({ success: false, message: "Forbidden - Invalid role." });
+    }
+
+    // Extract numeric average safely
+    const avg =
+      parseFloat(result?.[0]?.avg_students_per_classroom ?? result?.avg_students_per_classroom ?? 0);
+
+    return res.status(200).json({
+      success: true,
+      data: avg,
+      role: userRole,
+    });
   } catch (error) {
-    console.error("Error fetching average students:", error);
-    return res.status(500).json({ success: false, message: "Failed to fetch classroom statistics." });
+    console.error("Error fetching average students per classroom:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch classroom statistics.",
+    });
   }
 };
