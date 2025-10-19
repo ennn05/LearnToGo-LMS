@@ -19,8 +19,8 @@ function StudentLessonDetails() {
     const [error, setError] = useState(null);
 
      const getCompletionText = (completion) => {
-        if (completion === true) return "Completed";
-        if (completion === false) return "Not Completed";
+        if (completion) return "Completed";
+        if (!completion) return "Not Completed";
         return "Not Attempted";
     };
 
@@ -50,10 +50,8 @@ function StudentLessonDetails() {
     }, [lessonId]);
 
     useEffect(() => {
-        if (lesson.completion) {
+        if (lesson?.completion) {
             setShowConfetti(true);
-            const timer = setTimeout(() => setShowConfetti(false), 5000);
-            return () => clearTimeout(timer);
         }
     }, [lesson]);
 
