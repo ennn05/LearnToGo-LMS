@@ -105,16 +105,45 @@ function StudentLessonDetails() {
                 </div>
                 <div className="lesson-details-container">
                     {/* Header Section */}
-                    <div className="lesson-header">
+                    {/* <div className="lesson-header"> */}
                         <div className="lesson-meta">
                             <h2>{lesson.lesson_title || "Untitled Lesson"}</h2>
                             <p><strong>ID:</strong> {lesson.lesson_id || "NULL"}</p>
                             <p><strong>By:</strong> {lesson.user_fname && lesson.user_lname ? `${lesson.user_fname} ${lesson.user_lname}` : "Unknown"}</p>
-                            <p><strong>Created:</strong> {lesson.lesson_date_created ? new Date(lesson.lesson_date_created).toLocaleDateString() : "NULL"}</p>
-                            <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p>
+                            {/* <p><strong>Created:</strong> {lesson.lesson_date_created ? new Date(lesson.lesson_date_created).toLocaleDateString() : "NULL"}</p>
+                            <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p> */}
+                            <div className="lesson-progress-card">
+                                {/* <h3>LESSON PROGRESS</h3> */}
+                                {grade !== null && (
+                                    <p><strong>Grade:</strong> {grade}%</p>
+                                )}
+                                <p><strong>Completion:</strong> {completionText}</p>
+                                {lesson.completion && (
+                                    <div className="completion-badge">
+                                        <img
+                                            src={medalBadge}
+                                            alt="Lesson Completed Badge"
+                                            className="badge-image"
+                                            title="Congratulations, you have earned a completion badge!"
+                                        />
+                                        <span className="badge-label">Completed</span>
+                                    </div>
+                                )}
+                                {!lesson.completion && (
+                                    <div className="incomplete-badge">
+                                        <img
+                                            src={crossedMedal}
+                                            alt="Incomplete Badge"
+                                            className="badge-image"
+                                            title="Pass this lesson to earn this badge!"
+                                        />
+                                        <span className="badge-label">Incomplete</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    {/* Progress Section */}
+                    {/* </div> */}
+                    {/* Progress Section
                     <div className="lesson-progress-card">
                         <h3>LESSON PROGRESS</h3>
                         {grade !== null && (
@@ -143,7 +172,7 @@ function StudentLessonDetails() {
                                 <span className="badge-label">Incomplete</span>
                             </div>
                         )}
-                    </div>
+                    </div> */}
                     {/* Details Section */}
                     <div className="lesson-content">
                         <div className="info-item">
