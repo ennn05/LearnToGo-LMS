@@ -28,7 +28,7 @@ router.get("/status-breakdown", authenticate, authorize("admin", "instructor"), 
 // Average number of students
 router.get("/average-students", authenticate, authorize("admin", "instructor"), (req, res) => {
   if (req.user.role === "admin") return getAvgStudentsPerClassroom(req, res);
-  if (req.user.role === "instructor") return getAvgStudentsPerClassroomByInstructor(req, res);
+  if (req.user.role === "instructor") return getAvgStudentsPerClassroom(req, res);
   return res.status(403).json({ success: false, message: "Unauthorized" });
 });
 
