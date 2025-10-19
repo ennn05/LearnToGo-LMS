@@ -5,6 +5,7 @@ import "../styles/LessonDetails.css";
 import useStore from "../store";
 import medalBadge from "../assets/medal.png";
 import crossedMedal from "../assets/crossed_medal.png";
+import Confetti from "react-confetti";
 
 function StudentLessonDetails() {
     const { lessonId } = useParams();
@@ -49,7 +50,7 @@ function StudentLessonDetails() {
     }, [lessonId]);
 
     useEffect(() => {
-        if (lesson?.completion === "pass") {
+        if (lesson.completion) {
             setShowConfetti(true);
             const timer = setTimeout(() => setShowConfetti(false), 5000);
             return () => clearTimeout(timer);
