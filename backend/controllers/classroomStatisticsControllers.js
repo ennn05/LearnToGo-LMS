@@ -72,42 +72,63 @@ export const getClassroomStatusBreakdownByInstructor = async (req, res) => {
 //  Average number of students per classroom
 export const getAvgStudentsPerClassroom = async (req, res) => {
   const userRole = req?.user?.role;
-  const instructorId = req?.user?.id;
 
-  if (!userRole) {
+  if (userRole !== "admin") {
     return res
-      .status(401)
-      .json({ success: false, message: "Unauthorized - Missing role." });
+      .status(403)
+      .json({ success: false, message: "Forbidden - Admin access required." });
   }
 
   try {
-    let result;
-    if (userRole === "admin") {
-      // Admin: average across all classrooms
-      result = await avgNumOfStuPerClassroom();
-    } else if (userRole === "instructor") {
-      // Instructor: average only for their classrooms
-      result = await avgNumOfStuPerClassroomByInstructor(instructorId);
-    } else {
-      return res
-        .status(403)
-        .json({ success: false, message: "Forbidden - Invalid role." });
-    }
+    const result = await avgNumOfStuPerClassroom();
 
-    // Extract numeric average safely
-    const avg =
-      parseFloat(result?.[0]?.avg_students_per_classroom ?? result?.avg_students_per_classroom ?? 0);
+    const avg = parseFloat(
+      result?.[0]?.avg_students_per_classroom ??
+      result?.avg_students_per_classroom ??
+      0
+    );
 
     return res.status(200).json({
       success: true,
       data: avg,
-      role: userRole,
+      role: "admin",
     });
   } catch (error) {
-    console.error("Error fetching average students per classroom:", error);
+    console.error("Error fetching admin average students per classroom:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to fetch classroom statistics.",
+    });
+  }
+};
+
+export const getAvgStudentsPerClassroomOfInstructor = async (req, res) => {
+  const instructorId = req?.user?.id;
+  if (!instructorId) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Unauthorized - Missing instructor ID." });
+  }
+
+  try {
+    const result = await avgNumOfStuPerClassroomByInstructor(instructorId);
+
+    const avg = parseFloat(
+      result?.[0]?.avg_students_per_classroom ??
+      result?.avg_students_per_classroom ??
+      0
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: avg,
+      role: "instructor",
+    });
+  } catch (error) {
+    console.error("Error fetching instructor's average students per classroom:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch instructor classroom statistics.",
     });
   }
 };
