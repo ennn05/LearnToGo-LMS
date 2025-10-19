@@ -6,7 +6,6 @@ import {
   getClassroomStatusBreakdown,
   getClassroomStatusBreakdownByInstructor,
   getAvgStudentsPerClassroom, 
-  getAvgStudentsPerClassroomByInstructor,
 } from "../controllers/classroomStatisticsControllers.js";
 
 const router = express.Router();
