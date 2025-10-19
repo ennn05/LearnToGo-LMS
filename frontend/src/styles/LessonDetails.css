@@ -624,3 +624,75 @@
   min-width: 200px;
   margin-bottom: 40px;
 }
+
+.lesson-progress-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.lesson-progress-card p {
+  font-size: 16px;
+  color: #34495e;
+}
+
+.completion-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: rgba(39, 174, 96, 0.1); /* subtle green tint */
+  border-radius: 12px;
+  width: fit-content;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.badge-image {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.completion-badge:hover {
+  transform: translateY(-2px);
+  background-color: rgba(39, 174, 96, 0.15);
+}
+
+.badge-image:hover {
+  transform: scale(1.1);
+}
+
+.badge-label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* ⚠️ Incomplete Badge (new) */
+.incomplete-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: rgba(149, 165, 166, 0.15); /* soft grey tint */
+  border-radius: 12px;
+  width: fit-content;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.incomplete-badge:hover {
+  transform: translateY(-2px);
+  background-color: rgba(149, 165, 166, 0.25); /* slightly darker on hover */
+}
+
+.incomplete-badge .badge-label {
+  color: #7f8c8d; /* muted grey text */
+}
+
+.completion-badge .badge-label {
+  color: #27ae60; /* green text */
+}

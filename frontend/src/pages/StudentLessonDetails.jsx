@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/LessonDetails.css";
 import useStore from "../store";
+import medalBadge from "../assets/medal.png";
+import crossedMedal from "../assets/crossed_medal.png";
 
 function StudentLessonDetails() {
     const { lessonId } = useParams();
@@ -10,10 +12,7 @@ function StudentLessonDetails() {
     const { user, signOut } = useStore((state) => state);
     const [lesson, setLesson] = useState(null);
     const [grade, setGrade] = useState(null);
-    const [completion, setCompletion] = useState(null);
     const [completionText, setCompletionText] = useState(null);
-    const [badgeLabel, setBadgeLabel] = useState(null);
-    const [badgeColor, setBadgeColor] = useState(null);
     const [showConfetti, setShowConfetti] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,22 +21,6 @@ function StudentLessonDetails() {
         if (completion === true) return "Completed";
         if (completion === false) return "Not Completed";
         return "Not Attempted";
-    };
-
-    const getBadgeLabel = (grade) => {
-        if (grade >= 90.0) return "Outstanding";
-        if (grade >= 80.0) return "Excellent";
-        if (grade >= 70.0) return "Well Done";
-        if (grade >= 50.0) return "Keep Improving";
-        return "Try Again";
-    };
-
-    const getBadgeColor = (grade) => {
-        if (grade >= 90) return "#27ae60";
-        if (grade >= 80) return "#2980b9";
-        if (grade >= 70) return "#8e44ad";
-        if (grade >= 50) return "#f39c12";
-        return "#c0392b";
     };
 
     const fetchLessonDetails = async () => {
@@ -50,12 +33,10 @@ function StudentLessonDetails() {
                 console.log("Lessons fetched:", res.data);
                 setLesson(res.data);
                 setGrade(res.data.grade_value);
-                setCompletion(res.data.completion);
                 setCompletionText(getCompletionText(res.data.completion));
-                setBadgeLabel(getBadgeLabel(res.data.grade_value));
-                setBadgeColor(getBadgeColor(res.data.grade_value));
             }
         } catch (err) {
+            console.error("Error fetching lesson details:", err);
             setError("Lesson not found");
             setLesson(null);
         } finally {
@@ -136,24 +117,31 @@ function StudentLessonDetails() {
                     </div>
                     {/* Progress Section */}
                     <div className="lesson-progress-card">
-                        <h3>Lesson Progress</h3>
+                        <h3>LESSON PROGRESS</h3>
                         {grade !== null && (
                             <p><strong>Grade:</strong> {grade}%</p>
                         )}
                         <p><strong>Status:</strong> {completionText}</p>
-                        {badgeLabel && (
-                            <div
-                                className="badge"
-                                style={{
-                                    backgroundColor: badgeColor,
-                                    color: "white",
-                                    padding: "6px 12px",
-                                    borderRadius: "8px",
-                                    display: "inline-block",
-                                    marginTop: "10px"
-                                }}
-                            >
-                                {badgeLabel}
+                        {lesson.completion && (
+                            <div className="completion-badge">
+                                <img
+                                    src={medalBadge}
+                                    alt="Lesson Completed Badge"
+                                    className="badge-image"
+                                    title="Congratulations, you have earned a completion badge!"
+                                />
+                                <span className="badge-label">Completed</span>
+                            </div>
+                        )}
+                        {!lesson.completion && (
+                            <div className="incomplete-badge">
+                                <img
+                                    src={crossedMedal}
+                                    alt="Incomplete Badge"
+                                    className="badge-image"
+                                    title="Pass this lesson to earn this badge!"
+                                />
+                                <span className="badge-label">Incomplete</span>
                             </div>
                         )}
                     </div>
