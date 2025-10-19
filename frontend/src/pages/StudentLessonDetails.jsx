@@ -146,10 +146,10 @@ function StudentLessonDetails() {
                             {!lesson.completion && (
                                 <div className="incomplete-badge">
                                     <img
-                                        src={crossedMedal}
-                                        alt="Incomplete Badge"
+                                        src={getAchievementBadge(grade).image}
+                                        alt={`${getAchievementBadge(grade).label} Badge`}
                                         className="badge-image"
-                                        title="Pass this lesson to earn this badge!"
+                                        title={getAchievementBadge(grade).title}
                                     />
                                     <span className="badge-label">Incomplete</span>
                                 </div>
