@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api, { setAuthToken } from "../libs/apiCalls";
 import "../styles/Reports.css";
 import useStore from "../store";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 function Reports() {
   const [activePage, setActivePage] = useState("reports");
@@ -12,6 +13,12 @@ function Reports() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+    const STATUS_COLORS = {
+    "Not Enrolled": "#f39c12",
+    "Ongoing": "#3498db",
+    "Completed": "#27ae60",
+    Null: "#bdc3c7",
+  };
 
   //  Ensure axios always has the Bearer token
   useEffect(() => {
@@ -77,6 +84,13 @@ function Reports() {
 
     if (user) fetchStats();
   }, [user]);
+
+    // Pie chart data for student stats
+  const studentPieData = [
+    { name: "Not Enrolled", value: stats?.students_not_enrolled ?? 0 },
+    { name: "Ongoing", value: stats?.students_ongoing ?? 0 },
+    { name: "Completed", value: stats?.students_completed ?? 0 },
+  ];
 
   return (
     <div className="flex">
@@ -150,27 +164,47 @@ function Reports() {
                 </div>
               </div>
 
+              {/* Student Statistics */}
               <h2 className="stats-title" style={{ marginTop: "2rem" }}>
                 Student Statistics
               </h2>
-              <div className="stats-grid">
-                <div className="stat-card">
+
+              <div className="student-stats-row">
+                {/* Total Students Box */}
+                <div className="stat-card big-card">
                   <h3>Total Students</h3>
-                  <p>{stats.total_students}</p>
+                  <p className="big-number">{stats.total_students}</p>
                 </div>
-                <div className="stat-card">
-                  <h3>Not Enrolled</h3>
-                  <p>{stats.students_not_enrolled}</p>
-                </div>
-                <div className="stat-card">
-                  <h3>Ongoing</h3>
-                  <p>{stats.students_ongoing}</p>
-                </div>
-                <div className="stat-card">
-                  <h3>Completed</h3>
-                  <p>{stats.students_completed}</p>
+
+                {/* Pie Chart Box */}
+                <div className="stat-card pie-card">
+                  <h3>Enrollment Breakdown</h3>
+                  <PieChart width={280} height={280}>
+                    <Pie
+                      data={[
+                        { name: "Not Enrolled", value: stats.students_not_enrolled },
+                        { name: "Ongoing", value: stats.students_ongoing },
+                        { name: "Completed", value: stats.students_completed },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      dataKey="value"
+                      label
+                    >
+                        {studentPieData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={STATUS_COLORS[entry.name] || STATUS_COLORS.Null}
+                          />
+                        ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
                 </div>
               </div>
+        
 
               {user?.user_role === "admin" && (
                 <>

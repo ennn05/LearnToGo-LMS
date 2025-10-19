@@ -144,3 +144,61 @@
   font-weight: 700;
   color: #333;
 }
+
+/* --- STUDENT STATS ROW --- */
+.student-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+/* --- STAT CARDS --- */
+.stat-card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+  min-width: 250px;
+}
+
+/* --- LARGE TOTAL BOX --- */
+.big-card {
+  flex: 0 0 250px;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.big-number {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* --- PIE CHART CARD --- */
+.pie-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+}
+
+/* --- RESPONSIVE DESIGN --- */
+@media (max-width: 900px) {
+  .student-stats-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .big-card, .pie-card {
+    width: 100%;
+  }
+}
