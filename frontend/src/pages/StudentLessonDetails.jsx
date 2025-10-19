@@ -19,8 +19,8 @@ function StudentLessonDetails() {
     const [error, setError] = useState(null);
 
      const getCompletionText = (completion) => {
-        if (completion) return "Completed";
-        if (!completion) return "Not Completed";
+        if (completion) return "Passed";
+        if (!completion) return "Failed";
         return "Not Attempted";
     };
 
