@@ -9,10 +9,37 @@ function StudentLessonDetails() {
     const navigate = useNavigate();
     const { user, signOut } = useStore((state) => state);
     const [lesson, setLesson] = useState(null);
+    const [grade, setGrade] = useState(null);
+    const [completion, setCompletion] = useState(null);
+    const [completionText, setCompletionText] = useState(null);
+    const [badgeLabel, setBadgeLabel] = useState(null);
+    const [badgeColor, setBadgeColor] = useState(null);
+    const [showConfetti, setShowConfetti] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch lesson details
+     const getCompletionText = (completion) => {
+        if (completion === true) return "Completed";
+        if (completion === false) return "Not Completed";
+        return "Not Attempted";
+    };
+
+    const getBadgeLabel = (grade) => {
+        if (grade >= 90.0) return "Outstanding";
+        if (grade >= 80.0) return "Excellent";
+        if (grade >= 70.0) return "Well Done";
+        if (grade >= 50.0) return "Keep Improving";
+        return "Try Again";
+    };
+
+    const getBadgeColor = (grade) => {
+        if (grade >= 90) return "#27ae60";
+        if (grade >= 80) return "#2980b9";
+        if (grade >= 70) return "#8e44ad";
+        if (grade >= 50) return "#f39c12";
+        return "#c0392b";
+    };
+
     const fetchLessonDetails = async () => {
         try {
             const { data: res } = await api.get(`lessons/${lessonId}`);
@@ -22,6 +49,11 @@ function StudentLessonDetails() {
             } else {
                 console.log("Lessons fetched:", res.data);
                 setLesson(res.data);
+                setGrade(res.data.grade_value);
+                setCompletion(res.data.completion);
+                setCompletionText(getCompletionText(res.data.completion));
+                setBadgeLabel(getBadgeLabel(res.data.grade_value));
+                setBadgeColor(getBadgeColor(res.data.grade_value));
             }
         } catch (err) {
             setError("Lesson not found");
@@ -35,7 +67,16 @@ function StudentLessonDetails() {
         fetchLessonDetails();
     }, [lessonId]);
 
+    useEffect(() => {
+        if (lesson?.completion === "pass") {
+            setShowConfetti(true);
+            const timer = setTimeout(() => setShowConfetti(false), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [lesson]);
+
     const handleBack = () => navigate("/lessons");
+
     const handleLogout = () => {
         signOut();
         navigate("/login");
@@ -44,6 +85,7 @@ function StudentLessonDetails() {
     if (loading) {
         return <div className="loading">Loading lesson...</div>;
     }
+
     if (error || !lesson) {
         return (
             <div className="error">
@@ -56,6 +98,7 @@ function StudentLessonDetails() {
 
     return (
         <div className="flex">
+            {showConfetti && <Confetti recycle={false} />}
             {/* Sidebar */}
             <div className="sidebar">
                 <div className="profile">
@@ -91,6 +134,29 @@ function StudentLessonDetails() {
                             <p><strong>Last Updated:</strong> {lesson.lesson_date_updated ? new Date(lesson.lesson_date_updated).toLocaleDateString() : "NULL"}</p>
                         </div>
                     </div>
+                    {/* Progress Section */}
+                    <div className="lesson-progress-card">
+                        <h3>Lesson Progress</h3>
+                        {grade !== null && (
+                            <p><strong>Grade:</strong> {grade}%</p>
+                        )}
+                        <p><strong>Status:</strong> {completionText}</p>
+                        {badgeLabel && (
+                            <div
+                                className="badge"
+                                style={{
+                                    backgroundColor: badgeColor,
+                                    color: "white",
+                                    padding: "6px 12px",
+                                    borderRadius: "8px",
+                                    display: "inline-block",
+                                    marginTop: "10px"
+                                }}
+                            >
+                                {badgeLabel}
+                            </div>
+                        )}
+                    </div>
                     {/* Details Section */}
                     <div className="lesson-content">
                         <div className="info-item">
@@ -113,7 +179,7 @@ function StudentLessonDetails() {
                             <label>Pre-requisites:</label>
                             {lesson.lesson_prereq && lesson.lesson_prereq.trim().length > 0 ? (
                                 <ul>
-                                    {lesson.lesson_prereq.trim().split("\n").map((item, idx) => (
+                                    {lesson.lesson_prereq.trim().split("\\n").map((item, idx) => (
                                         <li key={idx}>{item}</li>
                                     ))}
                                 </ul>

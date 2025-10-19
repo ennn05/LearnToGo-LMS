@@ -147,6 +147,11 @@
   color: #7f8c8d;
 }
 
+.lesson-content {
+  flex: 1;
+  padding: 0;
+}
+
 /* Lesson Info */
 .lesson-info {
   margin-bottom: 30px;
@@ -172,6 +177,11 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.info-item li {
+  color: #2c3e50;
+  margin-left: 20px;
 }
 
 .info-item p {
@@ -604,4 +614,13 @@
 
 .modal .lesson-list .list-item button:hover {
   background-color: #389e0d;
+}
+
+.lesson-progress-card {
+  background: #f7f9fb;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  min-width: 200px;
+  margin-bottom: 40px;
 }
