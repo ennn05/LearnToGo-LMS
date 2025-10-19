@@ -114,22 +114,32 @@ export const getClassroomByCode = async (classroomCode) => {
     return classroom[0];
 }
 
-export const updateClassroom = async (classroomData) => {
-    const {id, updateData} = classroomData;
-    console.log(classroomData);
+export const updateClassroom = async (id, updateData) => {
+    console.log(id, updateData);
     const classrooms = await sql`UPDATE "LMS".classroom 
                     SET 
                         cr_start_date = ${updateData.cr_start_date},
                         cr_duration = ${updateData.cr_duration},
-                        cr_date_created = ${updateData.cr_date_created},
                         cr_last_updated = ${updateData.cr_last_updated},
-                        cr_creator = ${updateData.cr_creator},
                         supervisor_id = ${updateData.supervisor_id},
                         course_code = ${updateData.course_code},
                         cr_status = ${updateData.cr_status}
                     WHERE cr_id = ${id} 
                     RETURNING *;`;
     return classrooms[0];
+}
+
+export const updateClassroomLessons = async (classroomCode, lessons) => {
+    await removeClassroomLessons(classroomCode)
+
+    const classroomLessons = [];
+    for (const lesson of lessons)
+    {
+        const addedLesson = await addClassroomLesson(classroomCode, lesson.cl_id);
+        classroomLessons.push(addedLesson);
+    }
+
+    return classroomLessons;
 }
 
 export const createClassroom = async (classroomData) => {
@@ -199,6 +209,28 @@ export const removeClassroomStudent = async (classroomId, stuCourseId) => {
     `;
     return classroomStudent[0];
 };
+
+export const removeClassroomStudents = async (classroomId) => {
+    const removed = await sql`
+        DELETE FROM "LMS".classroom_student 
+        WHERE cr_id = ${classroomId}
+        RETURNING *;
+    `;
+    return removed;
+};
+
+export const updateClassroomStudents = async (classroomCode, students) => {
+    await removeClassroomStudents(classroomCode)
+
+    const classroomStudents = [];
+    for (const student of students)
+    {
+        const addedStudent = await addClassroomStudent(classroomCode, student.stucourse_id);
+        classroomStudents.push(addedStudent);
+    }
+
+    return classroomStudents;
+}
 
 // Get classrooms enrolled by a specific student
 export const getClassroomsByStudent = async (studentId) => {

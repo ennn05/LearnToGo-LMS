@@ -5,6 +5,34 @@
   box-sizing: border-box;
 }
 
+/* Error message styles */
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.inline-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-edit-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.inline-edit-btn:hover {
+  background-color: #2980b9;
+}
+
 body {
   background-color: #ecf0f1;
   margin: 0;
@@ -816,4 +844,37 @@ body {
 .assigned-lessons-container::-webkit-scrollbar-thumb:hover,
 .available-lessons-grid::-webkit-scrollbar-thumb:hover {
   background: #95a5a6;
+}
+
+/* Status and field notes for published classrooms */
+.field-note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.section-note {
+  font-size: 14px;
+  color: #666;
+  font-weight: normal;
+  font-style: italic;
+}
+
+.status-note {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Disabled state styling for better UX */
+input:disabled, select:disabled, button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+input:disabled:hover, select:disabled:hover, button:disabled:hover {
+  border-color: #ccc !important;
+  background-color: #f8f9fa !important;
 }

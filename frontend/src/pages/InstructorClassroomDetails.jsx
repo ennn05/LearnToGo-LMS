@@ -289,7 +289,7 @@ function InstructorClassroomDetails() {
 
           {/* Footer */}
           <div className="course-footer">
-            <button className="btn-edit" onClick={() => console.log("Edit classroom")}>
+            <button className="btn-edit" onClick={() => navigate(`/classrooms/${classroom.cr_id}/edit`)}>
               Edit
             </button>
             <button className="btn-edit" onClick={() => navigate(`/classrooms/${classroomCode}/grades`)}>
