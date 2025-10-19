@@ -472,7 +472,7 @@ function CreateClassroom() {
                                 ) : (
                                     filteredLessons.map(lesson => (
                                         <div key={lesson.lesson_id} className="available-lesson-card">
-                                            <div className="lesson-content">
+                                            <div className="create-lesson-content">
                                                 <h4>{lesson.lesson_title}</h4>
                                                 <p>{lesson.lesson_desc}</p>
                                             </div>
