@@ -103,9 +103,6 @@ function Reports() {
                 if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
                     throw new Error("Some lesson reports could not be retrieved.");
                 }
-                console.log("Total classrooms data:", totalRes.data.data);
-                console.log("Average students per classroom data:", avgRes.data.data);
-                console.log("Classroom breakdown data:", breakdownRes.data.data);
                 setTotalClassrooms(totalRes.data.data);
                 setAvgStudentsPerClassroom(avgRes.data.data);
                 setClassroomStatusBreakdown([
