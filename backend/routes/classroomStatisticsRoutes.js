@@ -5,7 +5,7 @@ import {
   getTotalNumClassroomsByInstructor,
   getClassroomStatusBreakdown,
   getClassroomStatusBreakdownByInstructor,
-  getAvgStudentsPerClassroomByInstructor,
+  getAvgStudentsPerClassroom
 } from "../controllers/classroomStatisticsControllers.js";
 
 const router = express.Router();                
@@ -26,8 +26,8 @@ router.get("/status-breakdown", authenticate, authorize("admin", "instructor"), 
 
 // Average number of students
 router.get("/average-students", authenticate, authorize("admin", "instructor"), (req, res) => {
-  if (req.user.role === "instructor") return getAvgStudentsPerClassroomByInstructor(req, res);
-  // If admin should also see avg — you can later add a getAvgStudentsPerClassroom() variant.
+  if (req.user.role === "admin") return getAvgStudentsPerClassroom(req, res);
+  if (req.user.role === "instructor") return getAvgStudentsPerClassroom(req, res);
   return res.status(403).json({ success: false, message: "Unauthorized" });
 });
 

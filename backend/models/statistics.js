@@ -197,6 +197,22 @@ export const avgNumOfStuPerClassroomByInstructor = async (instructorId) => {
   return total
 }
 
+export const avgNumOfStuPerClassroom = async () => {
+  const total = await sql`
+    SELECT 
+      ROUND(AVG(student_count), 2) AS avg_students_per_classroom
+    FROM (
+      SELECT 
+        cs.cr_id,
+        COUNT(sc.stu_user_id) AS student_count
+      FROM "LMS".classroom_student cs
+      JOIN "LMS".student_course sc ON cs.stucourse_id = sc.stucourse_id
+      GROUP BY cs.cr_id
+    ) AS classroom_counts;
+  `;
+  return total[0];
+};
+
 //us44 : admin view of classroom stats
 //total num of classrooms created
 export const totalNumOfClassrooms = async () => {
