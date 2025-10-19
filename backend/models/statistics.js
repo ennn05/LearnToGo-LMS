@@ -141,3 +141,105 @@ export const avgCreditPointsPerLesson = async () => {
     `select round(avg(lesson_credit), 2) from "LMS".lesson`;
   return total
 }
+
+//us44 : classroom stats (instructor view)
+export const totalNumOfClassroomsByInstructor = async (instructorId) => {
+  const total = await sql 
+    `select count(*) from "LMS".classroom where cr_creator = ${instructorId}`;
+  return total
+}
+
+//num of classrooms completed by instructor
+export const numClassroomsCompletedByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT COUNT(*) AS completed_classrooms
+    FROM "LMS".classroom
+    WHERE cr_creator = ${instructorId}
+    AND CURRENT_DATE > cr_start_date + (cr_duration * INTERVAL '1 week')`;
+;
+  return total
+}
+
+//num of cr ongoing
+export const numClassroomOngoingByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT COUNT(*)
+    FROM "LMS".classroom
+    WHERE cr_creator = ${instructorId}
+    AND CURRENT_DATE <= cr_start_date + (cr_duration * INTERVAL '1 week')`;
+;
+  return total
+}
+
+
+//num of cr not started
+export const numClassroomNotStartedByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT COUNT(*)
+    FROM "LMS".classroom
+    WHERE cr_creator = ${instructorId}
+    AND CURRENT_DATE < cr_start_date`;
+;
+  return total
+}
+
+//avg num of stu per classroom
+export const avgNumOfStuPerClassroomByInstructor = async (instructorId) => {
+  const total = await sql 
+    `SELECT 
+        AVG(student_count) AS avg_students_per_classroom
+    FROM (
+        SELECT 
+            cs.cr_id,
+            COUNT(sc.stu_user_id) AS student_count
+        FROM "LMS".classroom_student cs join "LMS".student_course sc on cs.stucourse_id = sc.stucourse_id
+        GROUP BY cs.cr_id
+    ) AS classroom_counts;`;
+  return total
+}
+
+//us44 : admin view of classroom stats
+//total num of classrooms created
+export const totalNumOfClassrooms = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".classroom`;
+  return total
+}
+
+//num of classrooms completed by instructor
+export const numClassroomsCompleted = async () => {
+  const total = await sql 
+    `SELECT COUNT(*) AS completed_classrooms
+    FROM "LMS".classroom
+    WHERE CURRENT_DATE > cr_start_date + (cr_duration * INTERVAL '1 week')`;
+;
+  return total
+}
+
+//num of cr ongoing
+export const numClassroomOngoing = async () => {
+  const total = await sql 
+    `SELECT COUNT(*)
+    FROM "LMS".classroom
+    WHERE CURRENT_DATE <= cr_start_date + (cr_duration * INTERVAL '1 week')`;
+;
+  return total
+}
+
+
+//num of cr not started
+export const numClassroomNotStarted = async () => {
+  const total = await sql 
+    `SELECT COUNT(*)
+    FROM "LMS".classroom
+    WHERE CURRENT_DATE < cr_start_date`;
+;
+  return total
+}
+
+
+//total num of students not enrolled (not enrolled into course or cr?)
+
+//total num of students that are in an ongoing (ongoing what?)
+
+//total num of students who completed everything(?)

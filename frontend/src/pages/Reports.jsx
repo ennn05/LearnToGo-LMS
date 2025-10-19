@@ -15,6 +15,9 @@ function Reports() {
     const [totalLessons, setTotalLessons] = useState(null);
     const [avgCreditPoint, setAvgCreditPoint] = useState(null);
     const [lessonStatusBreakdown, setLessonStatusBreakdown] = useState([]);
+    const [totalClassrooms, setTotalClassrooms] = useState(null);
+    const [avgStudentsPerClassroom, setAvgStudentsPerClassroom] = useState(null);
+    const [classroomStatusBreakdown, setClassroomStatusBreakdown] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const STATUS_COLORS = {
@@ -22,6 +25,9 @@ function Reports() {
         Draft: "#f39c12",
         Archived: "#95a5a6",
         Null: "#bdc3c7",
+        Completed: "#27ae60",
+        Ongoing: "#3498db",
+        Upcoming: "#f39c12",
     };
     const ALL_STATUSES = ["Published", "Draft", "Archived"];
 
@@ -87,8 +93,34 @@ function Reports() {
                 setError("Failed to load lesson reports.");
             }
         };
+        const fetchClassroomReports = async () => {
+            try {
+                const [totalRes, breakdownRes, avgRes] = await Promise.all([
+                    api.get("/classroomStatistics/total"),
+                    api.get("/classroomStatistics/status-breakdown"),
+                    api.get("/classroomStatistics/average-students"),
+                ]);
+                if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
+                    throw new Error("Some lesson reports could not be retrieved.");
+                }
+                console.log("Total classrooms data:", totalRes.data.data);
+                console.log("Average students per classroom data:", avgRes.data.data);
+                console.log("Classroom breakdown data:", breakdownRes.data.data);
+                setTotalClassrooms(totalRes.data.data);
+                setAvgStudentsPerClassroom(avgRes.data.data);
+                setClassroomStatusBreakdown([
+                    { name: "Completed", value: breakdownRes.data.data.completed || 0 },
+                    { name: "Ongoing", value: breakdownRes.data.data.ongoing || 0 },
+                    { name: "Upcoming", value: breakdownRes.data.data.notStarted || 0 },
+                ]);
+            } catch (err) {
+                console.error("Error fetching classroom reports:", err);
+                setError("Failed to load classroom reports.");
+            }
+        }
         fetchCourseReports();
         fetchLessonReports();
+        fetchClassroomReports();
     }, []);
 
     if (loading) {
@@ -243,6 +275,50 @@ function Reports() {
                             <h3>Average Credit Points per Lesson</h3>
                             <p className="reports-number">
                                 {avgCreditPoint ? avgCreditPoint.toFixed(2) : "N/A"}
+                            </p>
+                        </div>
+                    </div>
+                    {/** Classroom Reports */
+                    <h1 className="reports-title">Classroom Reports</h1>}
+                    <h2 className="reports-subtitle">{user?.user_role}: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
+                    <div className="reports-row">
+                        <div className="reports-card">
+                            <h3>Total Classrooms</h3>
+                            <p className="reports-number">{totalClassrooms ?? "N/A"}</p>
+                        </div>
+                        <div className="reports-card reports-pie">
+                            <h3>Classroom by Status</h3>
+                            {classroomStatusBreakdown.length === 0 ? (
+                                <p>No classrooms found.</p>
+                            ) : (
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <PieChart>
+                                        <Pie
+                                            data={classroomStatusBreakdown}
+                                            dataKey="value"
+                                            nameKey="name"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            label
+                                        >
+                                            {lessonStatusBreakdown.map((entry, index) => (
+                                                <Cell
+                                                    key={`cell-lesson-${index}`}
+                                                    fill={STATUS_COLORS[entry.name] || STATUS_COLORS["Null"]}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+                        <div className="reports-card">
+                            <h3>Average Students per Classroom</h3>
+                            <p className="reports-number">
+                                {avgStudentsPerClassroom ? avgStudentsPerClassroom.toFixed(2) : "N/A"}
                             </p>
                         </div>
                     </div>
