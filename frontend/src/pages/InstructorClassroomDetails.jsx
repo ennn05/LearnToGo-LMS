@@ -14,6 +14,7 @@ function InstructorClassroomDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [activePage, setActivePage] = useState(null);
   const navigate = useNavigate();
 
       // 🌙 get theme + toggle function

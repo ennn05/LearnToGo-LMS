@@ -11,6 +11,7 @@ function InstructorCourseDetails() {
   const { theme, toggleTheme } = useThemeStore();
   const { courseId } = useParams();
   const navigate = useNavigate();
+  const [activePage, setActivePage] = useState(null);
   const {user, signOut} = useStore((state) => state);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);

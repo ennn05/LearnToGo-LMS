@@ -7,6 +7,7 @@ import useThemeStore from "../store/themeStore.js";
 
 function InstructorLessonDetails() {
   const { lessonId } = useParams();
+  const [activePage, setActivePage] = useState(null);
   const navigate = useNavigate();
 
   const {user, signOut} = useStore((state) => state);
