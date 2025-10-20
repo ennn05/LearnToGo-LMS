@@ -43,7 +43,7 @@ function EditClassroom() {
       const { data: res } = await api.get(`classrooms/${classroomCode}`);
       if (!res.success) throw new Error(res.message);
       const cr = res.data;
-
+      console.log(cr);
       setClassroomData({
         classroomId: cr.cr_id,
         startDate: cr.cr_start_date,
@@ -55,6 +55,7 @@ function EditClassroom() {
         status: cr.cr_status,
       });
 
+      console.log(classroomData);
       setOriginalStartDate(cr.cr_start_date);
       setOriginalDuration(cr.cr_duration);
 
@@ -377,7 +378,7 @@ function EditClassroom() {
                 <input 
                   type="date" 
                   name="startDate" 
-                  value={classroomData.startDate} 
+                  value={classroomData.startDate ? new Date(classroomData.startDate).toISOString().split("T")[0] : ""}
                   onChange={handleInputChange} 
                   disabled={!isStartDateEditable}
                   min={isStartDateEditable ? new Date().toISOString().split("T")[0] : undefined}
@@ -529,7 +530,7 @@ function EditClassroom() {
                 </thead>
                 <tbody>
                   {availableStudents.map((student) => (
-                    <tr key={student.user_id}>
+                    <tr key={student.stu_user_id}>
                       <td>
                         <input
                           type="checkbox"
