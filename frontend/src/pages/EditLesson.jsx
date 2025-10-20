@@ -12,7 +12,6 @@ function EditLesson() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
-  const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
   // NEW STATES
   const [preReqModal, setShowPreReqModal] = useState(false);
@@ -107,9 +106,6 @@ function EditLesson() {
     });
   };
 
-  // --- keep your other handlers (publish, archive, delete, editLesson, etc.)
-
-
   // Navigate back to the lessons page
   const handleBackToLessons = () => navigate("/lessons");
 
@@ -161,24 +157,6 @@ function EditLesson() {
       console.error("Error archiving lesson:", err);
     }
   };
-
-  // Delete the lesson from the API and navigate to the lessons page
-  const handleDeleteLesson = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        alert("Failed to delete lesson.");
-        return;
-      }
-      navigate("/lessons");
-    } catch (error) {
-      alert("Error deleting lesson.");
-      console.error(error);
-    }
-  };
-
 
   // If the component is still loading, display a "Loading lesson..."
   // message. This prevents the component from attempting to render
@@ -372,12 +350,6 @@ function EditLesson() {
               }}
             >
               Save
-            </button>
-            <button
-              className="btn-delete"
-              onClick={() => setDeleteConfirm(true)}
-            >
-              Delete
             </button>
           </div>
         </div>
@@ -578,31 +550,6 @@ function EditLesson() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-      {/* Delete Lesson Confirmation */}
-      {DeleteConfirm && (
-        <div className="delete-confirmation-overlay">
-          <div className="delete-confirmation-modal">
-            <h3>Are you sure you want to delete this lesson?</h3>
-            <div className="delete-confirmation-actions">
-              <button
-                onClick={() => {
-                  setDeleteConfirm(false);
-                  handleDeleteLesson();
-                }}
-                className="btn-delete"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setDeleteConfirm(false)}
-                className="delete-confirmation-btn-cancel"
-              >
-                Cancel
-              </button>
-            </div>
           </div>
         </div>
       )}
