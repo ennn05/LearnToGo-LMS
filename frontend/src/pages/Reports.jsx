@@ -147,7 +147,7 @@ function Reports() {
             }
         }
         fetchCourseReports();
-        //fetchLessonReports();
+        fetchLessonReports();
         fetchClassroomReports();
         fetchUserReports();
     }, []);
