@@ -9,7 +9,9 @@ import {
   addClassroom,
   updateStudentMarksForClassroomLesson,
   getClassroomLessonsWithStudents,
-  getStudentClassrooms
+  getStudentClassrooms,
+  getAvailableClassroomsForStudent,
+  joinClassroom
 } from "../controllers/classroomController.js";
 
 const router = express.Router();
@@ -26,6 +28,9 @@ router.get("/", authenticate, (req, res) => {
             return res.status(403).json({ message: "Unauthorized" });
     }    
 });
+
+router.get("/student/available", authenticate, getAvailableClassroomsForStudent);
+router.post("/:cr_id/:stucourse_id/join", authenticate, joinClassroom);
 
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);

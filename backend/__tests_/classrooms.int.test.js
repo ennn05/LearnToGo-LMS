@@ -5,6 +5,7 @@ import {
   updateClassroom,
   updateClassroomLessons,
   updateClassroomStudents,
+  getStudentAvailableClassroomsToJoin
 } from "../models/classroom.js";
 
 // --- Mock DB layer ---
@@ -12,6 +13,7 @@ jest.mock("../models/classroom.js", () => ({
   updateClassroom: jest.fn(),
   updateClassroomLessons: jest.fn(),
   updateClassroomStudents: jest.fn(),
+  getStudentAvailableClassroomsToJoin: jest.fn(),
 }));
 
 // --- Mock auth middleware ---
@@ -115,5 +117,50 @@ describe("Integration: PUT /classrooms/:id", () => {
     expect(res.status).toBe(500);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toMatch(/failed to update classroom/i);
+  });
+});
+
+
+describe("Integration: GET /classrooms/available", () => {
+  it("returns available classrooms for student", async () => {
+    getStudentAvailableClassroomsToJoin.mockResolvedValue([
+      { id: "1", name: "Math 101" }
+    ]);
+
+    const res = await request(app)
+      .get("/classrooms/available")
+      .set("x-role", "student");
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data).toEqual([{ id: "1", name: "Math 101" }]);
+
+    expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledTimes(1);
+    expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith(1);
+  });
+
+  it("blocks non-students", async () => {
+    const res = await request(app)
+      .get("/classrooms/available")
+      .set("x-role", "instructor");
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual({ message: "Unauthorized" });
+
+    expect(getStudentAvailableClassroomsToJoin).not.toHaveBeenCalled();
+  });
+
+  it("returns 500 on internal server error", async () => {
+    getStudentAvailableClassroomsToJoin.mockRejectedValue(new Error("DB Error"));
+
+    const res = await request(app)
+      .get("/classrooms/available")
+      .set("x-role", "student");
+
+    expect(res.status).toBe(500);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toBe("Failed to fetch available classrooms for student.");
+
+    expect(getStudentAvailableClassroomsToJoin).toHaveBeenCalledWith(1);
   });
 });

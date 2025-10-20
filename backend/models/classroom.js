@@ -368,3 +368,35 @@ export const addClassroomStudentLesson = async (cs_id, crcl_id) => {
   `;
   return result[0];
 };
+
+// To be implemented
+export const getStudentAvailableClassroomsToJoin = async (studentId) => {
+    const classrooms = await sql`
+        SELECT cr.*, co.*, sc.stucourse_id,
+            usv.user_fname AS supervisor_fname,
+            usv.user_lname AS supervisor_lname,
+            uc.user_fname AS creator_fname,
+            uc.user_lname AS creator_lname
+        FROM "LMS".classroom cr
+        JOIN "LMS".student_course sc 
+            ON cr.course_code = sc.course_code
+        LEFT JOIN "LMS".classroom_student cs
+            ON cr.cr_id = cs.cr_id
+            AND cs.stucourse_id = sc.stucourse_id
+        JOIN "LMS".course co
+            ON cr.course_code = co.course_code
+        LEFT JOIN "LMS".instructor isv
+            ON cr.supervisor_id = isv.inst_user_id
+        LEFT JOIN "LMS".user usv
+            ON isv.inst_user_id = usv.user_id
+        LEFT JOIN "LMS".instructor ic
+            ON cr.cr_creator = ic.inst_user_id
+        LEFT JOIN "LMS".user uc
+            ON ic.inst_user_id = uc.user_id                            
+        WHERE cr.cr_status = 'published'
+            AND sc.stu_user_id = ${studentId}
+            AND cs.cs_id IS NULL;
+    `;
+
+    return classrooms;
+}
