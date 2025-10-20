@@ -48,6 +48,9 @@ function CreateCourse() {
       setLoading(false);
     }
   };
+  
+    // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
 
     // 🌓 Apply theme to document root
     useEffect(() => {
