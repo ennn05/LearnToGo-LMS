@@ -197,8 +197,8 @@ function ClassroomGrade() {
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Attendance</th>
-                                    <th>Grade</th>
                                     <th>Completion</th>
+                                    <th>Grade</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -275,7 +275,7 @@ function ClassroomGrade() {
                                         stu_user_id: stu.stu_user_id,
                                         attendance: stu.attendance || false,
                                         grade: stu.grade || 0,
-                                        completion: typeof stu.completion === "boolean" ? stu.completion : stu.grade >= 50,
+                                        completion: stu.completion || false,
                                     }));
                                     await api.put(`classrooms/${classroomCode}/lessons/${lesson.lesson_id}/students`, studentData);
                                     alert("Grades updated successfully!");
