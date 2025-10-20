@@ -330,3 +330,9 @@ export const getLessonsWithStudentsByClassroom = async (cr_id) => {
 
   return lessonsWithStudents;
 };
+
+// To be implemented
+export const getStudentAvailableClassroomsToJoin = async (studentId) => {
+    const classrooms = [];
+    return classrooms;
+}
