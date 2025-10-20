@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/CreateCourse.css"; // Stylesheet for page
 import useStore from "../store";
 import api from "../libs/apiCalls";
+import useThemeStore from "../store/themeStore.js";
 
 function CreateCourse() {
   // State for sidebar navigation
@@ -47,6 +48,14 @@ function CreateCourse() {
       setLoading(false);
     }
   };
+  
+    // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   // Load user and lessons on mount
   useEffect(() => {
@@ -249,6 +258,17 @@ function CreateCourse() {
       <div className="main-content">
         <div className="topbar">
           <h1>New Course</h1>
+                             <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         <div className="create-course-container">

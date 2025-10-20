@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import "../styles/EditCourse.css";
 import useStore from "../store";
 import api from "../libs/apiCalls";
+import useThemeStore from "../store/themeStore.js";
 
 function EditCourse() {
     const { courseId } = useParams();
@@ -64,6 +65,14 @@ function EditCourse() {
             setAvailableLessons([]);
         }
     };
+
+        // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
     useEffect(() => {
         // const storedUser = localStorage.getItem("user");
@@ -261,6 +270,17 @@ function EditCourse() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>Edit Course</h1>
+                                       <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
                 </div>
                 <div className="edit-course-container">
                     {/** Course Header with Status and Actions */}

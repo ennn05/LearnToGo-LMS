@@ -4,8 +4,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import "../styles/CourseDetails.css";
 import api from "../libs/apiCalls";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorCourseDetails() {
+    // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
   const { courseId } = useParams();
   const navigate = useNavigate();
   const {user, signOut} = useStore((state) => state);
@@ -35,6 +38,12 @@ function InstructorCourseDetails() {
       setLoading(false);
     }
   };
+
+      // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
+
 
   useEffect(() => {
     // Load user from localStorage (fallback to mock user if none found)
@@ -219,6 +228,17 @@ function InstructorCourseDetails() {
       <div className="main-content">
         <div className="topbar">
           <h1>Course Details</h1>
+                      <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         <div className="course-details-container">
