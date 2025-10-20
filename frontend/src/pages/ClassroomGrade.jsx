@@ -202,60 +202,52 @@ function ClassroomGrade() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {lesson.students && lesson.students.length > 0 && lesson.students.map((stu, idx) => {
-                                    // Check if student has existing grade and completion is pass
-                                    const hasExistingGrade = stu.grade && stu.grade !== "" && stu.grade !== 0;
-                                    const isCompleted = stu.completion === true;
-                                    const isDisabled = hasExistingGrade && isCompleted;
-                                    
-                                    return (
-                                        <tr key={stu.stucourse_id || idx} className={isDisabled ? "disabled-row" : ""}>
-                                            <td>{stu.stu_user_fname} {stu.stu_user_lname}</td>
-                                            <td>{stu.stu_user_email}</td>
-                                            <td>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={stu.attendance || false}
-                                                    onChange={e => {
-                                                        const updated = [...lessons];
-                                                        const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                        updated[lessonIdx].students[idx].attendance = e.target.checked;
-                                                        setLessons(updated);
-                                                    }}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="checkbox"
-                                                    checked={stu.completion || false}
-                                                    disabled={isDisabled}
-                                                    onChange={e => {
-                                                        const updated = [...lessons];
-                                                        const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                        updated[lessonIdx].students[idx].completion = e.target.checked;
-                                                        setLessons(updated);
-                                                    }}
-                                                />
-                                                {isDisabled && <span className="disabled-indicator">✓</span>}
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    value={stu.grade || ""}
-                                                    placeholder="e.g. 80%"
-                                                    disabled={isDisabled}
-                                                    onChange={e => {
-                                                        const updated = [...lessons];
-                                                        const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                        updated[lessonIdx].students[idx].grade = e.target.value;
-                                                        setLessons(updated);
-                                                    }}
-                                                />
-                                                {isDisabled && <span className="disabled-indicator">✓</span>}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {lesson.students && lesson.students.length > 0 && lesson.students.map((stu, idx) => (
+                                    <tr key={stu.stucourse_id || idx}>
+                                        <td>{stu.stu_user_fname} {stu.stu_user_lname}</td>
+                                        <td>{stu.stu_user_email}</td>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={stu.attendance || false}
+                                                onChange={e => {
+                                                    const updated = [...lessons];
+                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
+                                                    updated[lessonIdx].students[idx].attendance = e.target.checked;
+                                                    setLessons(updated);
+                                                }}
+                                                // Attendance is always editable
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={stu.completion || false}
+                                                onChange={e => {
+                                                    const updated = [...lessons];
+                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
+                                                    updated[lessonIdx].students[idx].completion = e.target.checked;
+                                                    setLessons(updated);
+                                                }}
+                                                disabled={stu.grade !== undefined && stu.grade !== null && stu.completion === true && stu.pass === true}
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                value={stu.grade || ""}
+                                                placeholder="e.g. 80%"
+                                                onChange={e => {
+                                                    const updated = [...lessons];
+                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
+                                                    updated[lessonIdx].students[idx].grade = e.target.value;
+                                                    setLessons(updated);
+                                                }}
+                                                disabled={stu.grade !== undefined && stu.grade !== null && stu.completion === true && stu.pass === true}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                         <button
@@ -273,11 +265,17 @@ function ClassroomGrade() {
                                 try {
                                     const studentData = lesson.students.map(stu => ({
                                         stu_user_id: stu.stu_user_id,
+                                        stucourse_id: stu.stucourse_id, // send both IDs
                                         attendance: stu.attendance || false,
                                         grade: stu.grade || 0,
                                         completion: stu.completion || false,
                                     }));
                                     await api.put(`classrooms/${classroomCode}/lessons/${lesson.lesson_id}/students`, studentData);
+                                    // Re-fetch lessons to update UI with latest data
+                                    const { data: res } = await api.get(`classrooms/${classroomCode}/lessons/students`);
+                                    if (res.success) {
+                                        setLessons(res.data);
+                                    }
                                     alert("Grades updated successfully!");
                                 } catch (err) {
                                     console.error("Error updating student marks:", err);
