@@ -119,11 +119,19 @@ function StudentClassroomDetails() {
         <div className="course-details-container">
           {/* Classroom Status */}
           <div className="course-header">
-            <div className="course-status">
+            {/* <div className="course-status">
               <span className={`status-badge ${classroom.cr_status?.toLowerCase() || "draft"}`}>
                 {classroom.cr_status || "Draft"}
               </span>
+            </div> */}
+          {/* Join Button for available classrooms only */}
+          {(fromTab === "available" && stucourse_id) && (
+            <div style={{ marginTop: "2em", textAlign: "center" }}>
+              <button className="join-btn" onClick={handleJoinClassroom} disabled={joining}>
+                {joining ? "Joining..." : "Join Classroom"}
+              </button>
             </div>
+          )}
           </div>
           {/* Classroom Info */}
           <div className="course-info">
@@ -187,14 +195,6 @@ function StudentClassroomDetails() {
               )}
             </div>
           </div>
-          {/* Join Button for available classrooms only */}
-          {(fromTab === "available" && stucourse_id) && (
-            <div style={{ marginTop: "2em", textAlign: "center" }}>
-              <button className="join-btn" onClick={handleJoinClassroom} disabled={joining}>
-                {joining ? "Joining..." : "Join Classroom"}
-              </button>
-            </div>
-          )}
           {/* 🚫 Students Section skipped (only instructors need that) */}
         </div>
       </div>
