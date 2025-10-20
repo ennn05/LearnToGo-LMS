@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api, { setAuthToken } from "../libs/apiCalls";
 import "../styles/Reports.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 function Reports() {
@@ -34,6 +35,13 @@ function Reports() {
         "Not Enrolled": "#f39c12",
     };
     const ALL_STATUSES = ["Published", "Draft", "Archived"];
+
+    // 🌙 get theme + toggle function
+    const { theme, toggleTheme } = useThemeStore();
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -225,6 +233,17 @@ function Reports() {
                 {/** Topbar */}
                 <div className="topbar">
                     <h1>Reports & Statistics</h1>
+                     <div className="theme-toggle">
+                    <label className="switch">
+                    <input
+                        type="checkbox"
+                        checked={theme === "dark"}
+                        onChange={toggleTheme}
+                    />
+                    <span className="slider"></span>
+                    </label>
+                    <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+                </div>
                 </div>
                 {/** Reports containers */}
                 <div className="reports-container">

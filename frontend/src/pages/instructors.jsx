@@ -3,6 +3,7 @@ import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/instructors.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 const Instructors = () => {
   // Track active sidebar page
@@ -22,6 +23,13 @@ const Instructors = () => {
 
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+
+  // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+  document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   /**
    * Fetch all instructors from the backend API
@@ -188,6 +196,17 @@ const Instructors = () => {
 
         <div className="topbar">
           <h1>Instructors</h1>
+          <div className="theme-toggle">
+            <label className="switch">
+            <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+            />
+            <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+        </div>
         </div>
 
         <div className="search-container">
