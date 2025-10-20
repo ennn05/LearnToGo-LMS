@@ -241,7 +241,7 @@ function Reports() {
                             {statusBreakdown.length === 0 ? (
                                 <p>No courses found.</p>
                             ) : (
-                                <ResponsiveContainer width="100%" height={220}>
+                                <ResponsiveContainer width="100%" height={250}>
                                     <PieChart>
                                         <Pie
                                             data={statusBreakdown}
@@ -283,7 +283,7 @@ function Reports() {
                             {lessonStatusBreakdown.length === 0 ? (
                                 <p>No lessons found.</p>
                             ) : (
-                                <ResponsiveContainer width="100%" height={220}>
+                                <ResponsiveContainer width="100%" height={250}>
                                     <PieChart>
                                         <Pie
                                             data={lessonStatusBreakdown}
@@ -327,7 +327,7 @@ function Reports() {
                             {classroomStatusBreakdown.length === 0 ? (
                                 <p>No classrooms found.</p>
                             ) : (
-                                <ResponsiveContainer width="100%" height={220}>
+                                <ResponsiveContainer width="100%" height={250}>
                                     <PieChart>
                                         <Pie
                                             data={classroomStatusBreakdown}
@@ -371,7 +371,7 @@ function Reports() {
                             {studentPieData.length === 0 ? (
                                 <p>No enrollment data found.</p>
                             ) : (
-                                <ResponsiveContainer width="100%" height={220}>
+                                <ResponsiveContainer width="100%" height={250}>
                                     <PieChart>
                                         <Pie
                                             data={studentPieData}
