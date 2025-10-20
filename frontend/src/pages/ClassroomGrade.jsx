@@ -164,17 +164,17 @@ function ClassroomGrade() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>Classroom Grades</h1>
-                                       <div className="theme-toggle">
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={theme === "dark"}
-                onChange={toggleTheme}
-              />
-              <span className="slider"></span>
-            </label>
-            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
-          </div>
+                        <div className="theme-toggle">
+                            <label className="switch">
+                            <input
+                                type="checkbox"
+                                checked={theme === "dark"}
+                                onChange={toggleTheme}
+                            />
+                                <span className="slider"></span>
+                            </label>
+                        <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+                    </div>
                 </div>
                 {/** Lesson Tabs */}
                 <div className="lesson-tabs">
