@@ -205,7 +205,6 @@ const Students = () => {
         {/* Topbar with Theme Toggle */}
         <div className="topbar">
           <h1>Students</h1>
-
           <div className="theme-toggle">
             <label className="switch">
               <input
