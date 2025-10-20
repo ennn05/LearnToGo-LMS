@@ -4,6 +4,7 @@ import api from "../libs/apiCalls";
 import useStore from "../store";
 import "../styles/Courses.css";
 import "../styles/students.css";
+import useThemeStore from "../store/themeStore.js";
 
 function StudentCourses() {
   const [studentCourses, setStudentCourses] = useState([]);
@@ -12,6 +13,13 @@ function StudentCourses() {
   const [activeTab, setActiveTab] = useState("my"); // 'my' or 'available'
   const navigate = useNavigate();
   const { user, signOut } = useStore((state) => state);
+
+   // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     // Fetch enrolled courses for the student
@@ -72,7 +80,22 @@ function StudentCourses() {
       </div>
       {/* Main Content */}
       <div className="main-content">
-        <div className="topbar" style={{ padding: 0, boxShadow: "none", background: "transparent" }}>
+          <div className="topbar">
+            <h1>Courses</h1>
+              <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
+          </div>
+
+        <div>
           <div className="student-tabbar">
             <button
               className={activeTab === "my" ? "student-tab-btn active" : "student-tab-btn"}
@@ -88,6 +111,7 @@ function StudentCourses() {
             </button>
           </div>
         </div>
+
         <div className="courses-container">
           {activeTab === "my" ? (
             <div className="courses-grid">

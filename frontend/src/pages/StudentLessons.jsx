@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Lessons.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function StudentLessons() {
     const [lessons, setLessons] = useState([]);
@@ -10,6 +11,14 @@ function StudentLessons() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { user, signOut } = useStore((state) => state);
+
+             // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
 
     /** Fetch lessons for enrolled courses */
     const fetchLessons = async () => {
@@ -66,6 +75,17 @@ function StudentLessons() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>My Lessons</h1>
+                          <div className="theme-toggle">
+                    <label className="switch">
+                    <input
+                        type="checkbox"
+                        checked={theme === "dark"}
+                        onChange={toggleTheme}
+                    />
+                    <span className="slider"></span>
+                    </label>
+                    <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+                </div>
                 </div>
 
                 {/* Lessons List */}

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function ClassroomGrade() {
     const navigate = useNavigate();
@@ -13,6 +14,13 @@ function ClassroomGrade() {
     const [loading, setLoading] = useState(true);
     const { classroomCode } = useParams();
     const { user, signOut } = useStore(s => s);
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+     // 🌓 Apply theme to document root
+      useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+      }, [theme]);
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -156,6 +164,17 @@ function ClassroomGrade() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>Classroom Grades</h1>
+                                       <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
                 </div>
                 {/** Lesson Tabs */}
                 <div className="lesson-tabs">
