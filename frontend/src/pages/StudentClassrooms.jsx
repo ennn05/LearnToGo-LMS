@@ -9,7 +9,6 @@ function StudentClassrooms() {
   const [classrooms, setClassrooms] = useState([]);
   const [activeTab, setActiveTab] = useState("my"); // 'my' or 'available'
   const [loading, setLoading] = useState(true);
-  const [joining, setJoining] = useState({}); // Track joining state per classroom
   const navigate = useNavigate();
   const { user, signOut } = useStore((state) => state);
 
@@ -52,32 +51,9 @@ function StudentClassrooms() {
     navigate("/login");
   };
 
-  const handleClassroomClick = (classroomCode) => {
-    navigate(`/classrooms/${classroomCode}`, { state: { from: activeTab } });
-  };
-
-  const handleJoinClassroom = async (classroomId, stucourseId, e) => {
-    e.stopPropagation(); // Prevent card click event
-    console.log(joining);
-    setJoining(prev => ({ ...prev, [classroomId]: true }));
-    
-    try {
-      const { data: res } = await api.post(`classrooms/${classroomId}/${stucourseId}/join`);
-      if (res.success) {
-        alert("Successfully joined classroom!");
-        // Refresh available classrooms
-        if (activeTab === "available") {
-          fetchClassrooms();
-        }
-      } else {
-        alert(res.message || "Failed to join classroom");
-      }
-    } catch (error) {
-      console.error("Error joining classroom:", error);
-      alert(error.response?.data?.message || "Error joining classroom");
-    } finally {
-      setJoining(prev => ({ ...prev, [classroomId]: false }));
-    }
+  // Update handleClassroomClick to take optional stucourseId and pass it in location.state
+  const handleClassroomClick = (classroomCode, stucourseId = null) => {
+    navigate(`/classrooms/${classroomCode}`, { state: { from: activeTab, stucourse_id: stucourseId } });
   };
 
   return (
@@ -141,7 +117,7 @@ function StudentClassrooms() {
                 <div
                   key={classroom.cr_id}
                   className="classroom-card"
-                  onClick={() => handleClassroomClick(classroom.cr_id)}
+                  onClick={() => handleClassroomClick(classroom.cr_id, activeTab === "available" ? classroom.stucourse_id : null)}
                 >
                   {/* Card Header / Top Section */}
                   {/* <div
@@ -175,17 +151,6 @@ function StudentClassrooms() {
                       <strong>Duration:</strong>{" "}
                       {classroom.cr_duration || "N/A"} week(s)
                     </div>
-
-                    {/* Join Button for Available Classrooms */}
-                    {activeTab === "available" && (
-                      <button
-                        className="join-btn"
-                        onClick={(e) => handleJoinClassroom(classroom.cr_id, classroom.stucourse_id, e)}
-                        disabled={joining[classroom.cr_id]}
-                      >
-                        {joining[classroom.cr_id] ? "Joining..." : "Join Classroom"}
-                      </button>
-                    )}
                   </div>
                 </div>
               ))}
