@@ -25,16 +25,15 @@ function EditLesson() {
   // Fetch lesson details
   const fetchLessonDetails = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`);
-      if (!res.ok) {
-        console.error("Error fetching courses:", res);
+      const {data: res} = await api.get(`lessons/${lessonId}`);
+      if (!res.success) {
+        console.error("Error fetching courses:", res.message);
       }
-      const data = await res.json();
-      setLesson(data.data);
+      setLesson(res.data);
 
       // If prereqs already exist (comma or newline separated text), parse into array
-      if (data.data.lesson_prereq) {
-        const parsed = data.data.lesson_prereq
+      if (res.data.lesson_prereq) {
+        const parsed = res.data.lesson_prereq
           .split("\n")
           .map((s) => s.trim())
           .filter(Boolean)
@@ -132,36 +131,26 @@ function EditLesson() {
     const updatedLesson = { ...lesson, lesson_status: 'published'};
     console.log(updatedLesson);
 
-    const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedLesson),
-    });
+    const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
-    if (!res.ok)
+    if (!res.success)
     {
-      console.error("Error fetching lessons:", res);
+      console.error("Error fetching lessons:", res.message);
     }
-    const data = await res.json();
 
-    console.log("Lesson published:", data.data);
-    setLesson(data.data);
+    console.log("Lesson published:", res.data);
+    setLesson(res.data);
   };
 
   // Update the lesson status to 'archived'
   const handleArchiveLesson = async () => {
     try {
       const updatedLesson = { ...lesson, lesson_status: "archived" };
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedLesson),
-      });
+      const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
-      if (!res.ok) throw new Error("Failed to archive lesson");
+      if (!res.success) throw new Error("Failed to archive lesson");
 
-      const data = await res.json();
-      setLesson(data.data);
+      setLesson(res.data);
     } catch (err) {
       console.error("Error archiving lesson:", err);
     }

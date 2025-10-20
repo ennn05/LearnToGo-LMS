@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/students.css";
 import useStore from "../store";
 import useThemeStore from "../store/themeStore.js";
+import api from "../libs/apiCalls.js";
 
 const Students = () => {
   // Track active sidebar page
@@ -38,13 +39,12 @@ const Students = () => {
       // const { data: res } = await api.get("students");
       // setStudents(res?.data);
 
-      const response = await fetch("http://localhost:5000/api/students");
+      const {data: response} = await api.get("students");
       console.log(response);
 
-      const data = await response.json();
-      console.log("Students loaded: ", data.data);
+      console.log("Students loaded: ", response.data);
 
-      setStudents(data.data);
+      setStudents(response.data);
     } catch (error) {
       console.error("Error fetching students:", error);
     } finally {
@@ -102,21 +102,13 @@ const Students = () => {
         // Example with central api helper:
         // const res = await api.delete(`/students/${stuUserId}`);
 
-        const res = await fetch(
-          `http://localhost:5000/api/students/${stuUserId}`,
-          {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+        const {data: res} = await api.delete(`students/${stuUserId}`);
 
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(errText);
+        if (!res.success) {
+          throw new Error(res.message);
         }
 
-        const data = await res.json();
-        console.log("Deleted:", data.data);
+        console.log("Deleted:", res.data);
 
         // Show success feedback
         setMessage({ text: "Student removed successfully!", type: "success" });
