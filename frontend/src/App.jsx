@@ -15,6 +15,7 @@ import ClassroomDetails from "./pages/ClassroomDetails";
 import CreateClassroom from "./pages/CreateClassroom";
 import ClassroomGrade from "./pages/ClassroomGrade";
 import CreateLesson from "./pages/CreateLessons";
+import Instructors from "./pages/instructors";
 import EditClassroom from "./pages/EditClassroom";
 
 const RootLayout = () => {
@@ -72,6 +73,7 @@ function App() {
           <Route path="/classrooms/create" element={<CreateClassroom />} />  
           <Route path="/classrooms/:classroomCode" element={<ClassroomDetails />} />
           <Route path="/classrooms/:classroomCode/grades" element={<ClassroomGrade />} />
+          <Route path="/instructors" element={<Instructors />} />
           <Route path="/classrooms" element={<Classrooms />} />
           <Route path="/classrooms/:classroomCode/edit" element={<EditClassroom />} />
         </Route>
