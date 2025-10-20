@@ -241,7 +241,7 @@ export const getAvailableClassroomsForStudent = async (req, res) => {
 };
 
 export const joinClassroom = async (req, res) => {
-  const { cr_id } = req.params;  // classroom ID
+  const { cr_id, stucourse_id } = req.params;  // classroom ID
   const studentId = req?.user?.id;
 
   if (!studentId) {
@@ -257,7 +257,7 @@ export const joinClassroom = async (req, res) => {
     }
 
     // Add student to classroom
-    const result = await addClassroomStudent(cr_id, studentId);
+    const result = await addClassroomStudent(cr_id, stucourse_id);
     if (!result) {
       return res.status(500).json({ success: false, message: "Failed to join classroom." });
     }

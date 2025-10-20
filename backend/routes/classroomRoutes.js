@@ -30,7 +30,7 @@ router.get("/", authenticate, (req, res) => {
 });
 
 router.get("/student/available", authenticate, getAvailableClassroomsForStudent);
-router.post("/:cr_id/join", authenticate, joinClassroom);
+router.post("/:cr_id/:stucourse_id/join", authenticate, joinClassroom);
 
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);

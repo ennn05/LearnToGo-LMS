@@ -56,12 +56,13 @@ function StudentClassrooms() {
     navigate(`/classrooms/${classroomCode}`, { state: { from: activeTab } });
   };
 
-  const handleJoinClassroom = async (classroomId, e) => {
+  const handleJoinClassroom = async (classroomId, stucourseId, e) => {
     e.stopPropagation(); // Prevent card click event
+    console.log(joining);
     setJoining(prev => ({ ...prev, [classroomId]: true }));
     
     try {
-      const { data: res } = await api.post(`classrooms/${classroomId}/join`);
+      const { data: res } = await api.post(`classrooms/${classroomId}/${stucourseId}/join`);
       if (res.success) {
         alert("Successfully joined classroom!");
         // Refresh available classrooms
@@ -179,7 +180,7 @@ function StudentClassrooms() {
                     {activeTab === "available" && (
                       <button
                         className="join-btn"
-                        onClick={(e) => handleJoinClassroom(classroom.cr_id, e)}
+                        onClick={(e) => handleJoinClassroom(classroom.cr_id, classroom.stucourse_id, e)}
                         disabled={joining[classroom.cr_id]}
                       >
                         {joining[classroom.cr_id] ? "Joining..." : "Join Classroom"}
