@@ -133,7 +133,6 @@ function Reports() {
                 if (!userStatsRes.data.success) {
                     throw new Error("Some user reports could not be retrieved.");
                 }
-                console.log("Initializing user statistics with:", userStatsRes.data.data);
                 setStudentPieData([
                     { name: "Not Enrolled", value: userStatsRes.data.data.totalNotEnrolled || 0 },
                     { name: "Ongoing", value: userStatsRes.data.data.totalInOngoingCourse || 0 },
