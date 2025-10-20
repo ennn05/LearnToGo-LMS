@@ -23,10 +23,14 @@ function StudentClassrooms() {
       } else {
         ({ data: res } = await api.get("classrooms/student/available"));
       }
+      
       if (res.success) {
+        console.log(res.data);
         const filteredClassrooms = activeTab === "my"
           ? res.data.filter((cr) => cr.cr_status?.toLowerCase() === "published")
           : res.data;
+
+          console.log(filteredClassrooms);
         setClassrooms(filteredClassrooms);
       } else {
         setClassrooms([]);
@@ -139,16 +143,16 @@ function StudentClassrooms() {
                   onClick={() => handleClassroomClick(classroom.cr_id)}
                 >
                   {/* Card Header / Top Section */}
-                  <div
+                  {/* <div
                     className={`classroom-top-section ${classroom.cr_status?.toLowerCase() || "draft"}`}
-                  >
+                  > */}
                     <h3>Classroom ID: {classroom.cr_id}</h3>
-                  </div>
+                  {/* </div> */}
 
                   {/* Card Body */}
                   <div className="classroom-body">
                     <div className="classroom-course-title">
-                      <strong>Course:</strong> {classroom.course_name}
+                      <strong>Course:</strong> {classroom.course_title}
                     </div>
 
                     <div className="classroom-supervisor">
@@ -156,10 +160,10 @@ function StudentClassrooms() {
                       {classroom.supervisor_fname} {classroom.supervisor_lname}
                     </div>
 
-                    <div className="classroom-status">
+                    {/* <div className="classroom-status">
                       <strong>Status:</strong>{" "}
                       {classroom.cr_status || "Ongoing"}
-                    </div>
+                    </div> */}
 
                     <div className="classroom-dates">
                       <strong>Start Date:</strong>{" "}
