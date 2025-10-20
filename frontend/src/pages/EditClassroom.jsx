@@ -348,16 +348,16 @@ function EditClassroom() {
                   <button 
                     className="btn-publish" 
                     onClick={() => handleStatusChange("published")}
-                    disabled={isPublished}
-                    title={isPublished ? "Classroom is already published" : ""}
+                    disabled={isOngoing}
+                    title={isOngoing ? "Cannot change status of ongoing classrooms" : ""}
                   >
                     Publish
                   </button>
                   <button 
                     className="btn-archive" 
                     onClick={() => handleStatusChange("archived")}
-                    disabled={isPublished}
-                    title={isPublished ? "Cannot archive published classrooms" : ""}
+                    disabled={isOngoing}
+                    title={isOngoing ? "Cannot change status of ongoing classrooms" : ""}
                   >
                     Archive
                   </button>
