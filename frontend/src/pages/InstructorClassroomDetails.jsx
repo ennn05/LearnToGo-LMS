@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorClassroomDetails() {
   const { classroomCode } = useParams();
@@ -13,7 +14,16 @@ function InstructorClassroomDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [activePage, setActivePage] = useState(null);
   const navigate = useNavigate();
+
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   const handleDeleteClassroom = async () => {
     try {
@@ -52,47 +62,7 @@ function InstructorClassroomDetails() {
   }, [classroomCode]);
 
 
-  const handlePublishClassroom = async () => {
-    // TODO: Implement publish classroom functionality
-    console.log("Publish classroom clicked");
-
-    const classroomUpdateData = { ...classroom, cr_status: "published" };
-    console.log(classroomUpdateData);
-
-    try {
-      const {data: res} = await api.put(`classrooms/${classroom.cr_id}`, classroomUpdateData);
-
-      if (!res.success) {
-        console.error("Error publishing classroom:", res.message);
-      }
-
-      console.log("Classroom published:", res.data);
-      fetchClassroom();
-    } catch (error) {
-      console.error("Error publishing classroom:", error);
-    }
-  };
-
-  const handleArchiveClassroom = async () => {
-    // TODO: Implement archive classroom functionality
-    console.log("Archive classroom clicked");
-
-    const classroomUpdateData = { ...classroom, cr_status: "archived" };
-    console.log(classroomUpdateData);
-
-    try {
-      const {data: res} = await api.put(`classrooms/${classroom.cr_id}`, classroomUpdateData);
-
-      if (!res.success) {
-        console.error("Error archiving classroom:", res.message);
-      }
-
-      console.log("Classroom archived:", res.data);
-      fetchClassroom();
-    } catch (error) {
-      console.error("Error archiving classroom:", error);
-    }
-  };
+  // Status changes are only allowed in EditClassroom page
 
 
   if (loading) {
@@ -137,7 +107,7 @@ function InstructorClassroomDetails() {
         <nav className="nav-menu">
           <button onClick={() => navigate("/courses")}>Courses</button>
           <button onClick={() => navigate("/lessons")}>Lessons</button>
-          <button onClick={() => navigate("/classrooms")}>Classrooms</button>
+          <button onClick={() => navigate("/classrooms")} className="active">Classrooms</button>
           <button onClick={() => navigate("/students")}>Students</button>
           <button onClick={() => navigate("/reports")}>Reports & Statistics</button>
           <button className="logout-btn" onClick={() => {
@@ -154,6 +124,17 @@ function InstructorClassroomDetails() {
       <div className="main-content">
         <div className="topbar">
           <h1>Classroom Details</h1>
+                             <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         <div className="course-details-container">
@@ -166,20 +147,7 @@ function InstructorClassroomDetails() {
             </div>
             
             <div className="course-actions">
-              {classroom.cr_status !== "published" ? (
-                <button className="btn-publish" onClick={handlePublishClassroom}>
-                  Publish
-                </button>
-              ) : (
-                ""
-              )}
-              {classroom.cr_status !== "archived" ? (
-                <button className="btn-archive" onClick={handleArchiveClassroom}>
-                  Archive
-                </button>
-              ) : (
-                ""
-              )}
+              {/* Status changes are only allowed in EditClassroom page */}
             </div>
           </div>
 
@@ -289,7 +257,7 @@ function InstructorClassroomDetails() {
 
           {/* Footer */}
           <div className="course-footer">
-            <button className="btn-edit" onClick={() => console.log("Edit classroom")}>
+            <button className="btn-edit" onClick={() => navigate(`/classrooms/${classroom.cr_id}/edit`)}>
               Edit
             </button>
             <button className="btn-edit" onClick={() => navigate(`/classrooms/${classroomCode}/grades`)}>

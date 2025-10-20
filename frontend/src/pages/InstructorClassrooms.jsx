@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Classrooms.css";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorClassrooms() {
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
   const [activePage, setActivePage] = useState("classrooms");
   const [user, setUser] = useState(null);
   const [classrooms, setClassrooms] = useState([]);
@@ -12,6 +15,11 @@ function InstructorClassrooms() {
   const [filter, setFilter] = useState("all"); // all, mine, others
 
   const navigate = useNavigate();
+
+        // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   const fetchCourses = async () => {
     try {
@@ -120,6 +128,17 @@ function InstructorClassrooms() {
       <div className="main-content">
         <div className="topbar">
           <h1>My Classrooms</h1>
+            <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         <div className="classrooms-container">

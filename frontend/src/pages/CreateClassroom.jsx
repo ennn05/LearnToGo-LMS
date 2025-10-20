@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/CreateClassroom.css"; // Stylesheet for page
 import api from "../libs/apiCalls";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function CreateClassroom() {
     // Sidebar state
@@ -11,6 +12,9 @@ function CreateClassroom() {
     // User info
     const {user, setCredentials, signOut} = useStore((state) => state);
     console.log("User from store:", user);
+
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
 
     // Default classroom
     const [classroomData, setClassroomData] = useState({
@@ -119,6 +123,10 @@ function CreateClassroom() {
             setAvailableSupervisors([]);
         }
     };
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+      }, [theme]);
 
     // Mount: load user and courses
     useEffect(() => {
@@ -308,6 +316,17 @@ function CreateClassroom() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>New Classroom</h1>
+                                       <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
                 </div>
                 <div className="create-classroom-container">
                     {/** Classroom Header with Status and Actions */}
@@ -353,6 +372,7 @@ function CreateClassroom() {
                                     value={classroomData.startDate}
                                     onChange={handleInputChange}
                                     placeholder={currentDate}
+                                    min={new Date().toISOString().split("T")[0]}
                                 />
                             </div>
                             <div className="form-group">
@@ -471,7 +491,7 @@ function CreateClassroom() {
                                 ) : (
                                     filteredLessons.map(lesson => (
                                         <div key={lesson.lesson_id} className="available-lesson-card">
-                                            <div className="lesson-content">
+                                            <div className="create-lesson-content">
                                                 <h4>{lesson.lesson_title}</h4>
                                                 <p>{lesson.lesson_desc}</p>
                                             </div>
@@ -505,7 +525,7 @@ function CreateClassroom() {
                                 </thead>
                                 <tbody>
                                     {availableStudents.map(student => (
-                                        <tr key={student.user_id}>
+                                        <tr key={student.stu_user_id}>
                                             <td>
                                                 <input 
                                                     type="checkbox"

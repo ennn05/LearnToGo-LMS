@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Lessons.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function StudentLessons() {
     const [lessons, setLessons] = useState([]);
@@ -10,6 +11,14 @@ function StudentLessons() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { user, signOut } = useStore((state) => state);
+
+             // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
 
     /** Fetch lessons for enrolled courses */
     const fetchLessons = async () => {
@@ -19,6 +28,7 @@ function StudentLessons() {
                 setError(res.message || "Failed to fetch lessons");
                 setLessons([]);
             } else {
+                console.log("Lessons fetched:", res.data);
                 setLessons(res.data);
             }
         } catch (err) {
@@ -66,6 +76,17 @@ function StudentLessons() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>My Lessons</h1>
+                          <div className="theme-toggle">
+                    <label className="switch">
+                    <input
+                        type="checkbox"
+                        checked={theme === "dark"}
+                        onChange={toggleTheme}
+                    />
+                    <span className="slider"></span>
+                    </label>
+                    <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+                </div>
                 </div>
 
                 {/* Lessons List */}
@@ -80,11 +101,7 @@ function StudentLessons() {
                         </div>
                     ) : (
                         <div className="lessons-grid">
-                            {lessons.filter(
-                                    (lesson, index, self) =>
-                                        index === self.findIndex((l) => l.lesson_id === lesson.lesson_id)
-                                    )
-                                    .map((lesson) => (
+                            {lessons.map((lesson) => (
                                 <div
                                     className="lesson-card"
                                     key={lesson.lesson_id}

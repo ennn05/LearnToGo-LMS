@@ -7,13 +7,17 @@ import {
   createClassroom,
   addClassroomLesson,
   addClassroomStudent,
-  editStudentMarksForClassroomLesson,
+  // editStudentMarksForClassroomLesson,
   getLessonsWithStudentsByClassroom,
-  addClassroomStudentLesson,
-  getClassroomsByStudent
+  // addClassroomStudentLesson,
+  getClassroomsByStudent,
+  updateStudentLessonGrade,
+  updateClassroomLessons,
+  updateClassroomStudents,
+  getStudentAvailableClassroomsToJoin
 } from "../models/classroom.js";
 
-// ✅ Get all classrooms
+// Get all classrooms
 export const getClassrooms = async (req, res) => {
   try {
     const classrooms = await getAllClassrooms();
@@ -24,7 +28,7 @@ export const getClassrooms = async (req, res) => {
   }
 };
 
-// ✅ Get instructor's classrooms
+// Get instructor's classrooms
 export const getInstructorClassrooms = async (req, res) => {
   const instructorId = req?.user?.id;
   if (!instructorId) return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -51,7 +55,7 @@ export const getStudentClassrooms = async (req, res) => {
   }
 };
 
-// ✅ Get a classroom by code
+// Get a classroom by code
 export const getClassroom = async (req, res) => {
   const { classroomCode } = req.params;
   try {
@@ -82,19 +86,53 @@ export const removeClassroom = async (req, res) => {
   }
 };
 
-// ✅ Update a classroom
 export const editClassroom = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
+  console.log("Update request for classroom:", id);
+  console.log("Update data:", updateData);
+
   try {
-    const updated = await updateClassroom({ id, updateData });
+    const updated = await updateClassroom(id, updateData);
     if (!updated) {
       return res.status(404).json({ success: false, message: "Classroom does not exist." });
     }
-    return res.status(200).json({ success: true, data: updated });
+
+    let updatedLessons = [];
+    if (updateData.lessons && Array.isArray(updateData.lessons)) {
+        try {
+          console.log("Updating lessons:", updateData.lessons);
+          updatedLessons = await updateClassroomLessons(id, updateData.lessons);
+          console.log("Lessons updated successfully:", updatedLessons);
+        } catch (error) {
+          console.error("Error updating classroom's lessons:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to update classroom's lessons."
+          });
+        }
+    }
+
+    let updatedStudents = [];
+    if (updateData.students && Array.isArray(updateData.students)) {
+        try {
+          console.log("Updating students:", updateData.students);
+          updatedStudents = await updateClassroomStudents(id, updateData.students);
+          console.log("Students updated successfully:", updatedStudents);
+        } catch (error) {
+          console.error("Error updating classroom's students:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to update classroom's students."
+          });
+        }
+    }
+
+    return res.status(200).json({ success: true, data: updated, lessons: updatedLessons, students: updatedStudents });
   } catch (error) {
     console.error("Error updating classroom:", error);
+    console.error("Error stack:", error.stack);
     return res.status(500).json({ success: false, message: "Failed to update classroom." });
   }
 };
@@ -168,17 +206,17 @@ export const addClassroom = async (req, res) => {
             }
 
 
-            try {
-                for (const crcl of createdLessons) {
-                  for (const cs of createdStudents) {
-                    await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
-                  }
-                }
-            }
-            catch (error) {
-              console.error("Error in adding cl_stu_lesson records:", error);
-              return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
-            }
+            // try {
+            //     for (const crcl of createdLessons) {
+            //       for (const cs of createdStudents) {
+            //         await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
+            //       }
+            //     }
+            // }
+            // catch (error) {
+            //   console.error("Error in adding cl_stu_lesson records:", error);
+            //   return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
+            // }
 
             return res.status(201).json({ success: true, data: classroom });
         }
@@ -191,13 +229,13 @@ export const addClassroom = async (req, res) => {
 };
 
 export const updateStudentMarksForClassroomLesson = async (req, res) => {
-  const { cr_id, crcl_cl_id } = req.params;
-  const students = req.body; // Expecting an array of { stucourse_id, attendance, grade, completion }
+  const { cr_id, lesson_id } = req.params;
+  const students = req.body; // Expecting an array of { stu_user_id, attendance, grade, completion }
   console.log(students);
   try { 
     const results = await Promise.all(
       students.map(student => 
-        editStudentMarksForClassroomLesson(cr_id, crcl_cl_id, student)
+        updateStudentLessonGrade(lesson_id, student)
       )
     );
     return res.status(200).json({ success: true, data: results });
@@ -219,5 +257,51 @@ export const getClassroomLessonsWithStudents = async (req, res) => {
   } catch (error) {
     console.error("Error fetching classroom lessons with students:", error);
     return res.status(500).json({ success: false, message: "Failed to fetch classroom lessons." });
+  }
+};
+
+export const getAvailableClassroomsForStudent = async (req, res) => {
+  const {id} = req.user;
+
+  if (!id) {
+    return res.status(403).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    const classrooms = await getStudentAvailableClassroomsToJoin(id);
+
+    return res.status(200).json({ success: true, data: classrooms });
+  } catch (error) {
+    console.error("Error fetching available classrooms for student:", error);
+    return res.status(500).json({ success: false, message: "Failed to fetch available classrooms for student." });
+  }
+};
+
+export const joinClassroom = async (req, res) => {
+  const { cr_id, stucourse_id } = req.params;  // classroom ID
+  const studentId = req?.user?.id;
+
+  if (!studentId) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    // Check if already joined
+    const classrooms = await getClassroomsByStudent(studentId);
+    const already = classrooms.find(c => c.cr_id === cr_id);
+    if (already) {
+      return res.status(400).json({ success: false, message: "Already joined this classroom." });
+    }
+
+    // Add student to classroom
+    const result = await addClassroomStudent(cr_id, stucourse_id);
+    if (!result) {
+      return res.status(500).json({ success: false, message: "Failed to join classroom." });
+    }
+
+    return res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    console.error("Error joining classroom:", error);
+    return res.status(500).json({ success: false, message: "Error while joining classroom." });
   }
 };

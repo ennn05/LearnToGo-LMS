@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/CreateLessons.css";
 import api from "../libs/apiCalls"; 
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function CreateLesson() {
   const {user, signOut} = useStore((state) => state);
@@ -32,6 +33,15 @@ function CreateLesson() {
 
   const [readingModal, setShowReadingModal] = useState(false);
   const [assignmentModal, setShowAssignmentModal] = useState(false);
+
+
+    // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   // Load user + published lessons for prerequisites
   useEffect(() => {
@@ -167,6 +177,17 @@ function CreateLesson() {
       <div className="main-content">
         <div className="topbar">
           <h1>New Lesson</h1>
+                             <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
         <div className="create-lesson-container">
           {/* Lesson Details */}

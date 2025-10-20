@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
 import courseRoutes from "../coursesRoutes.js";
-import { getAvailableCoursesForEnrollment } from "../../controllers/courseControllers.js";
+import { getAvailableCoursesForEnrollment, getEnrolledStudentsByCourse, getPublished, updateCourseLessonAssignments } from "../../controllers/courseControllers.js";
 
 // Mock controllers
 jest.mock("../../controllers/courseControllers", () => ({
@@ -14,6 +14,9 @@ jest.mock("../../controllers/courseControllers", () => ({
   removeCourse: jest.fn((req, res) => res.status(200).json({ from: "removeCourse" })),
   editCourse: jest.fn((req, res) => res.status(200).json({ from: "editCourse" })),
   enrollCourse: jest.fn((req, res) => res.status(201).json({ from: "enrollCourse" })),
+  getPublished:  jest.fn((req, res) => res.status(201).json({ from: "getPublished" })),
+  getEnrolledStudentsByCourse: jest.fn((req, res) => res.status(201).json({ from: "getEnrolledStudentsByCourse" })),
+  updateCourseLessonAssignments: jest.fn((req, res) => res.status(201).json({ from: "updateCourseLessonAssignments" })),
 }));
 
 // Mock middleware

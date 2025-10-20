@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import "../styles/LessonDetails.css"; // Use same stylesheet as LessonDetails
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function EditLesson() {
   const { lessonId } = useParams();
@@ -12,7 +13,6 @@ function EditLesson() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
-  const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
   // NEW STATES
   const [preReqModal, setShowPreReqModal] = useState(false);
@@ -25,16 +25,15 @@ function EditLesson() {
   // Fetch lesson details
   const fetchLessonDetails = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`);
-      if (!res.ok) {
-        console.error("Error fetching courses:", res);
+      const {data: res} = await api.get(`lessons/${lessonId}`);
+      if (!res.success) {
+        console.error("Error fetching courses:", res.message);
       }
-      const data = await res.json();
-      setLesson(data.data);
+      setLesson(res.data);
 
       // If prereqs already exist (comma or newline separated text), parse into array
-      if (data.data.lesson_prereq) {
-        const parsed = data.data.lesson_prereq
+      if (res.data.lesson_prereq) {
+        const parsed = res.data.lesson_prereq
           .split("\n")
           .map((s) => s.trim())
           .filter(Boolean)
@@ -63,6 +62,14 @@ function EditLesson() {
       console.error("Error fetching all lessons:", err);
     }
   };
+
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   useEffect(() => {
     fetchLessonDetails();
@@ -107,9 +114,6 @@ function EditLesson() {
     });
   };
 
-  // --- keep your other handlers (publish, archive, delete, editLesson, etc.)
-
-
   // Navigate back to the lessons page
   const handleBackToLessons = () => navigate("/lessons");
 
@@ -127,58 +131,30 @@ function EditLesson() {
     const updatedLesson = { ...lesson, lesson_status: 'published'};
     console.log(updatedLesson);
 
-    const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedLesson),
-    });
+    const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
-    if (!res.ok)
+    if (!res.success)
     {
-      console.error("Error fetching lessons:", res);
+      console.error("Error fetching lessons:", res.message);
     }
-    const data = await res.json();
 
-    console.log("Lesson published:", data.data);
-    setLesson(data.data);
+    console.log("Lesson published:", res.data);
+    setLesson(res.data);
   };
 
   // Update the lesson status to 'archived'
   const handleArchiveLesson = async () => {
     try {
       const updatedLesson = { ...lesson, lesson_status: "archived" };
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedLesson),
-      });
+      const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
-      if (!res.ok) throw new Error("Failed to archive lesson");
+      if (!res.success) throw new Error("Failed to archive lesson");
 
-      const data = await res.json();
-      setLesson(data.data);
+      setLesson(res.data);
     } catch (err) {
       console.error("Error archiving lesson:", err);
     }
   };
-
-  // Delete the lesson from the API and navigate to the lessons page
-  const handleDeleteLesson = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        alert("Failed to delete lesson.");
-        return;
-      }
-      navigate("/lessons");
-    } catch (error) {
-      alert("Error deleting lesson.");
-      console.error(error);
-    }
-  };
-
 
   // If the component is still loading, display a "Loading lesson..."
   // message. This prevents the component from attempting to render
@@ -235,6 +211,17 @@ function EditLesson() {
       <div className="main-content">
         <div className="topbar">
           <h1>Editing Lesson</h1>
+                             <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         {/* Lesson Details */}
@@ -372,12 +359,6 @@ function EditLesson() {
               }}
             >
               Save
-            </button>
-            <button
-              className="btn-delete"
-              onClick={() => setDeleteConfirm(true)}
-            >
-              Delete
             </button>
           </div>
         </div>
@@ -578,31 +559,6 @@ function EditLesson() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-      {/* Delete Lesson Confirmation */}
-      {DeleteConfirm && (
-        <div className="delete-confirmation-overlay">
-          <div className="delete-confirmation-modal">
-            <h3>Are you sure you want to delete this lesson?</h3>
-            <div className="delete-confirmation-actions">
-              <button
-                onClick={() => {
-                  setDeleteConfirm(false);
-                  handleDeleteLesson();
-                }}
-                className="btn-delete"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setDeleteConfirm(false)}
-                className="delete-confirmation-btn-cancel"
-              >
-                Cancel
-              </button>
-            </div>
           </div>
         </div>
       )}

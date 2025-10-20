@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import "../styles/EditCourse.css";
 import useStore from "../store";
 import api from "../libs/apiCalls";
+import useThemeStore from "../store/themeStore.js";
 
 function EditCourse() {
     const { courseId } = useParams();
@@ -65,6 +66,14 @@ function EditCourse() {
         }
     };
 
+        // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
+
     useEffect(() => {
         // const storedUser = localStorage.getItem("user");
         // if (storedUser) {
@@ -113,15 +122,10 @@ function EditCourse() {
             };
 
             // Save updates before marking as published
-            const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(publishedCourseData)
-            });
+            const {data: response} = await api.put(`courses/${courseId}`, publishedCourseData); 
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to publish course");
+            if (!response.success) {
+                throw new Error(response.message || "Failed to publish course");
             }
 
             // // Update lessons
@@ -176,15 +180,10 @@ function EditCourse() {
             };
 
             // Update course metadata
-            const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(courseToUpdate)
-            });
+            const {data: response} = await api.put(`courses/${courseId}`, courseToUpdate);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to save course details");
+            if (!response.success) {
+                throw new Error(response.message || "Failed to save course details");
             }
 
             // Update lesson assignments
@@ -261,6 +260,17 @@ function EditCourse() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>Edit Course</h1>
+                                       <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
                 </div>
                 <div className="edit-course-container">
                     {/** Course Header with Status and Actions */}

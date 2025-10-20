@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function ClassroomGrade() {
     const navigate = useNavigate();
@@ -13,6 +14,13 @@ function ClassroomGrade() {
     const [loading, setLoading] = useState(true);
     const { classroomCode } = useParams();
     const { user, signOut } = useStore(s => s);
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+     // 🌓 Apply theme to document root
+      useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+      }, [theme]);
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -156,6 +164,17 @@ function ClassroomGrade() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>Classroom Grades</h1>
+                        <div className="theme-toggle">
+                            <label className="switch">
+                            <input
+                                type="checkbox"
+                                checked={theme === "dark"}
+                                onChange={toggleTheme}
+                            />
+                                <span className="slider"></span>
+                            </label>
+                        <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+                    </div>
                 </div>
                 {/** Lesson Tabs */}
                 <div className="lesson-tabs">
@@ -197,6 +216,7 @@ function ClassroomGrade() {
                                                     updated[lessonIdx].students[idx].attendance = e.target.checked;
                                                     setLessons(updated);
                                                 }}
+                                                // Attendance is always editable
                                             />
                                         </td>
                                         <td>
@@ -209,6 +229,7 @@ function ClassroomGrade() {
                                                     updated[lessonIdx].students[idx].completion = e.target.checked;
                                                     setLessons(updated);
                                                 }}
+                                                disabled={stu.grade !== undefined && stu.grade !== null && stu.completion === true && stu.pass === true}
                                             />
                                         </td>
                                         <td>
@@ -222,6 +243,7 @@ function ClassroomGrade() {
                                                     updated[lessonIdx].students[idx].grade = e.target.value;
                                                     setLessons(updated);
                                                 }}
+                                                disabled={stu.grade !== undefined && stu.grade !== null && stu.completion === true && stu.pass === true}
                                             />
                                         </td>
                                     </tr>
@@ -231,14 +253,29 @@ function ClassroomGrade() {
                         <button
                             className="save-btn"
                             onClick={async () => {
+                                const invalidStudents = lessons.flatMap(lesson =>
+                                    lesson.students.filter(stu =>
+                                        stu.grade === "" || stu.grade < 0 || stu.grade > 100
+                                    )
+                                );
+                                if (invalidStudents.length > 0) {
+                                    alert("Please ensure all grades are between 0 and 100 before saving.");
+                                    return;
+                                }
                                 try {
                                     const studentData = lesson.students.map(stu => ({
-                                        stucourse_id: stu.stucourse_id,
+                                        stu_user_id: stu.stu_user_id,
+                                        stucourse_id: stu.stucourse_id, // send both IDs
                                         attendance: stu.attendance || false,
                                         grade: stu.grade || 0,
                                         completion: stu.completion || false,
                                     }));
-                                    await api.put(`classrooms/${classroomCode}/lessons/${lesson.crcl_cl_id}/students`, studentData);
+                                    await api.put(`classrooms/${classroomCode}/lessons/${lesson.lesson_id}/students`, studentData);
+                                    // Re-fetch lessons to update UI with latest data
+                                    const { data: res } = await api.get(`classrooms/${classroomCode}/lessons/students`);
+                                    if (res.success) {
+                                        setLessons(res.data);
+                                    }
                                     alert("Grades updated successfully!");
                                 } catch (err) {
                                     console.error("Error updating student marks:", err);

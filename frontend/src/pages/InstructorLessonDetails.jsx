@@ -3,19 +3,25 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import useStore from "../store";
 import "../styles/LessonDetails.css";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorLessonDetails() {
   const { lessonId } = useParams();
+  const [activePage, setActivePage] = useState(null);
   const navigate = useNavigate();
 
   const {user, signOut} = useStore((state) => state);
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [DeleteConfirm, setDeleteConfirm] = useState(false);
 
   // NEW STATES
   const [lessonPrereqs, setLessonPrereqs] = useState([]); 
   const [allLessons, setAllLessons] = useState([]);
+
+  // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
 
   // Fetch lesson details
   const fetchLessonDetails = async () => {
@@ -53,6 +59,11 @@ function InstructorLessonDetails() {
       console.error("Error fetching all lessons:", err);
     }
   };
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   useEffect(() => {
     // const storedUser = localStorage.getItem("user");
@@ -107,7 +118,23 @@ function InstructorLessonDetails() {
     }
     
   };
-
+  
+  // Delete the lesson from the API and navigate to the lessons page
+  const handleDeleteLesson = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        alert("Failed to delete lesson.");
+        return;
+      }
+      navigate("/lessons");
+    } catch (error) {
+      alert("Error deleting lesson.");
+      console.error(error);
+    }
+  };
 
   // If the component is still loading, display a "Loading lesson..."
   // message. This prevents the component from attempting to render
@@ -164,6 +191,17 @@ function InstructorLessonDetails() {
       <div className="main-content">
         <div className="topbar">
           <h1>Lesson Details</h1>
+               <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         {/* Lesson Details */}
@@ -287,9 +325,40 @@ function InstructorLessonDetails() {
             <button className="btn-edit" onClick={() => navigate(`/lessons/${lessonId}/edit`)}>
               Edit
             </button>
+            <button
+              className="btn-delete"
+              onClick={() => setDeleteConfirm(true)}
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>
+      {/* Delete Lesson Confirmation */}
+      {DeleteConfirm && (
+        <div className="delete-confirmation-overlay">
+          <div className="delete-confirmation-modal">
+            <h3>Are you sure you want to delete this lesson?</h3>
+            <div className="delete-confirmation-actions">
+              <button
+                onClick={() => {
+                  setDeleteConfirm(false);
+                  handleDeleteLesson();
+                }}
+                className="btn-delete"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(false)}
+                className="delete-confirmation-btn-cancel"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

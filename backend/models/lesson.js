@@ -62,6 +62,21 @@ export const getLessonById = async (lessonId) => {
   return lesson[0];
 };
 
+// to be implemented - to include student's grade and completion for this lesson
+export const getStudentLessonById = async (studentId, lessonId) => {
+  // dummy data for now
+  const lesson = await sql`
+  select 
+    l.*, g.*, u.user_id, u.user_fname, u.user_lname, u.user_email, u.user_role
+  from "LMS".grade g join "LMS".lesson l on g.lesson_id = l.lesson_id
+  LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+  LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
+  where g.stu_user_id = ${studentId}
+  and g.lesson_id = ${lessonId};
+  `;
+  return lesson[0];
+};
+
 // Get lessons by instructor
 export const getLessonByInstructor = async (instructorId) => {
   const lessons = await sql`
@@ -75,22 +90,13 @@ export const getLessonByInstructor = async (instructorId) => {
 export const getLessonsByStudent = async (studentId) => {
   const lessons = await sql`
     SELECT 
-      l.lesson_id,
-      l.lesson_title,
-      l.lesson_desc,
-      l.lesson_obj,
-      l.lesson_effort_per_week,
-      l.lesson_date_created,
-      l.lesson_date_updated,
-      l.lesson_credit,
-      l.lesson_designer,
-      l.lesson_status
-    FROM "LMS".student_course stuc
-    JOIN "LMS".course_lesson cl 
-      ON stuc.course_code = cl.cl_course_code
-    JOIN "LMS".lesson l 
-      ON cl.cl_lesson_id = l.lesson_id
-    WHERE stuc.stu_user_id = ${studentId}
+      l.*, g.*, u.user_id, u.user_fname, u.user_lname, u.user_email, u.user_role
+    FROM "LMS".grade g
+    JOIN "LMS".lesson l
+      ON g.lesson_id = l.lesson_id
+    LEFT JOIN "LMS".instructor i ON l.lesson_designer = i.inst_user_id
+    LEFT JOIN "LMS".user u ON u.user_id = i.inst_user_id
+    WHERE g.stu_user_id = ${studentId}
     ORDER BY l.lesson_id;
   `;
   return lessons;
@@ -142,7 +148,7 @@ export const deleteLesson = async (lessonId) => {
 
 export const getPublishedLessons = async () => {
     const lessons = await sql`
-        SELECT 
+      SELECT 
             cl.cl_course_code, 
             COALESCE(
               json_agg(
