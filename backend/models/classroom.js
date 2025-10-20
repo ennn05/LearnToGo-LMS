@@ -337,17 +337,32 @@ export const getAvailableClassroomsForStudent = async (studentID) => {
 // };
 
 export const updateStudentLessonGrade = async (lessonId, studentGrade) => {
-  const { stu_user_id, attendance, completion, grade } = studentGrade;
+    const { stu_user_id, attendance, completion, grade } = studentGrade;
 
-  const result = await sql`UPDATE "LMS".grade
-    SET
-      attendance = ${attendance},
-      completion = ${completion},
-      grade_value = ${grade}
-    WHERE stu_user_id = ${stu_user_id} AND lesson_id = ${lessonId}
-    RETURNING *;
-  `;
-  return result[0]; 
+    // Try update first
+    const result = await sql`UPDATE "LMS".grade
+        SET
+            attendance = ${attendance},
+            completion = ${completion},
+            grade_value = ${grade}
+        WHERE stu_user_id = ${stu_user_id} AND lesson_id = ${lessonId}
+        RETURNING *;
+    `;
+    if (result.length > 0) {
+        return result[0];
+    }
+    // If no row updated, insert new row (upsert)
+    const insertResult = await sql`
+        INSERT INTO "LMS".grade (stu_user_id, lesson_id, attendance, completion, grade_value)
+        VALUES (${stu_user_id}, ${lessonId}, ${attendance}, ${completion}, ${grade})
+        ON CONFLICT (stu_user_id, lesson_id)
+        DO UPDATE SET
+            attendance = EXCLUDED.attendance,
+            completion = EXCLUDED.completion,
+            grade_value = EXCLUDED.grade_value
+        RETURNING *;
+    `;
+    return insertResult[0];
 };
 
 export const getLessonsWithStudentsByClassroom = async (cr_id) => {
