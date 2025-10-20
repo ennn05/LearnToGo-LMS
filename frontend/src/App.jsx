@@ -16,6 +16,8 @@ import CreateClassroom from "./pages/CreateClassroom";
 import ClassroomGrade from "./pages/ClassroomGrade";
 import CreateLesson from "./pages/CreateLessons";
 import Reports from "./pages/Reports";
+import Instructors from "./pages/instructors";
+import EditClassroom from "./pages/EditClassroom";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
@@ -72,8 +74,10 @@ function App() {
           <Route path="/classrooms/create" element={<CreateClassroom />} />  
           <Route path="/classrooms/:classroomCode" element={<ClassroomDetails />} />
           <Route path="/classrooms/:classroomCode/grades" element={<ClassroomGrade />} />
+          <Route path="/instructors" element={<Instructors />} />
           <Route path="/classrooms" element={<Classrooms />} />
           <Route path="/reports" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Reports /></ProtectedRoute>} />
+          <Route path="/classrooms/:classroomCode/edit" element={<EditClassroom />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />

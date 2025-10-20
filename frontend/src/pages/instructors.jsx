@@ -1,21 +1,20 @@
-// import api from "../libs/apiCalls"; // Uncomment if switching from fetch to centralized api wrapper
+// import api from "../libs/apiCalls"; // Uncomment if using centralized api wrapper
 import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/students.css";
+import "../styles/instructors.css";
 import useStore from "../store";
-import useThemeStore from "../store/themeStore.js";
 
-const Students = () => {
+const Instructors = () => {
   // Track active sidebar page
-  const [activePage, setActivePage] = useState("students");
+  const [activePage, setActivePage] = useState("instructors");
 
   // Current logged-in user
-  const {user, signOut} = useStore((state) => state);
+  const { user, signOut } = useStore((state) => state);
 
-  // List of students loaded from API
-  const [students, setStudents] = useState([]);
+  // List of instructors loaded from API
+  const [instructors, setInstructors] = useState([]);
 
-  // Loading state while fetching students
+  // Loading state while fetching instructors
   const [loading, setLoading] = useState(true);
 
   // Feedback messages (success/error)
@@ -24,61 +23,46 @@ const Students = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 🌙 get theme + toggle function
-  const { theme, toggleTheme } = useThemeStore();
-
   /**
-   * Fetch all students from the backend API
+   * Fetch all instructors from the backend API
    */
-  const fetchStudents = async () => {
+  const fetchInstructors = async () => {
     try {
-      console.log("Fetching students from API...");
+      console.log("Fetching instructors from API...");
 
-      // Example if using central api helper:
-      // const { data: res } = await api.get("students");
-      // setStudents(res?.data);
-
-      const response = await fetch("http://localhost:5000/api/students");
-      console.log(response);
-
+      const response = await fetch("http://localhost:5000/api/instructors");
       const data = await response.json();
-      console.log("Students loaded: ", data.data);
+      console.log("Instructors loaded: ", data.data);
 
-      setStudents(data.data);
+      setInstructors(data.data);
     } catch (error) {
-      console.error("Error fetching students:", error);
+      console.error("Error fetching instructors:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🌓 Apply theme to document root
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-  const filteredStudents = students.filter((s) => {
-  const fullName = `${s.user_fname} ${s.user_lname}`.toLowerCase();
-  const email = s.user_email.toLowerCase();
-  const term = searchTerm.toLowerCase();
+  const filteredInstructors = instructors.filter((i) => {
+    const fullName = `${i.user_fname} ${i.user_lname}`.toLowerCase();
+    const email = i.user_email.toLowerCase();
+    const term = searchTerm.toLowerCase();
 
     return fullName.includes(term) || email.includes(term);
   });
 
   /**
    * On mount:
-   * - Load user info from localStorage
-   * - Fetch students list
+   * - Check role & redirect if not admin
+   * - Fetch instructors list
    */
   useEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // console.log("Stored user:", storedUser);
+    if (!user || user.user_role !== "admin") {
+      navigate("/"); // redirect non-admins back to home
+      return;
+    }
 
-    // if (storedUser) {
-    //   setUser(JSON.parse(storedUser));
-    // }
-
-    fetchStudents();
-  }, []);
+    fetchInstructors();
+  }, [user, navigate]);
 
   /**
    * Handle logout: clear localStorage & redirect
@@ -90,20 +74,17 @@ const Students = () => {
   };
 
   /**
-   * Remove a student by ID (DELETE API call)
+   * Remove an instructor by ID (DELETE API call)
    */
-  const handleRemove = async (stuUserId) => {
-    if (window.confirm("Are you sure you want to remove this student?")) {
-      const prevStudents = [...students]; // Keep backup before deleting
+  const handleRemove = async (instUserId) => {
+    if (window.confirm("Are you sure you want to remove this instructor?")) {
+      const prevInstructors = [...instructors]; // backup
 
       try {
-        console.log("Deleting student from API...");
-
-        // Example with central api helper:
-        // const res = await api.delete(`/students/${stuUserId}`);
+        console.log("Deleting instructor from API...");
 
         const res = await fetch(
-          `http://localhost:5000/api/students/${stuUserId}`,
+          `http://localhost:5000/api/instructors/${instUserId}`,
           {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
@@ -118,24 +99,22 @@ const Students = () => {
         const data = await res.json();
         console.log("Deleted:", data.data);
 
-        // Show success feedback
-        setMessage({ text: "Student removed successfully!", type: "success" });
+        setMessage({ text: "Instructor removed successfully!", type: "success" });
         setTimeout(() => setMessage(null), 3000);
 
         // Optimistically update UI
-        setStudents(students.filter((s) => s.user_id !== stuUserId));
+        setInstructors(instructors.filter((i) => i.user_id !== instUserId));
       } catch (error) {
-        console.error("Error deleting student:", error.message);
+        console.error("Error deleting instructor:", error.message);
 
-        // Show error feedback
         setMessage({
-          text: "Failed to remove student. Please try again.",
+          text: "Failed to remove instructor. Please try again.",
           type: "error",
         });
         setTimeout(() => setMessage(null), 3000);
 
-        // Rollback UI to previous state if needed
-        setStudents(prevStudents);
+        // Rollback if delete fails
+        setInstructors(prevInstructors);
       } finally {
         setLoading(false);
       }
@@ -157,7 +136,7 @@ const Students = () => {
           </div>
         </div>
 
-       {/* Navigation Menu */}
+        {/* Navigation Menu */}
         <nav className="nav-menu">
           <button
             className={activePage === "courses" ? "active" : ""}
@@ -189,14 +168,12 @@ const Students = () => {
           >
             Reports & Statistics
           </button>
-                  {user?.user_role === "admin" && (
             <button
-              className={activePage === "instructors" ? "active" : ""}
-              onClick={() => navigate("/instructors")}
-            >
-              Instructors
-            </button>
-          )}
+            className={activePage === "instructors" ? "active" : ""}
+            onClick={() => navigate("/instructors")}
+          >
+            Instructors
+          </button>
           <button className="logout-btn" onClick={handleLogout}>
             Log Out
           </button>
@@ -205,25 +182,12 @@ const Students = () => {
 
       {/* Main Content */}
       <div className="main-content">
-        {/* Feedback banner */}
         {message && (
           <div className={`feedback ${message.type}`}>{message.text}</div>
         )}
 
-        {/* Topbar with Theme Toggle */}
         <div className="topbar">
-          <h1>Students</h1>
-          <div className="theme-toggle">
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={theme === "dark"}
-                onChange={toggleTheme}
-              />
-              <span className="slider"></span>
-            </label>
-            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
-          </div>
+          <h1>Instructors</h1>
         </div>
 
         <div className="search-container">
@@ -235,30 +199,29 @@ const Students = () => {
           />
         </div>
 
-        {/* Students Table */}
-        <div className="students-container">
+        <div className="instructors-container">
           {loading ? (
-            <div className="loading">Loading students...</div>
-          ) : students.length === 0 ? (
-            <div className="no-students">
-              <p>No students found.</p>
+            <div className="loading">Loading instructors...</div>
+          ) : instructors.length === 0 ? (
+            <div className="no-instructors">
+              <p>No instructors found.</p>
             </div>
           ) : (
-            <table className="students-table">
+            <table className="instructors-table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Email</th>
+                  <th>Instructor Name</th>
+                  <th>Instructor Email</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {filteredStudents.map((s) => (
-                  <tr key={s.user_id}>
-                    <td>{`${s.user_fname} ${s.user_lname}`}</td>
-                    <td>{s.user_email}</td>
+                {filteredInstructors.map((i) => (
+                  <tr key={i.user_id}>
+                    <td>{`${i.user_fname} ${i.user_lname}`}</td>
+                    <td>{i.user_email}</td>
                     <td className="action">
-                      <button onClick={() => handleRemove(s.user_id)}>
+                      <button onClick={() => handleRemove(i.user_id)}>
                         Remove
                       </button>
                     </td>
@@ -273,4 +236,4 @@ const Students = () => {
   );
 };
 
-export default Students;
+export default Instructors;

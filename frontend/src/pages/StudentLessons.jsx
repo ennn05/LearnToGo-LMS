@@ -28,6 +28,7 @@ function StudentLessons() {
                 setError(res.message || "Failed to fetch lessons");
                 setLessons([]);
             } else {
+                console.log("Lessons fetched:", res.data);
                 setLessons(res.data);
             }
         } catch (err) {
@@ -100,11 +101,7 @@ function StudentLessons() {
                         </div>
                     ) : (
                         <div className="lessons-grid">
-                            {lessons.filter(
-                                    (lesson, index, self) =>
-                                        index === self.findIndex((l) => l.lesson_id === lesson.lesson_id)
-                                    )
-                                    .map((lesson) => (
+                            {lessons.map((lesson) => (
                                 <div
                                     className="lesson-card"
                                     key={lesson.lesson_id}

@@ -135,6 +135,14 @@ function InstructorLessons() {
           >
             Reports & Statistics
           </button>
+                  {user?.user_role === "admin" && (
+            <button
+              className={activePage === "instructors" ? "active" : ""}
+              onClick={() => navigate("/instructors")}
+            >
+              Instructors
+            </button>
+          )}
           <button className="logout-btn" onClick={handleLogout}>
             Log Out
           </button>

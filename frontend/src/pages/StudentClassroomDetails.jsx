@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css"; // ✅ use same stylesheet as instructor for consistent design
 import useStore from "../store";
@@ -8,10 +8,16 @@ import useThemeStore from "../store/themeStore.js";
 function StudentClassroomDetails() {
   const { classroomCode } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signOut } = useStore((state) => state);
   const [classroom, setClassroom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [joining, setJoining] = useState(false);
+
+  // Location state: either 'my' or 'available', also possible stucourse_id
+  const fromTab = location.state?.from;
+  const stucourse_id = location.state?.stucourse_id;
 
 
          // 🌙 get theme + toggle function
@@ -42,11 +48,32 @@ function StudentClassroomDetails() {
 
   useEffect(() => {
     fetchClassroomDetails();
+    // eslint-disable-next-line
   }, [classroomCode]);
 
   const handleLogout = () => {
     signOut();
     navigate("/");
+  };
+
+  // New: Join logic, only for available classrooms not yet joined
+  const handleJoinClassroom = async () => {
+    if (!stucourse_id) return;
+    setJoining(true);
+    try {
+      const { data: res } = await api.post(`classrooms/${classroomCode}/${stucourse_id}/join`);
+      if (res.success) {
+        alert("Successfully joined classroom!");
+        navigate("/classrooms"); // After join, go back to list
+      } else {
+        alert(res.message || "Failed to join classroom");
+      }
+    } catch (error) {
+      console.error("Error joining classroom:", error);
+      alert(error?.response?.data?.message || "Error joining classroom");
+    } finally {
+      setJoining(false);
+    }
   };
 
   if (loading) {
@@ -93,7 +120,6 @@ function StudentClassroomDetails() {
           <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </nav>
       </div>
-
       {/* Main Content */}
       <div className="main-content">
         <div className="topbar">
@@ -110,17 +136,23 @@ function StudentClassroomDetails() {
             <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
           </div>
         </div>
-
         <div className="course-details-container">
           {/* Classroom Status */}
           <div className="course-header">
-            <div className="course-status">
+            {/* <div className="course-status">
               <span className={`status-badge ${classroom.cr_status?.toLowerCase() || "draft"}`}>
                 {classroom.cr_status || "Draft"}
               </span>
+            </div> */}
+          {/* Join Button for available classrooms only */}
+          {(fromTab === "available" && stucourse_id) && (
+            <div style={{ marginTop: "2em", textAlign: "center" }}>
+              <button className="join-btn" onClick={handleJoinClassroom} disabled={joining}>
+                {joining ? "Joining..." : "Join Classroom"}
+              </button>
             </div>
+          )}
           </div>
-
           {/* Classroom Info */}
           <div className="course-info">
             <div className="info-item">
@@ -144,7 +176,6 @@ function StudentClassroomDetails() {
               <span>{classroom.creator_fname} {classroom.creator_lname}</span>
             </div>
           </div>
-
           {/* Supervisor + Course */}
           <div className="supervisor-course-section">
             <div className="form-row">
@@ -162,7 +193,6 @@ function StudentClassroomDetails() {
               </div>
             </div>
           </div>
-
           {/* Lessons Section */}
           <div className="lessons-section">
             <h3>Lessons</h3>
@@ -185,7 +215,6 @@ function StudentClassroomDetails() {
               )}
             </div>
           </div>
-
           {/* 🚫 Students Section skipped (only instructors need that) */}
         </div>
       </div>

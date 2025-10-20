@@ -1,4 +1,4 @@
-import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson, createLesson, getLessonsByStudent, getPublishedLessons } from "../models/lesson.js";
+import {getAllLessons, getLessonById, getLessonByInstructor, updateLesson, deleteLesson, createLesson, getLessonsByStudent, getPublishedLessons, getStudentLessonById } from "../models/lesson.js";
 export const getLessons = async (req, res) => {
     try {
         const lessons = await getAllLessons();
@@ -15,6 +15,26 @@ export const getLesson = async (req, res) => {
     const { id } = req.params;
     try {
         const lesson = await getLessonById(id);
+        if (lesson) {
+            return res.status(200).json({ success: true, data: lesson });
+        }
+        return res.status(404).json({ success: false, message: "Lesson not found." });
+    }
+    catch (error) {
+        console.error("Error fetching lesson:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch lesson." });
+    }
+};
+
+
+export const getStudentLesson = async (req, res) => {
+    const { id } = req.params;
+    const studentId = req?.user?.id;
+    if (!studentId) return res.status(401).json({success: false, error: "Unauthorized" });
+
+    try {
+        const lesson = await getStudentLessonById(studentId, id);
+        console.log(lesson);
         if (lesson) {
             return res.status(200).json({ success: true, data: lesson });
         }

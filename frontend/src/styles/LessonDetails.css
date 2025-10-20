@@ -142,9 +142,19 @@
 
 .lesson-meta {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 20px;
   font-size: 14px;
   color: #7f8c8d;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.lesson-content {
+  flex: 1;
+  padding: 0;
 }
 
 /* Lesson Info */
@@ -172,6 +182,11 @@
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.info-item li {
+  color: #2c3e50;
+  margin-left: 20px;
 }
 
 .info-item p {
@@ -604,4 +619,89 @@
 
 .modal .lesson-list .list-item button:hover {
   background-color: #389e0d;
+}
+
+.lesson-progress-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  background: #f7f9fb;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  /* min-width: 200px;
+  margin-bottom: 40px; */
+}
+
+.lesson-progress-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.lesson-progress-card p {
+  font-size: 16px;
+  color: #34495e;
+}
+
+.achievement-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* margin-top: 12px; */
+  padding: 8px 12px;
+  background-color: rgba(39, 174, 96, 0.1); /* subtle green tint */
+  border-radius: 12px;
+  width: fit-content;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.badge-image {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.achievement-badge:hover {
+  transform: translateY(-2px);
+  background-color: rgba(39, 174, 96, 0.15);
+}
+
+.badge-image:hover {
+  transform: scale(1.1);
+}
+
+.badge-label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.incomplete-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* margin-top: 12px; */
+  padding: 8px 12px;
+  background-color: rgba(149, 165, 166, 0.15); /* soft grey tint */
+  border-radius: 12px;
+  width: fit-content;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.incomplete-badge:hover {
+  transform: translateY(-2px);
+  background-color: rgba(149, 165, 166, 0.25); /* slightly darker on hover */
+}
+
+.incomplete-badge .badge-label {
+  color: #7f8c8d; /* muted grey text */
+}
+
+.achievement-badge .badge-label {
+  color: #27ae60; /* green text */
 }

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-import "../styles/Classrooms.css"; // use the same CSS for consistency
+import "../styles/Classrooms.css";
+import "../styles/students.css"; // Import student styles for consistent tab design
 import useStore from "../store";
 import useThemeStore from "../store/themeStore.js";
 
 function StudentClassrooms() {
   const [classrooms, setClassrooms] = useState([]);
+  const [activeTab, setActiveTab] = useState("my"); // 'my' or 'available'
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user, signOut } = useStore((state) => state);
@@ -20,11 +22,23 @@ function StudentClassrooms() {
 
   // Fetch classrooms the student is enrolled in
   const fetchClassrooms = async () => {
+    setLoading(true);
     try {
-      const { data: res } = await api.get("classrooms");
+      let res;
+      if (activeTab === "my") {
+        ({ data: res } = await api.get("classrooms"));
+      } else {
+        ({ data: res } = await api.get("classrooms/student/available"));
+      }
+      
       if (res.success) {
-        const publishedClassrooms = res.data.filter((cr) => cr.cr_status?.toLowerCase() === "published");
-        setClassrooms(publishedClassrooms);
+        console.log(res.data);
+        const filteredClassrooms = activeTab === "my"
+          ? res.data.filter((cr) => cr.cr_status?.toLowerCase() === "published")
+          : res.data;
+
+          console.log(filteredClassrooms);
+        setClassrooms(filteredClassrooms);
       } else {
         setClassrooms([]);
       }
@@ -38,15 +52,16 @@ function StudentClassrooms() {
 
   useEffect(() => {
     fetchClassrooms();
-  }, []);
+  }, [activeTab]);
 
   const handleLogout = () => {
     signOut();
     navigate("/login");
   };
 
-  const handleClassroomClick = (classroomCode) => {
-    navigate(`/classrooms/${classroomCode}`);
+  // Update handleClassroomClick to take optional stucourseId and pass it in location.state
+  const handleClassroomClick = (classroomCode, stucourseId = null) => {
+    navigate(`/classrooms/${classroomCode}`, { state: { from: activeTab, stucourse_id: stucourseId } });
   };
 
   return (
@@ -75,18 +90,31 @@ function StudentClassrooms() {
 
       {/* Main Content */}
       <div className="main-content">
-        <div className="topbar">
-          <h1>My Classrooms</h1>
-           <div className="theme-toggle">
-            <label className="switch">
-              <input
-                type="checkbox"
-                checked={theme === "dark"}
-                onChange={toggleTheme}
-              />
-              <span className="slider"></span>
-            </label>
-            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+        <div className="topbar" style={{ padding: 0, boxShadow: "none", background: "transparent" }}>
+          <div className="student-tabbar">
+            <button
+              className={activeTab === "my" ? "student-tab-btn active" : "student-tab-btn"}
+              onClick={() => setActiveTab("my")}
+            >
+              My Classrooms
+            </button>
+            <button
+              className={activeTab === "available" ? "student-tab-btn active" : "student-tab-btn"}
+              onClick={() => setActiveTab("available")}
+            >
+              Available Classrooms
+            </button>
+            <div className="theme-toggle">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={theme === "dark"}
+                  onChange={toggleTheme}
+                />
+                <span className="slider"></span>
+              </label>
+              <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+            </div>
           </div>
         </div>
 
@@ -95,7 +123,12 @@ function StudentClassrooms() {
             <div className="loading">Loading classrooms...</div>
           ) : classrooms.length === 0 ? (
             <div className="no-classrooms">
-              <p>No classrooms found. Please check with your instructor.</p>
+              <p>
+                {activeTab === "my" 
+                  ? "You are not enrolled in any classrooms yet."
+                  : "No available classrooms found."
+                }
+              </p>
             </div>
           ) : (
             <div className="classrooms-grid">
@@ -103,19 +136,19 @@ function StudentClassrooms() {
                 <div
                   key={classroom.cr_id}
                   className="classroom-card"
-                  onClick={() => handleClassroomClick(classroom.cr_id)}
+                  onClick={() => handleClassroomClick(classroom.cr_id, activeTab === "available" ? classroom.stucourse_id : null)}
                 >
                   {/* Card Header / Top Section */}
-                  <div
+                  {/* <div
                     className={`classroom-top-section ${classroom.cr_status?.toLowerCase() || "draft"}`}
-                  >
+                  > */}
                     <h3>Classroom ID: {classroom.cr_id}</h3>
-                  </div>
+                  {/* </div> */}
 
                   {/* Card Body */}
                   <div className="classroom-body">
                     <div className="classroom-course-title">
-                      <strong>Course:</strong> {classroom.course_name}
+                      <strong>Course:</strong> {classroom.course_title}
                     </div>
 
                     <div className="classroom-supervisor">
@@ -123,10 +156,10 @@ function StudentClassrooms() {
                       {classroom.supervisor_fname} {classroom.supervisor_lname}
                     </div>
 
-                    <div className="classroom-status">
+                    {/* <div className="classroom-status">
                       <strong>Status:</strong>{" "}
                       {classroom.cr_status || "Ongoing"}
-                    </div>
+                    </div> */}
 
                     <div className="classroom-dates">
                       <strong>Start Date:</strong>{" "}

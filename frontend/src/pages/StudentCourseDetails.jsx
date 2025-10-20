@@ -24,14 +24,18 @@ function StudentCourseDetails() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+  const [unenrolling, setUnenrolling] = useState(false);
+  const [unEnrollSuccess, setUnEnrollSuccess] = useState(false);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
       setLoading(true);
       try {
         const { data: response } = await api.get(`courses/${courseId}`);
+        console.log("pogg");
+        console.log(response.data);
         setCourse(response.data);
-        setEnrolled(!!response.data?.enrolled);
+        setEnrolled(fromMyCourses);
       } catch (err) {
         setError("Course not found");
       } finally {
@@ -39,7 +43,7 @@ function StudentCourseDetails() {
       }
     };
     fetchCourseDetails();
-  }, [courseId]);
+  }, [courseId, fromMyCourses]);
 
   const handleEnroll = async () => {
     setEnrolling(true);
@@ -56,6 +60,28 @@ function StudentCourseDetails() {
       setError("Failed to enroll. Try again later.");
     } finally {
       setEnrolling(false);
+    }
+  };
+  
+  const handleUnenroll = async () => {
+    const confirmUnenroll = window.confirm("Are you sure you want to unenroll from this course?");
+    if (!confirmUnenroll) return;
+    try {
+      setUnenrolling(true);
+      setUnEnrollSuccess(false);
+      const { data: res } = await api.delete(`courses/${courseId}/enroll`);
+      if (!res.success) {
+        throw new Error(res.message || "Failed to unenroll");
+      }
+      setEnrolled(false);
+      setUnEnrollSuccess(true);
+      console.log("Unenrolled successfully:", res.message || res);
+    } catch (error) {
+      console.error("Error during unenrollment:", error);
+      alert("Failed to unenroll. Please try again.");
+    } finally {
+      setUnenrolling(false);
+      setTimeout(() => setUnEnrollSuccess(false), 3000);
     }
   };
 
@@ -154,27 +180,53 @@ function StudentCourseDetails() {
         </div>
         
         <div className="course-details-container">
-            {success && <span style={{ display: "block", color: "#27ae60", textAlign: "center", padding: "0 12px" }}>Enrolled successfully!</span>}
-          {/* Enroll Button */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 24 }}>
-              {!fromMyCourses && (
-                enrolled ? (
-                  <button style={{ width: "fit-content" }} className="btn-edit" disabled>
-                    Enrolled
-                  </button>
-                ) : (
-                  <button
-                    style={{ width: "fit-content" }}
-                    className="btn-edit"
-                    onClick={handleEnroll}
-                    disabled={enrolling}
-                  >
-                    {enrolling ? "Enrolling..." : "Enroll"}
-                  </button>
-                )
-              )}
-            </div>
 
+      {/* === Header Row (Progress + Button) === */}
+      <div className="course-header-row">
+        {enrolled ? (
+          <div className="progress-container">
+            <span className="progress-label">Progress</span>
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${course.completion_rate ?? 0}%` }}
+              ></div>
+            </div>
+            <span className="progress-percent">{course.completion_rate ?? 0}%</span>
+          </div>
+        ) : (
+          <div className="progress-placeholder"></div> // keeps layout consistent
+        )}
+        
+        {fromMyCourses ? (
+          <button
+            style={{
+              width: "fit-content",
+              backgroundColor: "#e74c3c",
+              opacity: unenrolling || !enrolled ? 0.6 : 1,
+              cursor: unenrolling || !enrolled ? "not-allowed" : "pointer",
+            }}
+            className="btn-edit"
+            onClick={handleUnenroll}
+            disabled={unenrolling || !enrolled}
+          >
+            {unenrolling ? "Un-enrolling..." : "Un-enroll"}
+          </button>
+        ) : (
+          <button
+            style={{
+              width: "fit-content",
+              opacity: enrolling || enrolled ? 0.6 : 1,
+              cursor: enrolling || enrolled ? "not-allowed" : "pointer",
+            }}
+            className="btn-edit"
+            onClick={handleEnroll}
+            disabled={enrolling || enrolled}
+          >
+            {enrolling ? "Enrolling..." : "Enroll"}
+          </button>
+        )}
+      </div>
           {/* Course Information */}
           <div className="course-info">
             <div className="info-item">

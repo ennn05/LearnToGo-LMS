@@ -8,8 +8,8 @@ import userRoutes from './userRoutes.js';
 import statisticsRoutes from './statisticsRoutes.js';
 import classroomStatisticsRoutes from './classroomStatisticsRoutes.js';
 import userStatisticsRoutes from './userStatisticsRoutes.js';
-import { use } from 'react';
 import authenticate from '../middleware/authMiddleware.js';
+import instructorsRoutes from "./instructorsRoutes.js";
 
 const router = express.Router();
 
@@ -28,5 +28,6 @@ router.use('/users', userRoutes);
 router.use('/statistics', statisticsRoutes);
 router.use('/classroomStatistics', classroomStatisticsRoutes);
 router.use('/userStatistics', authenticate, userStatisticsRoutes);
+router.use("/instructors", instructorsRoutes);
 
 export default router;
