@@ -1,4 +1,4 @@
-import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent, addCourseEnrollment, getPublishedCourses, getAllStudentsByCourseEnrolled } from "../models/course.js";
+import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, deleteCourse, updateCourse, addCourseLesson, updateCourseLessons, getEnrolledCoursesByStudent, getAvailableCoursesForStudent, addCourseEnrollment, getPublishedCourses, getAllStudentsByCourseEnrolled, removeCourseEnrollment, getStudentCourseByCode } from "../models/course.js";
 
 export const getCourses = async (req, res) => {
     try {
@@ -109,6 +109,25 @@ export const getCourse = async (req, res) => {
     const { id } = req.params;
     try {
         const course = await getCourseByCode(id);
+        console.log(course);
+        if (course) {
+            return res.status(200).json({ success: true, data: course });
+        }
+        return res.status(404).json({ success: false, message: "Course not found." });
+    }
+    catch (error) {
+        console.error("Error fetching course:", error);
+        return res.status(500).json({ success: false, message: "Failed to fetch course." });
+    }
+};
+
+export const getStudentCourse = async (req, res) => {
+    const { id } = req.params;
+    const studentId = req?.user?.id;
+    if (!studentId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    try {
+        const course = await getStudentCourseByCode(id, studentId);
         console.log(course);
         if (course) {
             return res.status(200).json({ success: true, data: course });
@@ -287,5 +306,26 @@ export const getEnrolledStudentsByCourse = async (req, res) => {
     } catch (error) {
         console.error("Error fetching enrolled students:", error);
         return res.status(500).json({ success: false, message: "Failed to fetch enrolled students." });
+    }
+};
+
+export const unenrollCourse = async (req, res) => {
+    try {
+        const { courseCode } = req.params;
+        const studentId = req?.user?.id;
+
+        if (!studentId) return res.status(401).json({ success: false, error: "Unauthorized" });
+        if (!courseCode) return res.status(400).json({ success: false, message: "Course code is required." });
+
+        const deleted = await removeCourseEnrollment(studentId, courseCode);
+
+        if (!deleted) {
+            return res.status(404).json({ success: false, message: "Enrollment not found." });
+        }
+
+        return res.status(200).json({ success: true, message: "Unenrolled successfully.", data: deleted });
+    } catch (error) {
+        console.error("Error unenrolling from course:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
