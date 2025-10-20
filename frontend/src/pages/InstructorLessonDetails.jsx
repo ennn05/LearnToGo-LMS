@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import useStore from "../store";
 import "../styles/LessonDetails.css";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorLessonDetails() {
   const { lessonId } = useParams();
@@ -16,6 +17,9 @@ function InstructorLessonDetails() {
   // NEW STATES
   const [lessonPrereqs, setLessonPrereqs] = useState([]); 
   const [allLessons, setAllLessons] = useState([]);
+
+  // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
 
   // Fetch lesson details
   const fetchLessonDetails = async () => {
@@ -53,6 +57,11 @@ function InstructorLessonDetails() {
       console.error("Error fetching all lessons:", err);
     }
   };
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   useEffect(() => {
     // const storedUser = localStorage.getItem("user");
@@ -164,6 +173,17 @@ function InstructorLessonDetails() {
       <div className="main-content">
         <div className="topbar">
           <h1>Lesson Details</h1>
+               <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         {/* Lesson Details */}

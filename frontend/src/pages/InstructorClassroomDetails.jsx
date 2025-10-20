@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorClassroomDetails() {
   const { classroomCode } = useParams();
@@ -14,6 +15,14 @@ function InstructorClassroomDetails() {
   const [error, setError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const navigate = useNavigate();
+
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   const handleDeleteClassroom = async () => {
     try {
@@ -154,6 +163,17 @@ function InstructorClassroomDetails() {
       <div className="main-content">
         <div className="topbar">
           <h1>Classroom Details</h1>
+                             <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         <div className="course-details-container">
