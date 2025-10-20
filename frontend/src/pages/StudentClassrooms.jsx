@@ -90,6 +90,21 @@ function StudentClassrooms() {
 
       {/* Main Content */}
       <div className="main-content">
+        <div className="topbar">
+            <h1>My Classrooms</h1>
+            <div className="theme-toggle">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={theme === "dark"}
+                  onChange={toggleTheme}
+                />
+                <span className="slider"></span>
+              </label>
+              <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+            </div>
+        </div>
+
         <div className="topbar" style={{ padding: 0, boxShadow: "none", background: "transparent" }}>
           <div className="student-tabbar">
             <button
@@ -104,17 +119,6 @@ function StudentClassrooms() {
             >
               Available Classrooms
             </button>
-            <div className="theme-toggle">
-              <label className="switch">
-                <input
-                  type="checkbox"
-                  checked={theme === "dark"}
-                  onChange={toggleTheme}
-                />
-                <span className="slider"></span>
-              </label>
-              <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
-            </div>
           </div>
         </div>
 
