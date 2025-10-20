@@ -74,6 +74,7 @@ function App() {
           <Route path="/classrooms/create" element={<CreateClassroom />} />  
           <Route path="/classrooms/:classroomCode" element={<ClassroomDetails />} />
           <Route path="/classrooms/:classroomCode/grades" element={<ClassroomGrade />} />
+          <Route path="/instructors" element={<Instructors />} />
           <Route path="/classrooms" element={<Classrooms />} />
           <Route path="/reports" element={<ProtectedRoute allowedRoles={["instructor", "admin"]}><Reports /></ProtectedRoute>} />
           <Route path="/classrooms/:classroomCode/edit" element={<EditClassroom />} />
