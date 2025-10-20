@@ -7,10 +7,11 @@ import {
   createClassroom,
   addClassroomLesson,
   addClassroomStudent,
-  editStudentMarksForClassroomLesson,
+  // editStudentMarksForClassroomLesson,
   getLessonsWithStudentsByClassroom,
-  addClassroomStudentLesson,
-  getClassroomsByStudent
+  // addClassroomStudentLesson,
+  getClassroomsByStudent,
+  updateStudentLessonGrade
 } from "../models/classroom.js";
 
 // ✅ Get all classrooms
@@ -168,17 +169,17 @@ export const addClassroom = async (req, res) => {
             }
 
 
-            try {
-                for (const crcl of createdLessons) {
-                  for (const cs of createdStudents) {
-                    await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
-                  }
-                }
-            }
-            catch (error) {
-              console.error("Error in adding cl_stu_lesson records:", error);
-              return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
-            }
+            // try {
+            //     for (const crcl of createdLessons) {
+            //       for (const cs of createdStudents) {
+            //         await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
+            //       }
+            //     }
+            // }
+            // catch (error) {
+            //   console.error("Error in adding cl_stu_lesson records:", error);
+            //   return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
+            // }
 
             return res.status(201).json({ success: true, data: classroom });
         }
@@ -191,13 +192,13 @@ export const addClassroom = async (req, res) => {
 };
 
 export const updateStudentMarksForClassroomLesson = async (req, res) => {
-  const { cr_id, crcl_cl_id } = req.params;
-  const students = req.body; // Expecting an array of { stucourse_id, attendance, grade, completion }
+  const { cr_id, lesson_id } = req.params;
+  const students = req.body; // Expecting an array of { stu_user_id, attendance, grade, completion }
   console.log(students);
   try { 
     const results = await Promise.all(
       students.map(student => 
-        editStudentMarksForClassroomLesson(cr_id, crcl_cl_id, student)
+        updateStudentLessonGrade(lesson_id, student)
       )
     );
     return res.status(200).json({ success: true, data: results });
