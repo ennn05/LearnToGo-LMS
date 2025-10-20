@@ -107,7 +107,7 @@ function InstructorClassroomDetails() {
         <nav className="nav-menu">
           <button onClick={() => navigate("/courses")}>Courses</button>
           <button onClick={() => navigate("/lessons")}>Lessons</button>
-          <button onClick={() => navigate("/classrooms")}>Classrooms</button>
+          <button onClick={() => navigate("/classrooms")} className="active">Classrooms</button>
           <button onClick={() => navigate("/students")}>Students</button>
           <button onClick={() => navigate("/reports")}>Reports & Statistics</button>
                   {user?.user_role === "admin" && (
