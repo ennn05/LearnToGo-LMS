@@ -1,6 +1,6 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../libs/apiCalls";
+import api, { setAuthToken } from "../libs/apiCalls";
 import "../styles/Reports.css";
 import useStore from "../store";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -18,18 +18,30 @@ function Reports() {
     const [totalClassrooms, setTotalClassrooms] = useState(null);
     const [avgStudentsPerClassroom, setAvgStudentsPerClassroom] = useState(null);
     const [classroomStatusBreakdown, setClassroomStatusBreakdown] = useState([]);
+    const [totalStudents,  setTotalStudents] = useState(null);
+    const [studentPieData, setStudentPieData] = useState([]);
+    const [totalInstructors, setTotalInstructors] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const STATUS_COLORS = {
-        Published: "#27ae60",
-        Draft: "#f39c12",
-        Archived: "#95a5a6",
-        Null: "#bdc3c7",
-        Completed: "#27ae60",
-        Ongoing: "#3498db",
-        Upcoming: "#f39c12",
+        "Published": "#27ae60",
+        "Draft": "#f39c12",
+        "Archived": "#95a5a6",
+        "Null": "#bdc3c7",
+        "Completed": "#27ae60",
+        "Ongoing": "#3498db",
+        "Upcoming": "#f39c12",
+        "Not Enrolled": "#f39c12",
     };
     const ALL_STATUSES = ["Published", "Draft", "Archived"];
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            const { token } = JSON.parse(storedUser);
+            if (token) setAuthToken(token);
+        }
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("user");
@@ -47,7 +59,7 @@ function Reports() {
                     api.get("/statistics/courses/status-breakdown"),
                 ])
                 if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
-                    throw new Error("Some reports could not be retrieved.");
+                    throw new Error("Some course reports could not be retrieved.");
                 }
                 setTotalCourses(totalRes.data.data.count);
                 setAvgLessons(avgRes.data.data.avg_lessons_per_course);
@@ -101,7 +113,7 @@ function Reports() {
                     api.get("/classroomStatistics/average-students"),
                 ]);
                 if (!totalRes.data.success || !avgRes.data.success || !breakdownRes.data.success) {
-                    throw new Error("Some lesson reports could not be retrieved.");
+                    throw new Error("Some classroom reports could not be retrieved.");
                 }
                 setTotalClassrooms(totalRes.data.data);
                 setAvgStudentsPerClassroom(avgRes.data.data);
@@ -115,9 +127,29 @@ function Reports() {
                 setError("Failed to load classroom reports.");
             }
         }
+        const fetchUserReports = async () => {
+            try {
+                const userStatsRes = await api.get("/userStatistics/users");
+                if (!userStatsRes.data.success) {
+                    throw new Error("Some user reports could not be retrieved.");
+                }
+                console.log("Initializing user statistics with:", userStatsRes.data.data);
+                setStudentPieData([
+                    { name: "Not Enrolled", value: userStatsRes.data.data.totalNotEnrolled || 0 },
+                    { name: "Ongoing", value: userStatsRes.data.data.totalInOngoingCourse || 0 },
+                    { name: "Completed", value: userStatsRes.data.data.totalCompletedAllCourses || 0 },
+                ]);
+                setTotalStudents(userStatsRes.data.data.totalStudents);
+                setTotalInstructors(userStatsRes.data.data.totalInstructors || 0);
+            } catch (err) {
+                console.error("Error fetching user reports:", err);
+                setError("Failed to load user reports.");
+            }
+        }
         fetchCourseReports();
-        fetchLessonReports();
+        //fetchLessonReports();
         fetchClassroomReports();
+        fetchUserReports();
     }, []);
 
     if (loading) {
@@ -275,8 +307,8 @@ function Reports() {
                             </p>
                         </div>
                     </div>
-                    {/** Classroom Reports */
-                    <h1 className="reports-title">Classroom Reports</h1>}
+                    {/** Classroom Reports */}
+                    <h1 className="reports-title">Classroom Reports</h1>
                     <h2 className="reports-subtitle">{user?.user_role}: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
                     <div className="reports-row">
                         <div className="reports-card">
@@ -299,7 +331,7 @@ function Reports() {
                                             outerRadius={80}
                                             label
                                         >
-                                            {lessonStatusBreakdown.map((entry, index) => (
+                                            {classroomStatusBreakdown.map((entry, index) => (
                                                 <Cell
                                                     key={`cell-lesson-${index}`}
                                                     fill={STATUS_COLORS[entry.name] || STATUS_COLORS["Null"]}
@@ -319,7 +351,57 @@ function Reports() {
                             </p>
                         </div>
                     </div>
-                    {/** Additional reports can be added here in the future */}
+                    {/** Student Reports */}
+                    <h1 className="reports-title">Student Reports</h1>
+                    <h2 className="reports-subtitle">{user?.user_role}: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
+                    <div className="reports-row">
+                        <div className="reports-card">
+                            <h3>Total Students</h3>
+                            <p className="reports-number">{totalStudents ?? "N/A"}</p>
+                        </div>
+                        <div className="reports-card reports-pie">
+                            <h3>Enrollment Breakdown</h3>
+                            {studentPieData.length === 0 ? (
+                                <p>No enrollment data found.</p>
+                            ) : (
+                                <ResponsiveContainer width="100%" height={220}>
+                                    <PieChart>
+                                        <Pie
+                                            data={studentPieData}
+                                            dataKey="value"
+                                            nameKey="name"
+                                            cx="50%"
+                                            cy="50%"
+                                            outerRadius={80}
+                                            label
+                                        >
+                                            {studentPieData.map((entry, index) => (
+                                                <Cell
+                                                    key={`cell-lesson-${index}`}
+                                                    fill={STATUS_COLORS[entry.name] || STATUS_COLORS["Null"]}
+                                                />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
+                    </div>
+                    {user?.user_role === "admin" && (
+                        <>
+                            {/** Instructor Reports */}
+                            <h1 className="reports-title">Instructor Reports</h1>
+                            <h2 className="reports-subtitle">{user?.user_role}: {user ? `${user.user_fname} ${user.user_lname}` : "Loading..."}</h2>
+                            <div className="reports-row">
+                                <div className="reports-card">
+                                    <h3>Total Instructors</h3>
+                                    <p className="reports-number">{totalInstructors ?? "N/A"}</p>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

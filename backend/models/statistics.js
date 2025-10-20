@@ -198,6 +198,22 @@ export const avgNumOfStuPerClassroomByInstructor = async (instructorId) => {
   return total
 }
 
+export const avgNumOfStuPerClassroom = async () => {
+  const total = await sql`
+    SELECT 
+      ROUND(AVG(student_count), 2) AS avg_students_per_classroom
+    FROM (
+      SELECT 
+        cs.cr_id,
+        COUNT(sc.stu_user_id) AS student_count
+      FROM "LMS".classroom_student cs
+      JOIN "LMS".student_course sc ON cs.stucourse_id = sc.stucourse_id
+      GROUP BY cs.cr_id
+    ) AS classroom_counts;
+  `;
+  return total[0];
+};
+
 //us44 : admin view of classroom stats
 //total num of classrooms created
 export const totalNumOfClassrooms = async () => {
@@ -237,9 +253,90 @@ export const numClassroomNotStarted = async () => {
   return total
 }
 
+// us45 : student stats (shared by instructor and admin)
+//total num of students
+export const totalNumOfStudents = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".student`;
+  return total
+}
 
-//total num of students not enrolled (not enrolled into course or cr?)
+//us45 : student stats (inst and admin view)
+//total num of students not enrolled in course
+export const totalNumOfStudentsNotEnrolledInCourse = async () => {
+  const total = await sql 
+    `select count(*)
+    from "LMS".student s left join "LMS".student_course sc on s.stu_user_id = sc.stu_user_id
+    where sc.stu_user_id is null`;
+  return total
+}
 
-//total num of students that are in an ongoing (ongoing what?)
+//total num of students that are in an ongoing course
+export const totalNumOfStudentsInOngoingCourse = async () => {
+  const total = await sql `
+    SELECT COUNT(*) as ongoing_course
+    FROM (
+      SELECT 
+        sc.stu_user_id,
+        sc.course_code,
+        ROUND(
+          (
+            COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+            / NULLIF(COUNT(*), 0)
+          ) * 100,
+          2
+        ) AS completion_rate
+      FROM "LMS".student_course sc
+      JOIN "LMS".course_lesson cl 
+        ON cl.cl_course_code = sc.course_code
+      LEFT JOIN "LMS".grade g 
+        ON g.lesson_id = cl.cl_lesson_id 
+        AND g.stu_user_id = sc.stu_user_id
+      GROUP BY sc.stu_user_id, sc.course_code
+    ) AS student_course_ongoing
+    WHERE completion_rate < 100 and completion_rate >= 0;
+  `;
+  return total
+}
 
-//total num of students who completed everything(?)
+export const totalNumOfStudentsCompletedAllCourses = async () => {
+  const result = await sql`
+    SELECT COUNT(*) AS students_completed_all_courses
+    FROM (
+      SELECT 
+        stu_user_id
+      FROM (
+        SELECT 
+          sc.stu_user_id,
+          sc.course_code,
+          ROUND(
+            (
+              COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
+              / NULLIF(COUNT(*), 0)
+            ) * 100,
+            2
+          ) AS completion_rate
+        FROM "LMS".student_course sc
+        JOIN "LMS".course_lesson cl 
+          ON cl.cl_course_code = sc.course_code
+        LEFT JOIN "LMS".grade g 
+          ON g.lesson_id = cl.cl_lesson_id 
+          AND g.stu_user_id = sc.stu_user_id
+        GROUP BY sc.stu_user_id, sc.course_code
+      ) AS student_course_completion
+      GROUP BY stu_user_id
+      HAVING MIN(completion_rate) = 100
+    ) AS fully_completed_students;
+  `;
+  return result[0];
+};
+
+
+
+//us45 : student stats (admin view)
+//total num of instructors
+export const totalNumOfInstructors = async () => {
+  const total = await sql 
+    `select count(*) from "LMS".instructor`;
+  return total
+}
