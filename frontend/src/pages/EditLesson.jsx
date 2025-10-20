@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import "../styles/LessonDetails.css"; // Use same stylesheet as LessonDetails
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function EditLesson() {
   const { lessonId } = useParams();
@@ -62,6 +63,14 @@ function EditLesson() {
       console.error("Error fetching all lessons:", err);
     }
   };
+
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
 
   useEffect(() => {
     fetchLessonDetails();
@@ -213,6 +222,17 @@ function EditLesson() {
       <div className="main-content">
         <div className="topbar">
           <h1>Editing Lesson</h1>
+                             <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         {/* Lesson Details */}

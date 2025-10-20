@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/LessonDetails.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 import keepImproving from "../assets/keep_improving.png";
 import wellDone from "../assets/well_done.png";
 import excellent from "../assets/excellent.png";
@@ -20,6 +21,13 @@ function StudentLessonDetails() {
     const [showConfetti, setShowConfetti] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+             // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
      const getCompletionText = (completion) => {
         if (completion) return "Passed";
@@ -117,6 +125,17 @@ function StudentLessonDetails() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>Lessons</h1>
+                                    <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
                 </div>
                 <div className="lesson-details-container">
                     {/* Header Section */}

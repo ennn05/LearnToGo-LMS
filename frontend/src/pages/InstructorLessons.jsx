@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Lessons.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorLessons() {
   const [activePage, setActivePage] = useState("lessons");
@@ -12,6 +13,8 @@ function InstructorLessons() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // e.g., all, created by me, created by others
   const navigate = useNavigate();
+    // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
 
   const fetchLessons = async () => {
     try {
@@ -31,6 +34,11 @@ function InstructorLessons() {
       setLoading(false);
     }
   };
+
+    // 🌓 Apply theme to document root
+      useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+      }, [theme]);
 
   useEffect(() => {
     // const storedUser = localStorage.getItem("user");
@@ -145,6 +153,17 @@ function InstructorLessons() {
       <div className="main-content">
         <div className="topbar">
           <h1>All Lessons</h1> 
+            <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
         <div className="lessons-container">
           <div className="filter-dropdown">

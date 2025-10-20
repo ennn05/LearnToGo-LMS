@@ -4,8 +4,12 @@ import api from "../libs/apiCalls";
 import { mockCourseAPI } from "../data/mockCourses"; // Mock API for testing if needed
 import "../styles/Courses.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function InstructorCourses() {
+
+  // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
   // Track active sidebar page
   const [activePage, setActivePage] = useState("courses");
 
@@ -46,6 +50,12 @@ function InstructorCourses() {
       setLoading(false);
     }
   };
+
+    // 🌓 Apply theme to document root
+    useEffect(() => {
+      document.documentElement.setAttribute("data-theme", theme);
+    }, [theme]);
+
 
   /**
    * On mount:
@@ -168,6 +178,17 @@ function InstructorCourses() {
         {/* Topbar */}
         <div className="topbar">
           <h1>My Courses</h1>
+            <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         {/* Courses Grid */}

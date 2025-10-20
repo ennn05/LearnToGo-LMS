@@ -4,6 +4,7 @@ import api from "../libs/apiCalls";
 import "../styles/Classrooms.css";
 import "../styles/students.css"; // Import student styles for consistent tab design
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function StudentClassrooms() {
   const [classrooms, setClassrooms] = useState([]);
@@ -12,7 +13,14 @@ function StudentClassrooms() {
   const navigate = useNavigate();
   const { user, signOut } = useStore((state) => state);
 
-  // Fetch classrooms based on active tab
+       // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  // Fetch classrooms the student is enrolled in
   const fetchClassrooms = async () => {
     setLoading(true);
     try {
@@ -96,6 +104,17 @@ function StudentClassrooms() {
             >
               Available Classrooms
             </button>
+            <div className="theme-toggle">
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={theme === "dark"}
+                  onChange={toggleTheme}
+                />
+                <span className="slider"></span>
+              </label>
+              <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+            </div>
           </div>
         </div>
 

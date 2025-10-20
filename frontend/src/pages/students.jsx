@@ -3,6 +3,7 @@ import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/students.css";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 const Students = () => {
   // Track active sidebar page
@@ -22,6 +23,9 @@ const Students = () => {
 
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+
+  // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
 
   /**
    * Fetch all students from the backend API
@@ -48,6 +52,10 @@ const Students = () => {
     }
   };
 
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
   const filteredStudents = students.filter((s) => {
   const fullName = `${s.user_fname} ${s.user_lname}`.toLowerCase();
   const email = s.user_email.toLowerCase();
@@ -202,9 +210,20 @@ const Students = () => {
           <div className={`feedback ${message.type}`}>{message.text}</div>
         )}
 
-        {/* Topbar */}
+        {/* Topbar with Theme Toggle */}
         <div className="topbar">
           <h1>Students</h1>
+          <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
 
         <div className="search-container">

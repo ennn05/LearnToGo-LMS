@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css"; // ✅ use same stylesheet as instructor for consistent design
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function StudentClassroomDetails() {
   const { classroomCode } = useParams();
@@ -17,6 +18,14 @@ function StudentClassroomDetails() {
   // Location state: either 'my' or 'available', also possible stucourse_id
   const fromTab = location.state?.from;
   const stucourse_id = location.state?.stucourse_id;
+
+
+         // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
+  // 🌓 Apply theme to document root
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   // Fetch classroom details
   const fetchClassroomDetails = async () => {
@@ -115,6 +124,17 @@ function StudentClassroomDetails() {
       <div className="main-content">
         <div className="topbar">
           <h1>Classroom Details</h1>
+                <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
         </div>
         <div className="course-details-container">
           {/* Classroom Status */}

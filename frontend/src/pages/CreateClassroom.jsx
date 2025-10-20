@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/CreateClassroom.css"; // Stylesheet for page
 import api from "../libs/apiCalls";
 import useStore from "../store";
+import useThemeStore from "../store/themeStore.js";
 
 function CreateClassroom() {
     // Sidebar state
@@ -11,6 +12,9 @@ function CreateClassroom() {
     // User info
     const {user, setCredentials, signOut} = useStore((state) => state);
     console.log("User from store:", user);
+
+      // 🌙 get theme + toggle function
+  const { theme, toggleTheme } = useThemeStore();
 
     // Default classroom
     const [classroomData, setClassroomData] = useState({
@@ -120,6 +124,10 @@ function CreateClassroom() {
             setAvailableSupervisors([]);
         }
     };
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+      }, [theme]);
 
     // Mount: load user and courses
     useEffect(() => {
@@ -309,6 +317,17 @@ function CreateClassroom() {
             <div className="main-content">
                 <div className="topbar">
                     <h1>New Classroom</h1>
+                                       <div className="theme-toggle">
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={theme === "dark"}
+                onChange={toggleTheme}
+              />
+              <span className="slider"></span>
+            </label>
+            <span className="theme-label">{theme === "dark" ? "Dark Mode" : "Light Mode"}</span>
+          </div>
                 </div>
                 <div className="create-classroom-container">
                     {/** Classroom Header with Status and Actions */}
