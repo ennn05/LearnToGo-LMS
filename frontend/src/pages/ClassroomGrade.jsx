@@ -178,8 +178,8 @@ function ClassroomGrade() {
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Attendance</th>
-                                    <th>Completion</th>
                                     <th>Grade</th>
+                                    <th>Completion</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -242,12 +242,21 @@ function ClassroomGrade() {
                         <button
                             className="save-btn"
                             onClick={async () => {
+                                const invalidStudents = lessons.flatMap(lesson =>
+                                    lesson.students.filter(stu =>
+                                        stu.grade === "" || stu.grade < 0 || stu.grade > 100
+                                    )
+                                );
+                                if (invalidStudents.length > 0) {
+                                    alert("Please ensure all grades are between 0 and 100 before saving.");
+                                    return;
+                                }
                                 try {
                                     const studentData = lesson.students.map(stu => ({
                                         stu_user_id: stu.stu_user_id,
                                         attendance: stu.attendance || false,
                                         grade: stu.grade || 0,
-                                        completion: stu.completion || false,
+                                        completion: typeof stu.completion === "boolean" ? stu.completion : stu.grade >= 50,
                                     }));
                                     await api.put(`classrooms/${classroomCode}/lessons/${lesson.lesson_id}/students`, studentData);
                                     alert("Grades updated successfully!");

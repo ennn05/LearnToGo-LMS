@@ -354,6 +354,7 @@ function CreateClassroom() {
                                     value={classroomData.startDate}
                                     onChange={handleInputChange}
                                     placeholder={currentDate}
+                                    min={new Date().toISOString().split("T")[0]}
                                 />
                             </div>
                             <div className="form-group">

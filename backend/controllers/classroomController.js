@@ -12,6 +12,8 @@ import {
   // addClassroomStudentLesson,
   getClassroomsByStudent,
   updateStudentLessonGrade,
+  updateClassroomLessons,
+  updateClassroomStudents,
   getStudentAvailableClassroomsToJoin
 } from "../models/classroom.js";
 
@@ -84,19 +86,53 @@ export const removeClassroom = async (req, res) => {
   }
 };
 
-// Update a classroom
 export const editClassroom = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
+  console.log("Update request for classroom:", id);
+  console.log("Update data:", updateData);
+
   try {
-    const updated = await updateClassroom({ id, updateData });
+    const updated = await updateClassroom(id, updateData);
     if (!updated) {
       return res.status(404).json({ success: false, message: "Classroom does not exist." });
     }
-    return res.status(200).json({ success: true, data: updated });
+
+    let updatedLessons = [];
+    if (updateData.lessons && Array.isArray(updateData.lessons)) {
+        try {
+          console.log("Updating lessons:", updateData.lessons);
+          updatedLessons = await updateClassroomLessons(id, updateData.lessons);
+          console.log("Lessons updated successfully:", updatedLessons);
+        } catch (error) {
+          console.error("Error updating classroom's lessons:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to update classroom's lessons."
+          });
+        }
+    }
+
+    let updatedStudents = [];
+    if (updateData.students && Array.isArray(updateData.students)) {
+        try {
+          console.log("Updating students:", updateData.students);
+          updatedStudents = await updateClassroomStudents(id, updateData.students);
+          console.log("Students updated successfully:", updatedStudents);
+        } catch (error) {
+          console.error("Error updating classroom's students:", error);
+          return res.status(500).json({
+            success: false,
+            message: "Failed to update classroom's students."
+          });
+        }
+    }
+
+    return res.status(200).json({ success: true, data: updated, lessons: updatedLessons, students: updatedStudents });
   } catch (error) {
     console.error("Error updating classroom:", error);
+    console.error("Error stack:", error.stack);
     return res.status(500).json({ success: false, message: "Failed to update classroom." });
   }
 };
@@ -242,7 +278,7 @@ export const getAvailableClassroomsForStudent = async (req, res) => {
 };
 
 export const joinClassroom = async (req, res) => {
-  const { cr_id } = req.params;  // classroom ID
+  const { cr_id, stucourse_id } = req.params;  // classroom ID
   const studentId = req?.user?.id;
 
   if (!studentId) {
@@ -258,7 +294,7 @@ export const joinClassroom = async (req, res) => {
     }
 
     // Add student to classroom
-    const result = await addClassroomStudent(cr_id, studentId);
+    const result = await addClassroomStudent(cr_id, stucourse_id);
     if (!result) {
       return res.status(500).json({ success: false, message: "Failed to join classroom." });
     }

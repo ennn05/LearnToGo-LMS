@@ -114,22 +114,32 @@ export const getClassroomByCode = async (classroomCode) => {
     return classroom[0];
 }
 
-export const updateClassroom = async (classroomData) => {
-    const {id, updateData} = classroomData;
-    console.log(classroomData);
+export const updateClassroom = async (id, updateData) => {
+    console.log(id, updateData);
     const classrooms = await sql`UPDATE "LMS".classroom 
                     SET 
                         cr_start_date = ${updateData.cr_start_date},
                         cr_duration = ${updateData.cr_duration},
-                        cr_date_created = ${updateData.cr_date_created},
                         cr_last_updated = ${updateData.cr_last_updated},
-                        cr_creator = ${updateData.cr_creator},
                         supervisor_id = ${updateData.supervisor_id},
                         course_code = ${updateData.course_code},
                         cr_status = ${updateData.cr_status}
                     WHERE cr_id = ${id} 
                     RETURNING *;`;
     return classrooms[0];
+}
+
+export const updateClassroomLessons = async (classroomCode, lessons) => {
+    await removeClassroomLessons(classroomCode)
+
+    const classroomLessons = [];
+    for (const lesson of lessons)
+    {
+        const addedLesson = await addClassroomLesson(classroomCode, lesson.cl_id);
+        classroomLessons.push(addedLesson);
+    }
+
+    return classroomLessons;
 }
 
 export const createClassroom = async (classroomData) => {
@@ -200,6 +210,28 @@ export const removeClassroomStudent = async (classroomId, stuCourseId) => {
     return classroomStudent[0];
 };
 
+export const removeClassroomStudents = async (classroomId) => {
+    const removed = await sql`
+        DELETE FROM "LMS".classroom_student 
+        WHERE cr_id = ${classroomId}
+        RETURNING *;
+    `;
+    return removed;
+};
+
+export const updateClassroomStudents = async (classroomCode, students) => {
+    await removeClassroomStudents(classroomCode)
+
+    const classroomStudents = [];
+    for (const student of students)
+    {
+        const addedStudent = await addClassroomStudent(classroomCode, student.stucourse_id);
+        classroomStudents.push(addedStudent);
+    }
+
+    return classroomStudents;
+}
+
 // Get classrooms enrolled by a specific student
 export const getClassroomsByStudent = async (studentId) => {
   const classrooms = await sql`
@@ -231,6 +263,38 @@ export const getClassroomsByStudent = async (studentId) => {
 
   return classrooms;
 };
+
+//Get all published classrooms that's courses are enrolled by student
+export const getAvailableClassroomsForStudent = async (studentID) => {
+    const classrooms = await sql `SELECT 
+        cr.*,
+        c.*,
+        usv.user_fname AS supervisor_fname,
+        usv.user_lname AS supervisor_lname,
+        uc.user_fname AS creator_fname,
+        uc.user_lname AS creator_lname
+    FROM "LMS".student_course sc
+    JOIN "LMS".classroom cr 
+        ON sc.course_code = cr.course_code
+    LEFT JOIN "LMS".classroom_student cs 
+        ON cr.cr_id = cs.cr_id AND cs.stucourse_id = sc.stucourse_id
+    LEFT JOIN "LMS".course c 
+        ON cr.course_code = c.course_code
+    LEFT JOIN "LMS".instructor isv 
+        ON cr.supervisor_id = isv.inst_user_id
+    LEFT JOIN "LMS".user usv 
+        ON isv.inst_user_id = usv.user_id
+    LEFT JOIN "LMS".instructor ic 
+        ON cr.cr_creator = ic.inst_user_id
+    LEFT JOIN "LMS".user uc 
+        ON ic.inst_user_id = uc.user_id
+    WHERE sc.stu_user_id = ${studentId}
+    --Check that status is published
+    AND cr.cr_status = 'published'
+    --Check that student has not been enrolled into the classroom before
+    AND cs.cr_id IS NULL;`
+    return classrooms
+}
 
 // temp draft sql - update in cl_stu_lesson table
 /*export const editStudentMarksForClassroomLesson = async (cr_id, crcl_cl_id, student) => {
@@ -333,6 +397,32 @@ export const getLessonsWithStudentsByClassroom = async (cr_id) => {
 
 // To be implemented
 export const getStudentAvailableClassroomsToJoin = async (studentId) => {
-    const classrooms = [];
+    const classrooms = await sql`
+        SELECT cr.*, co.*, sc.stucourse_id,
+            usv.user_fname AS supervisor_fname,
+            usv.user_lname AS supervisor_lname,
+            uc.user_fname AS creator_fname,
+            uc.user_lname AS creator_lname
+        FROM "LMS".classroom cr
+        JOIN "LMS".student_course sc 
+            ON cr.course_code = sc.course_code
+        LEFT JOIN "LMS".classroom_student cs
+            ON cr.cr_id = cs.cr_id
+            AND cs.stucourse_id = sc.stucourse_id
+        JOIN "LMS".course co
+            ON cr.course_code = co.course_code
+        LEFT JOIN "LMS".instructor isv
+            ON cr.supervisor_id = isv.inst_user_id
+        LEFT JOIN "LMS".user usv
+            ON isv.inst_user_id = usv.user_id
+        LEFT JOIN "LMS".instructor ic
+            ON cr.cr_creator = ic.inst_user_id
+        LEFT JOIN "LMS".user uc
+            ON ic.inst_user_id = uc.user_id                            
+        WHERE cr.cr_status = 'published'
+            AND sc.stu_user_id = ${studentId}
+            AND cs.cs_id IS NULL;
+    `;
+
     return classrooms;
 }

@@ -30,12 +30,12 @@ router.get("/", authenticate, (req, res) => {
 });
 
 router.get("/student/available", authenticate, getAvailableClassroomsForStudent);
-router.post("/:cr_id/join", authenticate, joinClassroom);
+router.post("/:cr_id/:stucourse_id/join", authenticate, joinClassroom);
 
 router.get("/instructor", authenticate, getInstructorClassrooms);
 router.get("/:classroomCode", getClassroom);
 router.delete("/:id", authenticate, authorize("instructor"), removeClassroom);
-router.put("/:id", authenticate, editClassroom);
+router.put("/:id", authenticate, authorize("instructor"), editClassroom);
 router.post("/", authenticate, authorize("instructor"), addClassroom);
 router.put("/:cr_id/lessons/:lesson_id/students", authenticate, authorize("instructor"), updateStudentMarksForClassroomLesson);
 router.get("/:cr_id/lessons/students", authenticate, authorize("instructor"), getClassroomLessonsWithStudents);
