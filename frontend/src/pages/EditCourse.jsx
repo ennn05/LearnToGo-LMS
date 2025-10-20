@@ -122,15 +122,10 @@ function EditCourse() {
             };
 
             // Save updates before marking as published
-            const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(publishedCourseData)
-            });
+            const {data: response} = await api.put(`courses/${courseId}`, publishedCourseData); 
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to publish course");
+            if (!response.success) {
+                throw new Error(response.message || "Failed to publish course");
             }
 
             // // Update lessons
@@ -185,15 +180,10 @@ function EditCourse() {
             };
 
             // Update course metadata
-            const response = await fetch(`http://localhost:5000/api/courses/${courseId}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(courseToUpdate)
-            });
+            const {data: response} = await api.put(`courses/${courseId}`, courseToUpdate);
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to save course details");
+            if (!response.success) {
+                throw new Error(response.message || "Failed to save course details");
             }
 
             // Update lesson assignments
