@@ -197,8 +197,8 @@ function ClassroomGrade() {
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Attendance</th>
-                                    <th>Completion</th>
                                     <th>Grade</th>
+                                    <th>Completion</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -221,26 +221,45 @@ function ClassroomGrade() {
                                         </td>
                                         <td>
                                             <input
-                                                type="checkbox"
-                                                checked={stu.completion || false}
-                                                onChange={e => {
-                                                    const updated = [...lessons];
-                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                    updated[lessonIdx].students[idx].completion = e.target.checked;
-                                                    setLessons(updated);
-                                                }}
-                                                disabled={stu.grade !== undefined && stu.grade !== null && stu.completion === true && stu.pass === true}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
                                                 type="number"
                                                 value={stu.grade || ""}
                                                 placeholder="e.g. 80%"
                                                 onChange={e => {
                                                     const updated = [...lessons];
                                                     const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
-                                                    updated[lessonIdx].students[idx].grade = e.target.value;
+
+                                                    const newGrade = e.target.value === "" ? null : Number(e.target.value);
+
+                                                    updated[lessonIdx].students[idx].grade = newGrade;
+
+                                                    if (newGrade !== null) {
+                                                    if (newGrade >= 50) {
+                                                        updated[lessonIdx].students[idx].completion = true;
+                                                        updated[lessonIdx].students[idx].pass = true;
+                                                    } else {
+                                                        updated[lessonIdx].students[idx].completion = false;
+                                                        updated[lessonIdx].students[idx].pass = false;
+                                                    }
+                                                    } else {
+                                                    // If grade is cleared, reset completion + pass
+                                                    updated[lessonIdx].students[idx].completion = false;
+                                                    updated[lessonIdx].students[idx].pass = false;
+                                                    }
+
+                                                    setLessons(updated);
+                                                }}
+                                                disabled={stu.grade !== undefined && stu.grade !== null && stu.completion === true && stu.pass === true}
+                                                />
+
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="checkbox"
+                                                checked={stu.completion || false}
+                                                onChange={e => {
+                                                    const updated = [...lessons];
+                                                    const lessonIdx = updated.findIndex(l => l.crcl_cl_id === lesson.crcl_cl_id);
+                                                    updated[lessonIdx].students[idx].completion = e.target.checked;
                                                     setLessons(updated);
                                                 }}
                                                 disabled={stu.grade !== undefined && stu.grade !== null && stu.completion === true && stu.pass === true}
