@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Classrooms.css";
@@ -11,7 +11,7 @@ function InstructorClassrooms() {
   const [user, setUser] = useState(null);
   const [classrooms, setClassrooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [availableCourses, setAvailableCourses] = useState([]);
+  const [, setAvailableCourses] = useState([]);
   const [filter, setFilter] = useState("all"); // all, mine, others
 
   const navigate = useNavigate();
@@ -35,15 +35,12 @@ function InstructorClassrooms() {
 
   const fetchClassrooms = async () => {
     try {
-      console.log("Fetching classrooms from API...");
       const { data: res } = await api.get("classrooms");
 
-      console.log("API response for classrooms:", res.data);
       if (!res.success) {
         console.error("Error fetching classrooms:", res.message);
       }
 
-      console.log("Classrooms loaded:", res.data);
       setClassrooms(res.data);
     } catch (error) {
       console.error("Error fetching classrooms:", error);
@@ -72,7 +69,6 @@ function InstructorClassrooms() {
   }, []);
 
   const handleClassroomClick = (classroomCode) => {
-    console.log("CLASSROOM CLICKED");
     navigate(`/classrooms/${classroomCode}`);
   };
 
@@ -80,16 +76,6 @@ function InstructorClassrooms() {
     localStorage.removeItem("user");
     navigate("/");
   };
-
-  const classroomsWithCourses = classrooms.map(cl => ({
-    ...cl,
-    courseObj: availableCourses.find(course => course.course_code === cl.course_code)
-  }));
-
-  console.log("Classrooms with course objects:", classroomsWithCourses);
-  classroomsWithCourses.forEach(cl => {
-    console.log(`Classroom ${cl.cr_id} course_status:`, cl.courseObj?.course_status);
-  });
 
   return (
     <div className="flex">

@@ -10,13 +10,11 @@ export const getAllStudents = async () => {
         s.stu_grade
     FROM "LMS".student s
     JOIN "LMS".user u ON s.stu_user_id = u.user_id;`;
-    console.log(students);
     return students;
 }
 
 
 export const deleteStudent = async (stuUserId) => {
     const deletedStudent = await sql`DELETE FROM "LMS".user WHERE user_id = ${stuUserId} RETURNING *;`;
-    console.log(deletedStudent);
     return deletedStudent;
 }

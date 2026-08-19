@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/EditCourse.css";
 import useStore from "../store";
@@ -24,7 +24,6 @@ function EditCourse() {
 
     const fetchCourseDetails = async () => {
         try {
-            console.log("Fetching course details");
             const {data: res} = await api.get(`courses/${courseId}`);
             if (!res.success) {
                 console.error("Error fetching courses:", res.message);
@@ -37,8 +36,6 @@ function EditCourse() {
                 course_total_credit: course.course_total_credit || 0,
             });
             setAssignedLessons(course.lessons || []);
-            console.log("Course details loaded:", res.data);
-            console.log(res.data.lessons);
             // setCourseData(data.data);
         } catch (error) {
             console.error("Error fetching course details:", error);
@@ -50,7 +47,6 @@ function EditCourse() {
     const fetchLessons = async () => {
         try {
             const {data: res} = await api.get("lessons");
-            console.log(res);
             if (!res.success) {
                 console.error("API error:", res.message);
                 setAvailableLessons([]);
@@ -106,44 +102,6 @@ function EditCourse() {
             course_status: newStatus
         }));
     };
-
-    const handlePublishCourse = async () => {
-        try {
-            if (!courseData.course_code || !courseData.course_title || courseData.course_total_credit <= 0) {
-                alert("Please fill in all required fields (Course Code, Title, and Credits) before publishing.");
-                return;
-            }
-
-            const publishedCourseData = {
-                ...courseData,
-                course_status: "published",
-                course_total_credit: assignedLessons.reduce((sum, l) => sum + Number(l.lesson_credit || 0), 0), 
-                lessons: assignedLessons
-            };
-
-            // Save updates before marking as published
-            const {data: response} = await api.put(`courses/${courseId}`, publishedCourseData); 
-
-            if (!response.success) {
-                throw new Error(response.message || "Failed to publish course");
-            }
-
-            // // Update lessons
-            // await fetch(`http://localhost:5000/api/courses/${courseId}/lessons`, {
-            //     method: "PUT",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify({ lessons: assignedLessons.map(l => l.lesson_id) })
-            // });
-
-            alert("Course published successfully!");
-            navigate("/courses");
-
-        } catch (error) {
-            console.error("Error publishing course:", error);
-            alert("Failed to publish course. Please try again.");
-        }
-    };
-
 
     const addLessonToCourse = (lesson) => {
         if (!assignedLessons.find(l => l.lesson_id === lesson.lesson_id)) {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import useStore from "../store";
@@ -7,7 +7,7 @@ import useThemeStore from "../store/themeStore.js";
 
 function InstructorLessonDetails() {
   const { lessonId } = useParams();
-  const [activePage, setActivePage] = useState(null);
+  const [activePage] = useState(null);
   const navigate = useNavigate();
 
   const {user, signOut} = useStore((state) => state);
@@ -18,7 +18,7 @@ function InstructorLessonDetails() {
 
   // NEW STATES
   const [lessonPrereqs, setLessonPrereqs] = useState([]); 
-  const [allLessons, setAllLessons] = useState([]);
+  const [, setAllLessons] = useState([]);
 
   // 🌙 get theme + toggle function
   const { theme, toggleTheme } = useThemeStore();
@@ -90,9 +90,7 @@ function InstructorLessonDetails() {
 
   // Update the lesson status to 'published'
   const handlePublishLesson = async () => {
-    console.log("Publish lesson clicked");
     const updatedLesson = { ...lesson, lesson_status: 'published'};
-    console.log(updatedLesson);
 
     const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
@@ -100,7 +98,6 @@ function InstructorLessonDetails() {
     {
       console.error("Error fetching lessons:", res.message);
     }
-    console.log("Lesson published:", res.data);
     fetchLessonDetails();
   };
 

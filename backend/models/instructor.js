@@ -11,16 +11,14 @@ export const getAllInstructors = async () => {
         JOIN "LMS".user u ON i.inst_user_id = u.user_id
         WHERE user_role = 'instructor';
     `;
-    console.log(instructors);
     return instructors;
 };
 
 export const deleteInstructor = async (instUserId) => {
     const deletedInstructor = await sql`
-        DELETE FROM "LMS".user 
-        WHERE user_id = ${instUserId} 
+        DELETE FROM "LMS".user
+        WHERE user_id = ${instUserId}
         RETURNING *;
     `;
-    console.log(deletedInstructor);
     return deletedInstructor;
 };

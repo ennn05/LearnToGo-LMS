@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateClassroom.css"; // Stylesheet for page
 import api from "../libs/apiCalls";
@@ -10,8 +10,7 @@ function CreateClassroom() {
     const [activePage, setActivePage] = useState("classrooms")
 
     // User info
-    const {user, setCredentials, signOut} = useStore((state) => state);
-    console.log("User from store:", user);
+    const {user, signOut} = useStore((state) => state);
 
       // 🌙 get theme + toggle function
   const { theme, toggleTheme } = useThemeStore();
@@ -28,7 +27,6 @@ function CreateClassroom() {
         status: "draft",
     })
 
-    console.log("Classroom Data:", classroomData);
     // Lessons & Courses & Students
     const [assignedCourse, setAssignedCourse] = useState(null);
     const [availableCourses, setAvailableCourses] = useState([]);
@@ -53,7 +51,6 @@ function CreateClassroom() {
             }
             const data = await response.json();
             setAvailableCourses(data.data);
-            console.log("Available courses:", data.data);
         } catch (error) {
             console.error("Error fetching courses:", error);
             setAvailableCourses([]);
@@ -72,12 +69,10 @@ function CreateClassroom() {
                 return;
             }
             const data = await response.json();
-            console.log("All Lessons:", data.data);
             const match = data.data.find(
                 item => item.cl_course_code === course_code
             );
             const lessons = match ? match.lessons : [];
-            console.log("Filtered Lessons:", lessons);
             setAvailableLessons(lessons);
         } catch (error) {
             console.error("Error fetching lessons:", error);
@@ -97,7 +92,6 @@ function CreateClassroom() {
                 return; 
             }
             const data = await response.json();
-            console.log("Enrolled students:", data.data);
             const match = data.data.find(
                 item => item.course_code === course_code
             );
@@ -114,7 +108,6 @@ function CreateClassroom() {
             const {data: response} = await api.get("users/instructors");
             if (response.success) {
                 setAvailableSupervisors(response.data);
-                console.log("Available supervisors:", response.data);
             } else {
                 console.error("Error fetching supervisors:", response.message);
                 setAvailableSupervisors([]);
@@ -179,7 +172,6 @@ function CreateClassroom() {
             }
             const publishedClassroomData = { ...classroomData, status: "published" };
             setClassroomData(publishedClassroomData);
-            console.log("Publishing classroom:", classroomData);
             alert("Classroom published successfully!");
             navigate("/classrooms");
         } catch (error) {
@@ -239,10 +231,8 @@ function CreateClassroom() {
                 students: assignedStudents.map(s => s.stucourse_id)
             };
 
-            console.log("Saving classroom:", classroomToSave);
             const {data: response} = await api.post("classrooms", classroomToSave);
 
-            console.log(response);
             if (!response.success) {
                 throw new Error(response.message || "Failed to save classroom!");
             }

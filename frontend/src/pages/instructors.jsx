@@ -1,5 +1,4 @@
-// import api from "../libs/apiCalls"; // Uncomment if using centralized api wrapper
-import { React, useState, useEffect } from "react";
+﻿import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/instructors.css";
 import useStore from "../store";
@@ -7,7 +6,7 @@ import useThemeStore from "../store/themeStore.js";
 
 const Instructors = () => {
   // Track active sidebar page
-  const [activePage, setActivePage] = useState("instructors");
+  const [activePage] = useState("instructors");
 
   // Current logged-in user
   const { user, signOut } = useStore((state) => state);
@@ -36,11 +35,9 @@ const Instructors = () => {
    */
   const fetchInstructors = async () => {
     try {
-      console.log("Fetching instructors from API...");
 
       const response = await fetch("http://localhost:5000/api/instructors");
       const data = await response.json();
-      console.log("Instructors loaded: ", data.data);
 
       setInstructors(data.data);
     } catch (error) {
@@ -89,7 +86,6 @@ const Instructors = () => {
       const prevInstructors = [...instructors]; // backup
 
       try {
-        console.log("Deleting instructor from API...");
 
         const res = await fetch(
           `http://localhost:5000/api/instructors/${instUserId}`,
@@ -103,9 +99,6 @@ const Instructors = () => {
           const errText = await res.text();
           throw new Error(errText);
         }
-
-        const data = await res.json();
-        console.log("Deleted:", data.data);
 
         setMessage({ text: "Instructor removed successfully!", type: "success" });
         setTimeout(() => setMessage(null), 3000);

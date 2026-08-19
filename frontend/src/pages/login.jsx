@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css"; 
 import useStore from "../store/index.js"; 
@@ -44,7 +44,6 @@ function Login() {
       });
 
       if (res?.user) {
-        console.log("Login successful", res.user);
         setLoginMsg(" Login successful");
 
         const userInfo = { ...res.user, token: res.token };
@@ -78,7 +77,6 @@ function Login() {
       });
 
       if (res?.user) {
-        console.log("Registration successful", res.user);
         setRegMsg(" Registration successful");
 
         const userInfo = { ...res.user, token: res.token };

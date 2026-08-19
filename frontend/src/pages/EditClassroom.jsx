@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/CreateClassroom.css"; // reuse same CSS as Create
 import api from "../libs/apiCalls";
@@ -23,7 +23,6 @@ function EditClassroom() {
     status: "draft",
   });
 
-  const [isPublished, setIsPublished] = useState(false); // Track if classroom is published
   const [assignedCourse, setAssignedCourse] = useState(null);
   const [availableCourses, setAvailableCourses] = useState([]);
   const [assignedLessons, setAssignedLessons] = useState([]);
@@ -34,8 +33,6 @@ function EditClassroom() {
   const [searchTerm, setSearchTerm] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
   const [isOngoing, setIsOngoing] = useState(false);
-  const [originalStartDate, setOriginalStartDate] = useState("");
-  const [originalDuration, setOriginalDuration] = useState("");
 
   // ---- Fetch classroom details ----
   const fetchClassroomDetails = async () => {
@@ -43,7 +40,6 @@ function EditClassroom() {
       const { data: res } = await api.get(`classrooms/${classroomCode}`);
       if (!res.success) throw new Error(res.message);
       const cr = res.data;
-      console.log(cr);
       setClassroomData({
         classroomId: cr.cr_id,
         startDate: cr.cr_start_date,
@@ -55,13 +51,6 @@ function EditClassroom() {
         status: cr.cr_status,
       });
 
-      console.log(classroomData);
-      setOriginalStartDate(cr.cr_start_date);
-      setOriginalDuration(cr.cr_duration);
-
-      // Check if classroom is published (ongoing)
-      setIsPublished(cr.cr_status === 'published');
-      
       // Check if classroom is ongoing: today is between start and end (start + duration weeks)
       // Use date-only (00:00:00) comparison to avoid timezone issues
       const normalize = (d) => {
@@ -244,20 +233,14 @@ function EditClassroom() {
   }
 
   // Debug: Check if lessons have cl_id property
-  console.log("Assigned lessons:", assignedLessons);
-  console.log("Lessons with cl_id:", assignedLessons.map(l => ({ hasClId: !!l.cl_id, cl_id: l.cl_id, lesson_id: l.lesson_id })));
   
   // Debug: Check if students have stucourse_id property  
-  console.log("Assigned students:", assignedStudents);
-  console.log("Students with stucourse_id:", assignedStudents.map(s => ({ hasStucourseId: !!s.stucourse_id, stucourse_id: s.stucourse_id, cs_id: s.cs_id })));
 
   try {
-    console.log("Sending update payload:", updatedClassroom);
 
     const response = await api.put(`/classrooms/${classroomData.classroomId}`, updatedClassroom);
 
     if (response.data.success) {
-      console.log("Update success:", response.data);
       alert("Classroom updated successfully!");
       navigate("/classrooms");
     } else {

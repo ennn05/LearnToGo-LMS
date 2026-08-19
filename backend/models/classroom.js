@@ -115,8 +115,7 @@ export const getClassroomByCode = async (classroomCode) => {
 }
 
 export const updateClassroom = async (id, updateData) => {
-    console.log(id, updateData);
-    const classrooms = await sql`UPDATE "LMS".classroom 
+    const classrooms = await sql`UPDATE "LMS".classroom
                     SET 
                         cr_start_date = ${updateData.cr_start_date},
                         cr_duration = ${updateData.cr_duration},
@@ -175,7 +174,6 @@ export const addClassroomLesson = async (classroomId, clId) => {
             (${classroomId}, ${clId})
         RETURNING *;
     `;
-    console.log("Added classroom lesson:", classroomLesson[0]);
     return classroomLesson[0];
 };
 
@@ -197,7 +195,6 @@ export const addClassroomStudent = async (classroomId, stuCourseId) => {
             (${classroomId}, ${stuCourseId})
         RETURNING *;
     `;
-    console.log("Added classroom student:", classroomStudent[0]);
     return classroomStudent[0];
 };
 
@@ -263,78 +260,6 @@ export const getClassroomsByStudent = async (studentId) => {
 
   return classrooms;
 };
-
-//Get all published classrooms that's courses are enrolled by student
-export const getAvailableClassroomsForStudent = async (studentID) => {
-    const classrooms = await sql `SELECT 
-        cr.*,
-        c.*,
-        usv.user_fname AS supervisor_fname,
-        usv.user_lname AS supervisor_lname,
-        uc.user_fname AS creator_fname,
-        uc.user_lname AS creator_lname
-    FROM "LMS".student_course sc
-    JOIN "LMS".classroom cr 
-        ON sc.course_code = cr.course_code
-    LEFT JOIN "LMS".classroom_student cs 
-        ON cr.cr_id = cs.cr_id AND cs.stucourse_id = sc.stucourse_id
-    LEFT JOIN "LMS".course c 
-        ON cr.course_code = c.course_code
-    LEFT JOIN "LMS".instructor isv 
-        ON cr.supervisor_id = isv.inst_user_id
-    LEFT JOIN "LMS".user usv 
-        ON isv.inst_user_id = usv.user_id
-    LEFT JOIN "LMS".instructor ic 
-        ON cr.cr_creator = ic.inst_user_id
-    LEFT JOIN "LMS".user uc 
-        ON ic.inst_user_id = uc.user_id
-    WHERE sc.stu_user_id = ${studentId}
-    --Check that status is published
-    AND cr.cr_status = 'published'
-    --Check that student has not been enrolled into the classroom before
-    AND cs.cr_id IS NULL;`
-    return classrooms
-}
-
-// temp draft sql - update in cl_stu_lesson table
-/*export const editStudentMarksForClassroomLesson = async (cr_id, crcl_cl_id, student) => {
-    const { stucourse_id, attendance, completion, grade } = student;
-
-    const result = await sql`
-        INSERT INTO "LMS".cl_stu_lesson (cs_id, crcl_id, csl_attendance, csl_completion, csl_grade)
-        VALUES (
-        (SELECT cs_id FROM "LMS".classroom_student WHERE cr_id = ${cr_id} AND stucourse_id = ${stucourse_id}),
-        (SELECT crcl_id FROM "LMS".classroom_course_lesson WHERE crcl_cr_id = ${cr_id} AND crcl_cl_id = ${crcl_cl_id}),
-        ${attendance},
-        ${completion},
-        ${grade}
-        )
-        ON CONFLICT (cs_id, crcl_id) DO UPDATE SET
-        csl_attendance = EXCLUDED.csl_attendance,
-        csl_completion = EXCLUDED.csl_completion,
-        csl_grade = EXCLUDED.csl_grade
-        RETURNING *;
-    `;
-
-    return result[0];
-}*/
-
-// export const upsertStudentLessonGrade = async (gradeData) => {
-//   const { stu_user_id, lesson_id, attendance, completion, grade_value } = gradeData;
-
-//   const result = await sql`
-//     INSERT INTO "LMS".grade (stu_user_id, lesson_id, attendance, completion, grade_value)
-//     VALUES (${stu_user_id}, ${lesson_id}, ${attendance}, ${completion}, ${grade_value})
-//     ON CONFLICT (stu_user_id, lesson_id)
-//     DO UPDATE
-//     SET attendance = EXCLUDED.attendance,
-//         completion = EXCLUDED.completion,
-//         grade_value = EXCLUDED.grade_value
-//     WHERE "LMS".grade.pass = false  -- only update if student hasn't passed
-//     RETURNING *;
-//   `;
-//   return result[0]; // Will be undefined if no update (already passed)
-// };
 
 export const updateStudentLessonGrade = async (lessonId, studentGrade) => {
     const { stu_user_id, attendance, completion, grade } = studentGrade;

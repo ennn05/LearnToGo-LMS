@@ -58,7 +58,6 @@ export const addCourseEnrollment = async (studentId, courseCode) => {
     const course = await sql`INSERT INTO "LMS".student_course (stu_user_id, course_code)
     VALUES (${studentId}, ${courseCode}) RETURNING *;`;
 
-    // const course = [{student_id: studentId, course_code: courseCode}]; // temporary placeholder
     return course[0];
 }   
 
@@ -156,8 +155,7 @@ export const deleteCourse = async (courseCode) => {
 
 export const updateCourse = async (courseData) => {
     const {id, updateData} = courseData;
-    console.log(courseData);
-    const courses = await sql`UPDATE "LMS".course 
+    const courses = await sql`UPDATE "LMS".course
                     SET 
                         course_code = ${updateData.course_code},
                         course_title = ${updateData.course_title},
@@ -175,7 +173,6 @@ export const addCourseLesson = async (courseCode, lessonId) => {
     VALUES
     (${courseCode}, ${lessonId}) RETURNING *;`;
 
-    console.log("Added course lesson:", courseLesson[0]);
     return courseLesson[0];
 }
 
@@ -238,20 +235,3 @@ export const removeCourseEnrollment = async (studentId, courseCode) => {
     `;
     return result[0]; // returns deleted row if successful, undefined if nothing deleted
 };
-/*
-export const getPercentageLessonCompletionByStudentForCourse = async (studentId, courseCode) => {
-    const result = await sql `SELECT
-    ROUND(
-        (
-        COUNT(*) FILTER (WHERE g.completion = TRUE)::decimal
-        / NULLIF(COUNT(*), 0)
-        ) * 100,
-        2
-    ) AS completion_rate
-    FROM "LMS".course_lesson cl
-    LEFT JOIN "LMS".grade g 
-    ON g.lesson_id = cl.cl_lesson_id
-    AND g.stu_user_id = ${studentId}
-    WHERE cl.cl_course_code = ${courseCode} `
-    return result
-}*/

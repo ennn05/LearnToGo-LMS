@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls"; 
 import "../styles/LessonDetails.css"; // Use same stylesheet as LessonDetails
@@ -80,15 +80,12 @@ function EditLesson() {
   const editLesson = async (lessonData) => {
     try {
       const updateLessonData = {...lesson, ...lessonData};
-      console.log(updateLessonData);
       const {data: res} = await api.put(`lessons/${lessonId}`, updateLessonData);
-      console.log(res);
       if (!res.success) {
         console.error("Server responded with:", res.message);
         throw new Error("Failed to edit lesson");
       }
 
-      console.log("Lesson updated:", res.data);
       await fetchLessonDetails();
       return res.data;
     } catch (error) {
@@ -127,9 +124,7 @@ function EditLesson() {
 
   // Update the lesson status to 'published'
   const handlePublishLesson = async () => {
-    console.log("Publish lesson clicked");
     const updatedLesson = { ...lesson, lesson_status: 'published'};
-    console.log(updatedLesson);
 
     const {data: res} = await api.put(`lessons/${lessonId}`, updatedLesson);
 
@@ -138,7 +133,6 @@ function EditLesson() {
       console.error("Error fetching lessons:", res.message);
     }
 
-    console.log("Lesson published:", res.data);
     setLesson(res.data);
   };
 
@@ -433,10 +427,7 @@ function EditLesson() {
                   lesson_reading_list: e.target.readingItem.value.trim(),
                 };
 
-                console.log("Adding reading")
-                // TODO: Send readingData to backend
-                const result = await editLesson(readingData);
-                console.log("Reading added:", readingData);
+                await editLesson(readingData);
                 alert("Reading added!");
                 setShowReadingModal(false);
             }}>
@@ -466,10 +457,7 @@ function EditLesson() {
                   lesson_assignment: e.target.asgItem.value.trim(),
                 };
 
-                console.log("Adding assignment")
-                // TODO: Send readingData to backend
-                const result = await editLesson(assignmentData);
-                console.log("Assignment added:", assignmentData);
+                await editLesson(assignmentData);
                 alert("Assignment added!");
                 setShowAssignmentModal(false);
             }}>
@@ -503,10 +491,7 @@ function EditLesson() {
                   lesson_credit: e.target.lessonCredit.value,
                 };
 
-                console.log("Editing lesson details")
-                const result = await editLesson(lessonData);
-                
-                console.log("Changes saved:", lessonData);
+                await editLesson(lessonData);
 
                 setShowModal(false);
               }}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Lessons.css";
@@ -28,10 +28,10 @@ function StudentLessons() {
                 setError(res.message || "Failed to fetch lessons");
                 setLessons([]);
             } else {
-                console.log("Lessons fetched:", res.data);
                 setLessons(res.data);
             }
         } catch (err) {
+            console.error("Error fetching student lessons:", err);
             setError("Error fetching student lessons");
             setLessons([]);
         } finally {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css";
@@ -7,14 +7,13 @@ import useThemeStore from "../store/themeStore.js";
 
 function InstructorClassroomDetails() {
   const { classroomCode } = useParams();
-  const { user, setCredentials, signOut } = useStore((state) => state);
-  console.log("User from store:", user);
+  const { user, signOut } = useStore((state) => state);
   // Classroom state
   const [classroom, setClassroom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [activePage, setActivePage] = useState(null);
+  const [activePage] = useState(null);
   const navigate = useNavigate();
 
       // 🌙 get theme + toggle function
@@ -27,8 +26,7 @@ function InstructorClassroomDetails() {
 
   const handleDeleteClassroom = async () => {
     try {
-      const res = await api.delete(`classrooms/${classroom.cr_id}`);
-      console.log("Deleted classroom:", res.data);
+      await api.delete(`classrooms/${classroom.cr_id}`);
       navigate("/classrooms");
     } catch (error) {
       console.error("Error deleting classroom:", error.response?.data || error);
@@ -44,7 +42,6 @@ function InstructorClassroomDetails() {
           setError("Classroom not found");
           return;
         }
-        console.log("Classroom loaded:", res.data);
         setClassroom(res.data);
 
         // ✅ Mock students for now

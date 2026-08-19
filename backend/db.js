@@ -5,7 +5,6 @@ dotenv.config();
 
 const {PGHOST, PGDATABASE, PGUSER, PGPASSWORD} = process.env;
 
-console.log("DB Config:", {PGHOST, PGDATABASE, PGUSER, PGPASSWORD});
 export const sql = neon(
     `postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}`
 )

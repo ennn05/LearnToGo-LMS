@@ -7,8 +7,6 @@ const STUDENT_PIN = process.env.STUDENT_PIN || '67890';
 
 export const register = async (req, res) => {
     const { fname, lname, pin, role, email, password } = req.body;
-    console.log("Registration attempt:", email, pin, password, role);
-    console.log("Instructor PIN:", INSTRUCTOR_PIN, "Student PIN:", STUDENT_PIN);
     try {
         if (!email || !pin || !password || !role) {
             return res.status(400).json({ status: "failed", message: "Email, PIN, password, and role are required." });
@@ -16,21 +14,17 @@ export const register = async (req, res) => {
 
         if (role === "instructor") {
             if (`${pin}` !== INSTRUCTOR_PIN) {
-                console.log("Invalid instructor pin provided:", pin);
                 return res.status(401).json({ status: "failed", message: "Invalid PIN for Instructor account." });
             }
         } else if (role === "student") {
             if (`${pin}` !== STUDENT_PIN) {
-                console.log("Invalid student pin provided:", pin);
                 return res.status(401).json({ status: "failed", message: "Invalid PIN for Student account." });
             }
         } else {
-            console.log("Invalid role provided:", role);
             return res.status(400).json({ status: "failed", message: "Invalid role." });
         }
 
         const existingUser = await sql`SELECT * FROM "LMS".user WHERE user_email = ${email}`;
-        console.log("DB result:", existingUser);
         if (existingUser.length > 0) {
             return res.status(409).json({ status: "failed", message: "Email already in use" });
         }
@@ -54,7 +48,6 @@ export const register = async (req, res) => {
         }
         const token = generateJWT(payload);
 
-        console.log("DB result:", newUser);
         return res.status(201).json({ success: true, message: "Registration successful", user: newUser[0] , token});
 
     } catch (error) {
@@ -67,16 +60,13 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
     const { email, password } = req.body;
-    console.log("Login attempt:", email, password);
-    
+
     try {
-        
         if (!(email || password)) {
             return res.status(400).json({ status: "failed", message: "Provide Required Fields!" });
         }
 
         const user = await sql`SELECT * FROM "LMS".user WHERE user_email = ${email}`;
-        console.log("DB result:", user);
 
         if (user.length <= 0)
         {

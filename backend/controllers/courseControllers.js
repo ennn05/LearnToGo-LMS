@@ -3,7 +3,6 @@ import { getAllCourses, getCoursesByInstructor, getCourseByCode, createCourse, d
 export const getCourses = async (req, res) => {
     try {
         const courses = await getAllCourses();
-        console.log("Courses fetched:", courses);
         return res.status(200).json({ success: true, data: courses });
     }
     catch (error) {
@@ -13,9 +12,7 @@ export const getCourses = async (req, res) => {
 };
 
 export const getInstructorCourses = async (req, res) => {
-    console.log("HI")
     const instructorId = req?.user?.id;
-    console.log(instructorId);
     if (!instructorId) return res.status(401).json({success: false, error: "Unauthorized" });
 
     try {
@@ -45,7 +42,6 @@ export const getStudentCourses = async (req, res) => {
             With res status 500 and JSON body { success: false, message: "Failed to fetch enrolled courses for student." }
     */
     const studentId = req?.user?.id;
-    console.log(studentId);
     if (!studentId) return res.status(401).json({success: false, error: "Unauthorized" });
 
     try {
@@ -93,7 +89,6 @@ export const enrollCourse = async (req, res) => {
         if (!courseCode) return res.status(400).json({ success: false, message: "Course code is required." });
 
         const enrollment = await addCourseEnrollment(studentId, courseCode);
-        console.log(enrollment);
         if (!enrollment) {
             return res.status(409).json({ success: false, message: "Failed to enroll in course." });
         }
@@ -115,7 +110,6 @@ export const getCourse = async (req, res) => {
     const { id } = req.params;
     try {
         const course = await getCourseByCode(id);
-        console.log(course);
         if (course) {
             return res.status(200).json({ success: true, data: course });
         }
@@ -134,7 +128,6 @@ export const getStudentCourse = async (req, res) => {
 
     try {
         const course = await getStudentCourseByCode(id, studentId);
-        console.log(course);
         if (course) {
             return res.status(200).json({ success: true, data: course });
         }
@@ -162,8 +155,6 @@ export const addCourse = async (req, res) => {
 
         const today = new Date().toISOString().split('T')[0];
 
-        // const total_credit = lessons.reduce((sum, lesson) => sum + (lesson.lesson_credit || 0), 0);
-
         const courseData = {
             code,
             title,
@@ -177,10 +168,7 @@ export const addCourse = async (req, res) => {
         const course = await createCourse(courseData);
         if (course) {
             try {
-                lessons.forEach(element => {
-                    addCourseLesson(code, element);
-                });
-
+                await Promise.all(lessons.map(element => addCourseLesson(code, element)));
             } catch(error)
             {
                 console.error("Error in adding lesson to course:", error);
@@ -218,15 +206,6 @@ export const editCourse = async (req, res) => {
     const updateData = req.body;
 
     try {
-        // If lessons are included, recalc course_total_credit
-        // if (updateData.lessons && Array.isArray(updateData.lessons)) {
-        //     updateData.course_total_credit = updateData.lessons.reduce(
-        //         (sum, lesson) => sum + (lesson.lesson_credit || 0),
-        //         0
-        //     );
-        // }
-
-        // Update course metadata (title, status, etc.)
         const updatedCourse = await updateCourse({ id, updateData });
         if (!updatedCourse) {
             return res.status(404).json({ success: false, message: "Course does not exist" });

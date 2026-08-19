@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
-import { mockCourseAPI } from "../data/mockCourses"; // Mock API for testing if needed
 import "../styles/Courses.css";
 import useStore from "../store";
 import useThemeStore from "../store/themeStore.js";
@@ -30,7 +29,6 @@ function InstructorCourses() {
    */
   const fetchCourses = async () => {
     try {
-      console.log("Fetching courses from API...");
 
       // Example with mock:
       // const data = await mockCourseAPI.getAllCourses();
@@ -41,7 +39,6 @@ function InstructorCourses() {
         console.error("Error fetching courses:", res.message);
       }
 
-      console.log("Courses loaded:", res.data);
       setCourses(res.data);
       setFilter("all");
     } catch (error) {
@@ -63,14 +60,6 @@ function InstructorCourses() {
    * - Fetch courses
    */
   useEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // console.log("Stored user:", storedUser);
-
-    // if (storedUser) {
-    //   setUser(JSON.parse(storedUser));
-    //   console.log("User set:", user);
-    // }
-
     fetchCourses();
   }, []);
 
@@ -93,7 +82,6 @@ function InstructorCourses() {
       return true; // "all"
     });
 
-    console.log(filteredCourses);
 
   const handleCourseClick = (courseId) => {
     navigate(`/courses/${courseId}`);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateLessons.css";
 import api from "../libs/apiCalls"; 
@@ -21,9 +21,6 @@ function CreateLesson() {
     lesson_assignment: [],
     lesson_prereq: []
   });
-
-  // For managing prerequisites
-  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -102,7 +99,6 @@ function CreateLesson() {
       };
 
       const {data: res} = await api.post("lessons", payload);
-      console.log(res);
 
       if (!res.success) {
         throw new Error(res.message || "Failed to save lesson");
@@ -353,9 +349,7 @@ function CreateLesson() {
                   lesson_reading_list: e.target.readingItem.value.trim(),
                 };
 
-                console.log("Adding reading")
                 setLessonData((prev) => ({ ...prev, ...readingData }));
-                console.log("Reading added:", readingData);
                 alert("Reading added!");
                 setShowReadingModal(false);
             }}>
@@ -385,9 +379,7 @@ function CreateLesson() {
                   lesson_assignment: e.target.asgItem.value.trim(),
                 };
 
-                console.log("Adding assignment")
                 setLessonData((prev) => ({ ...prev, ...assignmentData }));
-                console.log("Assignment added:", assignmentData);
                 alert("Assignment added!");
                 setShowAssignmentModal(false);
             }}>

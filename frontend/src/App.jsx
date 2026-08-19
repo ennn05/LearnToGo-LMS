@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useNavigate } from "react-router-dom";
 import Login from "./pages/login";
 import Lessons from "./pages/lessons";
-import Courses from "./pages/Courses";
+import Courses from "./pages/courses";
 import CourseDetails from "./pages/CourseDetails";
 import EditCourse from "./pages/EditCourse";
 import CreateCourse from "./pages/CreateCourse";
@@ -21,7 +21,6 @@ import EditClassroom from "./pages/EditClassroom";
 
 const RootLayout = () => {
   const user = useStore((state) => state.user);
-  console.log(user)
 
   setAuthToken(user?.token ?? "");
 
@@ -32,7 +31,6 @@ const RootLayout = () => {
 
 function ProtectedRoute({ children, allowedRoles }) {
   const user = useStore((state) => state.user);
-  console.log(user)
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -81,11 +79,6 @@ function App() {
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
-        {/* <Route path="/register" element={<Register />} /> */}
-
-        {/* classroom */}
-        <Route path="/classrooms" element={<Classrooms />} />
       </Routes>
   );
 }

@@ -9,7 +9,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recha
 function Reports() {
     const navigate = useNavigate();
     const { user, signOut } = useStore((state) => state);
-    const [activePage, setActivePage] = useState("reports");
+    const [activePage] = useState("reports");
     const [totalCourses, setTotalCourses] = useState(null);
     const [avgLessons, setAvgLessons] = useState(null);
     const [statusBreakdown, setStatusBreakdown] = useState([]);

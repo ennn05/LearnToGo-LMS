@@ -13,12 +13,6 @@ import instructorsRoutes from "./instructorsRoutes.js";
 
 const router = express.Router();
 
-// router.use('/auth', authRoutes);
-// router.use('/lessons', authenticate, lessonsRoutes);
-// router.use('/courses', authenticate, coursesRoutes);
-// router.use('/students', authenticate, studentsRoutes);
-
-
 router.use('/auth', authRoutes);
 router.use('/lessons', lessonsRoutes);
 router.use('/courses', coursesRoutes);

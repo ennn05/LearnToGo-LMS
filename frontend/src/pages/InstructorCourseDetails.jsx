@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import { mockCourseAPI } from "../../../data/mockCourses";
 import "../styles/CourseDetails.css";
@@ -11,7 +11,7 @@ function InstructorCourseDetails() {
   const { theme, toggleTheme } = useThemeStore();
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const [activePage, setActivePage] = useState(null);
+  const [activePage] = useState(null);
   const {user, signOut} = useStore((state) => state);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,8 +29,6 @@ function InstructorCourseDetails() {
         console.error("Error fetching courses:", res.message);
       }
 
-      console.log("Course details loaded:", res.data);
-      console.log(res.data.lessons);
       setCourse(res.data);
     } catch (error) {
       console.error("Error fetching course details:", error);
@@ -69,16 +67,12 @@ function InstructorCourseDetails() {
 
   const handleEditCourse = () => {
     // TODO: Implement edit course functionality
-    console.log("Edit course clicked");
     navigate(`/courses/${courseId}/edit`);
   };
 
   const handlePublishCourse = async () => {
     // TODO: Implement publish course functionality
-    console.log("Publish course clicked");
-    console.log(course);
     const courseUpdateData = { ...course, lessons: undefined, course_status: "published", course_date_updated: new Date().toLocaleDateString()};
-    console.log(courseUpdateData);
 
     try {
       const {data: res} = await api.put(`courses/${courseId}`, courseUpdateData);
@@ -88,7 +82,6 @@ function InstructorCourseDetails() {
         alert('Failed publishing course.');
       }
 
-      console.log("Course published:", res.data);
       fetchCourseDetails();
     } catch (error) {
       console.error("Error publishing course:", error);
@@ -97,10 +90,8 @@ function InstructorCourseDetails() {
 
   const handleArchiveCourse = async () => {
     // TODO: Implement archive course functionality
-    console.log("Archive course clicked");
 
     const courseUpdateData = { ...course, lessons: undefined, course_status: "archived", course_date_updated: new Date().toLocaleDateString() };
-    console.log(courseUpdateData);
 
     try {
       const {data: res} = await api.put(`courses/${courseId}`, courseUpdateData);
@@ -110,7 +101,6 @@ function InstructorCourseDetails() {
         alert('Failed archiving course.');
       }
 
-      console.log("Course archived:", res.data);
       fetchCourseDetails();
     } catch (error) {
       console.error("Error archiving course:", error);

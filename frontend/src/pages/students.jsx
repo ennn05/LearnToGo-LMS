@@ -1,5 +1,4 @@
-// import api from "../libs/apiCalls"; // Uncomment if switching from fetch to centralized api wrapper
-import { React, useState, useEffect } from "react";
+﻿import { React, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/students.css";
 import useStore from "../store";
@@ -8,7 +7,7 @@ import api from "../libs/apiCalls.js";
 
 const Students = () => {
   // Track active sidebar page
-  const [activePage, setActivePage] = useState("students");
+  const [activePage] = useState("students");
 
   // Current logged-in user
   const {user, signOut} = useStore((state) => state);
@@ -33,16 +32,13 @@ const Students = () => {
    */
   const fetchStudents = async () => {
     try {
-      console.log("Fetching students from API...");
 
       // Example if using central api helper:
       // const { data: res } = await api.get("students");
       // setStudents(res?.data);
 
       const {data: response} = await api.get("students");
-      console.log(response);
 
-      console.log("Students loaded: ", response.data);
 
       setStudents(response.data);
     } catch (error) {
@@ -70,13 +66,6 @@ const Students = () => {
    * - Fetch students list
    */
   useEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // console.log("Stored user:", storedUser);
-
-    // if (storedUser) {
-    //   setUser(JSON.parse(storedUser));
-    // }
-
     fetchStudents();
   }, []);
 
@@ -97,7 +86,6 @@ const Students = () => {
       const prevStudents = [...students]; // Keep backup before deleting
 
       try {
-        console.log("Deleting student from API...");
 
         // Example with central api helper:
         // const res = await api.delete(`/students/${stuUserId}`);
@@ -108,7 +96,6 @@ const Students = () => {
           throw new Error(res.message);
         }
 
-        console.log("Deleted:", res.data);
 
         // Show success feedback
         setMessage({ text: "Student removed successfully!", type: "success" });

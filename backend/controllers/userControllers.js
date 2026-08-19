@@ -1,4 +1,4 @@
-import { getAllInstructors } from "../models/user.js";
+import { getAllInstructors, getAllInstructorsByAdmin } from "../models/user.js";
 
 export const getInstructors = async (req, res) => {
   try {

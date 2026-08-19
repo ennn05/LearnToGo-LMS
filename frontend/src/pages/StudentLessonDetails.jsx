@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/LessonDetails.css";
@@ -54,7 +54,6 @@ function StudentLessonDetails() {
                 setError(res.message || "Lesson not found");
                 setLesson(null);
             } else {
-                console.log("Lessons fetched:", res.data);
                 setLesson(res.data);
                 setGrade(res.data.grade_value);
                 setCompletionText(getCompletionText(res.data.completion));

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Lessons.css";
@@ -8,7 +8,6 @@ import useThemeStore from "../store/themeStore.js";
 function InstructorLessons() {
   const [activePage, setActivePage] = useState("lessons");
   const {user, signOut} = useStore((state) => state);
-  const [showModal, setShowModal] = useState(false);
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // e.g., all, created by me, created by others
@@ -19,13 +18,11 @@ function InstructorLessons() {
   const fetchLessons = async () => {
     try {
       const { data: res } = await api.get("lessons"); // Fetch all lessons instead of Instructor's lessons only
-      console.log(res);
       if (!res.success) {
         console.error("Server responded with:", res.message);
         throw new Error("Failed to edit lesson");
       }
 
-      console.log(res.data);
       setLessons(res.data);
       setFilter("all");
     } catch (err) {
@@ -41,12 +38,6 @@ function InstructorLessons() {
       }, [theme]);
 
   useEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // console.log(storedUser);
-    // if (storedUser) {
-    //   setUser(JSON.parse(storedUser));
-    //   console.log(user);
-    // }
     fetchLessons();
   }, []);
 
@@ -59,30 +50,6 @@ function InstructorLessons() {
       return true; // "all"
     });
 
-    console.log(filteredLessons);
-
-  /** Add new lesson */
-  const addLesson = async (lessonData) => {
-    try {
-      const createLessonData = {
-        ...lessonData,
-        lesson_designer: user.user_id,
-      }
-      const {data: res} = await api.post("lessons", createLessonData);
-      console.log(res)
-      if (!res.success) {
-        console.error("Server responded with:", res.message);
-        throw new Error("Failed to add lesson");
-      }
-
-      console.log("Lesson saved:", res.data);
-      await fetchLessons();
-      return res.data;
-    } catch (error) {
-      console.error("Error adding lesson:", error);
-      alert("Failed to add lesson. Please try again.");
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -227,82 +194,6 @@ function InstructorLessons() {
           +
         </button>
 
-         {/* Modal */}
-         {/* {showModal && (
-          <div className="modal-overlay" onClick={() => setShowModal(false)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h3>Add Lesson</h3>
-              <form onSubmit={async (e) => {
-                  e.preventDefault();
-
-                  const lessonData = {
-                    lesson_title: e.target.title.value,
-                    lesson_desc: e.target.description.value,
-                    lesson_obj: e.target.objective.value,
-                    lesson_effort_per_week: e.target.estimatedTime.value,
-                    lesson_credit: e.target.lessonCredit.value,
-                  };
-
-                  console.log("Adding lesson")
-                  // TODO: Send lessonData to backend
-                  const result = await addLesson(lessonData);
-                  
-
-                  console.log("Lesson submitted:", lessonData);
-                  alert("Lesson added!");
-
-                  setShowModal(false);
-                }}
-            > 
-                <div className="form-group">
-                  <label>Lesson Title</label>
-                  <input type="text" name="title" required />
-                </div>
-
-                <div className="form-group">
-                  <label>Description</label>
-                  <textarea name="description" rows="2" required />
-                </div>
-
-                <div className="form-group">
-                  <label>Objective</label>
-                  <textarea name="objective" rows="2" required />
-                </div>
-
-                <div className="form-group-inline">
-                  <label>Estimated Time (hours per week)</label>
-                  <input
-                    type="number"
-                    name="estimatedTime"
-                    placeholder="e.g. 30"
-                    required
-                  />
-                </div>
-
-                <div className="form-group-inline">
-                  <label>Lesson Credit (points)</label>
-                  <input
-                    type="number"
-                    name="lessonCredit"
-                    placeholder="e.g. 6"
-                    required
-                  />
-                </div>
-
-                <div className="modal-actions">
-                  <button type="submit">Save</button>
-                  <button
-                    type="button"
-                    className="cancel"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )} */}
       </div>
     </div>
   );

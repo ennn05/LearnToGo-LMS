@@ -21,7 +21,6 @@ router.post("/:courseCode/enroll", authenticate, authorize("student"), enrollCou
 
 router.get("/published", getPublished);
 router.get("/instructor", authenticate, getInstructorCourses);
-// router.get("/instructor/:id", getInstructorCourses);
 router.get("/:id", authenticate, (req, res) => {
     switch (req?.user?.role) {
         case "student":
@@ -33,14 +32,14 @@ router.get("/:id", authenticate, (req, res) => {
             return res.status(403).json({ message: "Unauthorized" });
     }
 });
-router.post("/", addCourse);
-router.delete("/:id", removeCourse);
-router.put("/:id", editCourse);
-router.get("/enrolled-students/:courseCode", getEnrolledStudentsByCourse);
-router.get("/enrolled-students", getEnrolledStudentsByCourse);
-router.put("/:courseCode/lessons", updateCourseLessonAssignments);
+router.post("/", authenticate, authorize("instructor", "admin"), addCourse);
+router.delete("/:id", authenticate, authorize("instructor", "admin"), removeCourse);
+router.put("/:id", authenticate, authorize("instructor", "admin"), editCourse);
+router.get("/enrolled-students/:courseCode", authenticate, authorize("instructor", "admin"), getEnrolledStudentsByCourse);
+router.get("/enrolled-students", authenticate, authorize("instructor", "admin"), getEnrolledStudentsByCourse);
+router.put("/:courseCode/lessons", authenticate, authorize("instructor", "admin"), updateCourseLessonAssignments);
 router.get("/available", authenticate, authorize("student"), getAvailableCoursesForEnrollment);
 router.post("/:courseCode/enroll", authenticate, authorize("student"), enrollCourse);
-router.delete("/:courseCode/enroll", authenticate, authorize("student"), unenrollCourse); 
+router.delete("/:courseCode/enroll", authenticate, authorize("student"), unenrollCourse);
 
 export default router;

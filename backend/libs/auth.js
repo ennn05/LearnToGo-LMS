@@ -10,7 +10,7 @@ export const checkPassword = async (userPassword, hashedPassword) => {
   try {
     return await bcrypt.compare(userPassword, hashedPassword);
   } catch (error) {
-    console.log(error);
+    console.error("Error comparing password:", error);
   }
 };
 

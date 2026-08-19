@@ -1,10 +1,8 @@
 import {getAllStudents, deleteStudent} from "../models/student.js";
 
 export const getStudents = async (req, res) => {
-    // console.log("GETTING");
     try {
         const students = await getAllStudents();
-        console.log("Students fetched:", students);
         return res.status(200).json({ success: true, data: students });
     }
     catch (error) {
@@ -15,7 +13,6 @@ export const getStudents = async (req, res) => {
 
 export const removeStudent = async (req, res) => {
     const { id } = req.params;
-    // console.log("GETTING");
     try {
         const deletedStudent = await deleteStudent(id);
         if (deletedStudent.length === 0)
@@ -26,7 +23,6 @@ export const removeStudent = async (req, res) => {
             });
         }
         deletedStudent[0].user_password = undefined;
-        console.log("Student deleted:", deletedStudent[0]);
         return res.status(200).json({ success: true, data: deletedStudent[0] });
     }
     catch (error) {

@@ -9,7 +9,7 @@ export const getAllInstructors = async () => {
     return instructors;
 };
 
-export const getAllInstructorsbyAdmin = async () => {
+export const getAllInstructorsByAdmin = async () => {
     const instructors = await sql`
         SELECT 
         user_id,

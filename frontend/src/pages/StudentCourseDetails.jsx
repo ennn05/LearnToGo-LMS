@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useParams, useNavigate , useLocation } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/CourseDetails.css";
@@ -6,8 +6,7 @@ import useStore from "../store";
 import useThemeStore from "../store/themeStore.js";
 
 function StudentCourseDetails() {
-  const {user, setCredentials, signOut} = useStore((state) => state);
-  console.log("User from store:", user);
+  const {user, signOut} = useStore((state) => state);
   const { courseId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,7 +16,6 @@ function StudentCourseDetails() {
   const [error, setError] = useState(null);
   const [enrolled, setEnrolled] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
-  const [success, setSuccess] = useState(false);
      // 🌙 get theme + toggle function
   const { theme, toggleTheme } = useThemeStore();
   // 🌓 Apply theme to document root
@@ -25,18 +23,16 @@ function StudentCourseDetails() {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
   const [unenrolling, setUnenrolling] = useState(false);
-  const [unEnrollSuccess, setUnEnrollSuccess] = useState(false);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
       setLoading(true);
       try {
         const { data: response } = await api.get(`courses/${courseId}`);
-        console.log("pogg");
-        console.log(response.data);
         setCourse(response.data);
         setEnrolled(fromMyCourses);
       } catch (err) {
+        console.error("Error fetching course details:", err);
         setError("Course not found");
       } finally {
         setLoading(false);
@@ -51,12 +47,11 @@ function StudentCourseDetails() {
       const {data: res} = await api.post(`courses/${courseId}/enroll`);
       if (res?.success) {
         setEnrolled(true);
-        setSuccess(true);
-        console.log("Enrolled successfully", res);
       } else {
         setError(res?.message || "Enrollment failed");
       }
     } catch (err) {
+      console.error("Error enrolling in course:", err);
       setError("Failed to enroll. Try again later.");
     } finally {
       setEnrolling(false);
@@ -68,20 +63,16 @@ function StudentCourseDetails() {
     if (!confirmUnenroll) return;
     try {
       setUnenrolling(true);
-      setUnEnrollSuccess(false);
       const { data: res } = await api.delete(`courses/${courseId}/enroll`);
       if (!res.success) {
         throw new Error(res.message || "Failed to unenroll");
       }
       setEnrolled(false);
-      setUnEnrollSuccess(true);
-      console.log("Unenrolled successfully:", res.message || res);
     } catch (error) {
       console.error("Error during unenrollment:", error);
       alert("Failed to unenroll. Please try again.");
     } finally {
       setUnenrolling(false);
-      setTimeout(() => setUnEnrollSuccess(false), 3000);
     }
   };
 

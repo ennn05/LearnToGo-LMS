@@ -1,4 +1,4 @@
-import "../styles/ClassroomGrade.css";
+﻿import "../styles/ClassroomGrade.css";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
@@ -71,9 +71,7 @@ function ClassroomGrade() {
                     setActiveLesson(null);
                     return;
                 }
-                console.log("Setting lessons:", res.data);
                 setLessons(res.data);
-                console.log("Setting activeLesson:", res.data?.length > 0? res.data[0].crcl_cl_id : null);
                 setActiveLesson(res.data?.length > 0? res.data[0].crcl_cl_id : null);
 
             } catch (err) {
@@ -89,11 +87,9 @@ function ClassroomGrade() {
     }, [classroomCode]);
 
     useEffect(() => {
-        console.log("Lessons updated:", lessons);
     }, [lessons]);
 
     useEffect(() => {
-        console.log("Active lesson updated:", activeLesson);
     }, [activeLesson]);
 
 

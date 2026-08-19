@@ -3,7 +3,6 @@ import { getAllInstructors, deleteInstructor } from "../models/instructor.js";
 export const getInstructors = async (req, res) => {
     try {
         const instructors = await getAllInstructors();
-        console.log("Instructors fetched:", instructors);
         return res.status(200).json({ success: true, data: instructors });
     } catch (error) {
         console.error("Error fetching instructors:", error);
@@ -22,7 +21,6 @@ export const removeInstructor = async (req, res) => {
             });
         }
         deletedInstructor[0].user_password = undefined; // hide password
-        console.log("Instructor deleted:", deletedInstructor[0]);
         return res.status(200).json({ success: true, data: deletedInstructor[0] });
     } catch (error) {
         console.error("Error in deleting instructor:", error);

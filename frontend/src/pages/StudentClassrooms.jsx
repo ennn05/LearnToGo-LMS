@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../libs/apiCalls";
 import "../styles/Classrooms.css";
@@ -32,12 +32,10 @@ function StudentClassrooms() {
       }
       
       if (res.success) {
-        console.log(res.data);
         const filteredClassrooms = activeTab === "my"
           ? res.data.filter((cr) => cr.cr_status?.toLowerCase() === "published")
           : res.data;
 
-          console.log(filteredClassrooms);
         setClassrooms(filteredClassrooms);
       } else {
         setClassrooms([]);

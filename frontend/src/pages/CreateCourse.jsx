@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateCourse.css"; // Stylesheet for page
 import useStore from "../store";
@@ -7,7 +7,7 @@ import useThemeStore from "../store/themeStore.js";
 
 function CreateCourse() {
   // State for sidebar navigation
-  const [activePage, setActivePage] = useState("courses");
+  const [activePage] = useState("courses");
 
   // User information (fetched from localStorage or mock user)
   const {user, signOut} = useStore((state) => state);
@@ -90,34 +90,6 @@ function CreateCourse() {
       ...prev,
       status: newStatus
     }));
-  };
-
-  // Publish course (validate required fields then save with status "published")
-  const handlePublishCourse = async () => {
-    try {
-      if (!courseData.courseCode || !courseData.courseTitle || !courseData.totalCredits) {
-        alert("Please fill in all required fields (Course Code, Title, and Credits) before publishing.");
-        return;
-      }
-
-      const publishedCourseData = { ...courseData, status: "published" };
-      setCourseData(publishedCourseData);
-
-      const courseToSave = {
-        course_code: publishedCourseData.courseCode,
-        course_title: publishedCourseData.courseTitle,
-        total_credits: parseInt(publishedCourseData.totalCredits),
-        status: "published",
-        assignedLessons: assignedLessons.map(l => l.lesson_id)
-      };
-
-      console.log("Publishing course:", courseToSave);
-      alert("Course published successfully!");
-      navigate("/courses");
-    } catch (error) {
-      console.error("Error publishing course:", error);
-      alert("Failed to publish course. Please try again.");
-    }
   };
 
   // Add a lesson to course (avoid duplicates)

@@ -28,6 +28,7 @@ function StudentCourses() {
         const { data: response } = await api.get("courses");
         setStudentCourses(response.data || []);
       } catch (error) {
+        console.error("Error fetching student courses:", error);
         setStudentCourses([]);
       }
     };
@@ -38,6 +39,7 @@ function StudentCourses() {
         const { data: response } = await api.get("courses/available");
         setAvailableCourses(response.data || []);
       } catch (error) {
+        console.error("Error fetching available courses:", error);
         setAvailableCourses([]);
       }
     };

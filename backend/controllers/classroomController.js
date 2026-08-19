@@ -7,9 +7,7 @@ import {
   createClassroom,
   addClassroomLesson,
   addClassroomStudent,
-  // editStudentMarksForClassroomLesson,
   getLessonsWithStudentsByClassroom,
-  // addClassroomStudentLesson,
   getClassroomsByStudent,
   updateStudentLessonGrade,
   updateClassroomLessons,
@@ -72,10 +70,8 @@ export const getClassroom = async (req, res) => {
 
 export const removeClassroom = async (req, res) => {
   const { id } = req.params; // this is the cr_id from frontend
-  console.log("Deleting classroom with cr_id:", id);
   try {
     const deleted = await deleteClassroom(id);
-    console.log("Deleted result:", deleted);
     if (!deleted) {
       return res.status(404).json({ success: false, message: "Classroom does not exist." });
     }
@@ -90,9 +86,6 @@ export const editClassroom = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
-  console.log("Update request for classroom:", id);
-  console.log("Update data:", updateData);
-
   try {
     const updated = await updateClassroom(id, updateData);
     if (!updated) {
@@ -102,9 +95,7 @@ export const editClassroom = async (req, res) => {
     let updatedLessons = [];
     if (updateData.lessons && Array.isArray(updateData.lessons)) {
         try {
-          console.log("Updating lessons:", updateData.lessons);
           updatedLessons = await updateClassroomLessons(id, updateData.lessons);
-          console.log("Lessons updated successfully:", updatedLessons);
         } catch (error) {
           console.error("Error updating classroom's lessons:", error);
           return res.status(500).json({
@@ -117,9 +108,7 @@ export const editClassroom = async (req, res) => {
     let updatedStudents = [];
     if (updateData.students && Array.isArray(updateData.students)) {
         try {
-          console.log("Updating students:", updateData.students);
           updatedStudents = await updateClassroomStudents(id, updateData.students);
-          console.log("Students updated successfully:", updatedStudents);
         } catch (error) {
           console.error("Error updating classroom's students:", error);
           return res.status(500).json({
@@ -132,13 +121,11 @@ export const editClassroom = async (req, res) => {
     return res.status(200).json({ success: true, data: updated, lessons: updatedLessons, students: updatedStudents });
   } catch (error) {
     console.error("Error updating classroom:", error);
-    console.error("Error stack:", error.stack);
     return res.status(500).json({ success: false, message: "Failed to update classroom." });
   }
 };
 
 export const addClassroom = async (req, res) => {
-  console.log("REQUEST BODY:", req.body);
   const {
                 cr_id,
                 cr_start_date,
@@ -182,7 +169,7 @@ export const addClassroom = async (req, res) => {
           let createdLessons = [];
           let createdStudents = [];
             try {
-                for (const element of lessons) {
+                for (const element of lessons ?? []) {
                     const crcl = await addClassroomLesson(cr_id, element);
                     if(crcl) createdLessons.push(crcl);
                 }
@@ -194,7 +181,7 @@ export const addClassroom = async (req, res) => {
             }
 
             try {
-                for (const element of students) {
+                for (const element of students ?? []) {
                     const cs = await addClassroomStudent(cr_id, element);
                     if(cs) createdStudents.push(cs);
                 }
@@ -204,19 +191,6 @@ export const addClassroom = async (req, res) => {
                 console.error("Error in adding student to classroom:", error);
                 return res.status(500).json({ success: false, message: "Failed to add student to classroom." });
             }
-
-
-            // try {
-            //     for (const crcl of createdLessons) {
-            //       for (const cs of createdStudents) {
-            //         await addClassroomStudentLesson(cs.cs_id, crcl.crcl_id);
-            //       }
-            //     }
-            // }
-            // catch (error) {
-            //   console.error("Error in adding cl_stu_lesson records:", error);
-            //   return res.status(500).json({ success: false, message: "Failed to link students with lessons." });
-            // }
 
             return res.status(201).json({ success: true, data: classroom });
         }
@@ -231,8 +205,7 @@ export const addClassroom = async (req, res) => {
 export const updateStudentMarksForClassroomLesson = async (req, res) => {
   const { cr_id, lesson_id } = req.params;
   const students = req.body; // Expecting an array of { stu_user_id, attendance, grade, completion }
-  console.log(students);
-  try { 
+  try {
     const results = await Promise.all(
       students.map(student => 
         updateStudentLessonGrade(lesson_id, student)
@@ -249,7 +222,6 @@ export const updateStudentMarksForClassroomLesson = async (req, res) => {
 export const getClassroomLessonsWithStudents = async (req, res) => {
   const { cr_id } = req.params;
 
-  console.log("Fetching lessons with students for classroom:", cr_id);
   try {
     const lessons = await getLessonsWithStudentsByClassroom(cr_id);
 
